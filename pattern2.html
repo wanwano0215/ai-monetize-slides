@@ -1,0 +1,1379 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AIマネタイズ全体像 - 完全ガイド</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700;900&display=swap" rel="stylesheet">
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  :root {
+    --pink: #e91e8c;
+    --orange: #ff6b35;
+    --gold: #ffd700;
+    --pink-light: #fce4f3;
+    --orange-light: #fff3ec;
+    --gold-light: #fffde6;
+    --text-dark: #1a1a2e;
+    --text-mid: #4a4a6a;
+    --bg-cream: #fffaf5;
+  }
+
+  body {
+    font-family: 'Noto Sans JP', sans-serif;
+    background: var(--bg-cream);
+    color: var(--text-dark);
+    overflow: hidden;
+    height: 100vh;
+    width: 100vw;
+  }
+
+  /* Background decorations */
+  .bg-decor {
+    position: fixed;
+    top: 0; left: 0; right: 0; bottom: 0;
+    pointer-events: none;
+    z-index: 0;
+    overflow: hidden;
+  }
+  .bg-decor .blob {
+    position: absolute;
+    border-radius: 50%;
+    filter: blur(80px);
+    opacity: 0.15;
+  }
+  .bg-decor .blob-1 { width: 500px; height: 500px; background: var(--pink); top: -10%; right: -5%; }
+  .bg-decor .blob-2 { width: 400px; height: 400px; background: var(--orange); bottom: -10%; left: -5%; }
+  .bg-decor .blob-3 { width: 300px; height: 300px; background: var(--gold); top: 50%; left: 50%; transform: translate(-50%, -50%); }
+
+  /* Confetti dots */
+  .confetti {
+    position: fixed;
+    top: 0; left: 0; right: 0; bottom: 0;
+    pointer-events: none;
+    z-index: 0;
+    overflow: hidden;
+  }
+  .confetti .dot {
+    position: absolute;
+    border-radius: 50%;
+    opacity: 0.25;
+    animation: floatDot 8s ease-in-out infinite;
+  }
+  @keyframes floatDot {
+    0%, 100% { transform: translateY(0) rotate(0deg); }
+    50% { transform: translateY(-20px) rotate(180deg); }
+  }
+
+  /* Slide container */
+  .slides-wrapper {
+    position: relative;
+    width: 100%;
+    height: 100vh;
+    z-index: 1;
+  }
+
+  .slide {
+    position: absolute;
+    top: 0; left: 0;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 60px 40px 100px;
+    opacity: 0;
+    transform: translateX(60px);
+    transition: opacity 0.5s ease, transform 0.5s ease;
+    pointer-events: none;
+    overflow-y: auto;
+  }
+  .slide.active {
+    opacity: 1;
+    transform: translateX(0);
+    pointer-events: auto;
+  }
+  .slide.exit-left {
+    opacity: 0;
+    transform: translateX(-60px);
+  }
+
+  /* Badge / eyebrow */
+  .badge {
+    display: inline-block;
+    padding: 6px 20px;
+    border-radius: 30px;
+    font-size: 0.8rem;
+    font-weight: 700;
+    letter-spacing: 0.05em;
+    margin-bottom: 16px;
+    background: linear-gradient(135deg, var(--pink), var(--orange));
+    color: #fff;
+    box-shadow: 0 4px 15px rgba(233, 30, 140, 0.3);
+  }
+  .badge.gold {
+    background: linear-gradient(135deg, var(--orange), var(--gold));
+    box-shadow: 0 4px 15px rgba(255, 107, 53, 0.3);
+  }
+  .badge.pink {
+    background: linear-gradient(135deg, #ff4ecd, var(--pink));
+  }
+
+  /* Gradient text */
+  .grad-text {
+    background: linear-gradient(135deg, var(--pink), var(--orange), var(--gold));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+  .grad-text-pink {
+    background: linear-gradient(135deg, var(--pink), #ff4ecd);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+  .grad-text-orange {
+    background: linear-gradient(135deg, var(--orange), var(--gold));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  /* Slide title */
+  .slide-title {
+    font-size: 2.4rem;
+    font-weight: 900;
+    text-align: center;
+    margin-bottom: 24px;
+    line-height: 1.4;
+  }
+  .slide-subtitle {
+    font-size: 1.1rem;
+    color: var(--text-mid);
+    text-align: center;
+    margin-bottom: 32px;
+    max-width: 700px;
+    line-height: 1.7;
+  }
+
+  /* Cards */
+  .card {
+    background: #fff;
+    border-radius: 20px;
+    padding: 28px 32px;
+    box-shadow:
+      0 8px 32px rgba(233, 30, 140, 0.1),
+      0 2px 8px rgba(0,0,0,0.04);
+    border: 1px solid rgba(233, 30, 140, 0.08);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+  }
+  .card:hover {
+    transform: translateY(-2px);
+    box-shadow:
+      0 12px 40px rgba(233, 30, 140, 0.15),
+      0 4px 12px rgba(0,0,0,0.06);
+  }
+  .card-pink {
+    border-left: 4px solid var(--pink);
+  }
+  .card-orange {
+    border-left: 4px solid var(--orange);
+  }
+  .card-gold {
+    border-left: 4px solid var(--gold);
+  }
+
+  /* Grid layouts */
+  .grid-2 {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+    width: 100%;
+    max-width: 900px;
+  }
+  .grid-3 {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 20px;
+    width: 100%;
+    max-width: 1000px;
+  }
+  .grid-4 {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr 1fr;
+    gap: 16px;
+    width: 100%;
+    max-width: 1000px;
+  }
+  .grid-5 {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 14px;
+    width: 100%;
+    max-width: 1100px;
+  }
+
+  /* Big number */
+  .big-number {
+    font-size: 3rem;
+    font-weight: 900;
+    line-height: 1;
+    margin-bottom: 6px;
+  }
+
+  /* Revenue level bars */
+  .level-bar {
+    height: 10px;
+    border-radius: 5px;
+    margin-top: 8px;
+    background: linear-gradient(90deg, var(--pink), var(--orange));
+  }
+
+  /* Step connector */
+  .step-number {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--pink), var(--orange));
+    color: #fff;
+    font-weight: 900;
+    font-size: 1.1rem;
+    margin-bottom: 10px;
+    box-shadow: 0 4px 15px rgba(233, 30, 140, 0.3);
+  }
+
+  /* Bottom gradient line */
+  .slide::after {
+    content: '';
+    position: absolute;
+    bottom: 80px;
+    left: 10%;
+    right: 10%;
+    height: 3px;
+    background: linear-gradient(90deg, transparent, var(--pink), var(--orange), var(--gold), transparent);
+    border-radius: 2px;
+    opacity: 0.4;
+  }
+
+  /* Navigation */
+  .nav-bar {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 70px;
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(12px);
+    border-top: 1px solid rgba(233, 30, 140, 0.1);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 24px;
+    z-index: 100;
+    box-shadow: 0 -4px 20px rgba(0,0,0,0.05);
+  }
+  .nav-btn {
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    border: 2px solid rgba(233, 30, 140, 0.2);
+    background: #fff;
+    color: var(--pink);
+    font-size: 1.2rem;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s ease;
+    font-weight: 700;
+  }
+  .nav-btn:hover {
+    background: linear-gradient(135deg, var(--pink), var(--orange));
+    color: #fff;
+    border-color: transparent;
+    box-shadow: 0 4px 20px rgba(233, 30, 140, 0.3);
+  }
+  .nav-btn:disabled {
+    opacity: 0.3;
+    cursor: not-allowed;
+  }
+  .nav-btn:disabled:hover {
+    background: #fff;
+    color: var(--pink);
+    border-color: rgba(233, 30, 140, 0.2);
+    box-shadow: none;
+  }
+
+  /* Progress bar */
+  .progress-container {
+    width: 200px;
+    height: 6px;
+    background: rgba(233, 30, 140, 0.1);
+    border-radius: 3px;
+    overflow: hidden;
+  }
+  .progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--pink), var(--orange), var(--gold));
+    border-radius: 3px;
+    transition: width 0.4s ease;
+  }
+  .slide-counter {
+    font-size: 0.85rem;
+    font-weight: 700;
+    color: var(--text-mid);
+    min-width: 60px;
+    text-align: center;
+  }
+
+  /* Title slide specifics */
+  .title-main {
+    font-size: 4rem;
+    font-weight: 900;
+    line-height: 1.3;
+    text-align: center;
+    margin-bottom: 20px;
+  }
+  .title-sub {
+    font-size: 1.4rem;
+    color: var(--text-mid);
+    text-align: center;
+    margin-bottom: 40px;
+    line-height: 1.7;
+  }
+  .title-decoration {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 30px;
+  }
+  .title-decoration span {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    animation: pulse 2s ease-in-out infinite;
+  }
+  .title-decoration span:nth-child(1) { background: var(--pink); animation-delay: 0s; }
+  .title-decoration span:nth-child(2) { background: var(--orange); animation-delay: 0.3s; }
+  .title-decoration span:nth-child(3) { background: var(--gold); animation-delay: 0.6s; }
+  .title-decoration span:nth-child(4) { background: var(--pink); animation-delay: 0.9s; }
+  .title-decoration span:nth-child(5) { background: var(--orange); animation-delay: 1.2s; }
+  @keyframes pulse {
+    0%, 100% { transform: scale(1); opacity: 0.7; }
+    50% { transform: scale(1.4); opacity: 1; }
+  }
+
+  /* Glow box */
+  .glow-box {
+    background: linear-gradient(135deg, rgba(233,30,140,0.08), rgba(255,107,53,0.08));
+    border: 2px solid rgba(233,30,140,0.15);
+    border-radius: 16px;
+    padding: 20px 28px;
+    text-align: center;
+  }
+
+  /* Table style */
+  .styled-table {
+    width: 100%;
+    max-width: 800px;
+    border-collapse: separate;
+    border-spacing: 0 8px;
+  }
+  .styled-table th {
+    padding: 12px 16px;
+    text-align: left;
+    font-weight: 700;
+    font-size: 0.85rem;
+    color: var(--text-mid);
+    border-bottom: 2px solid rgba(233,30,140,0.15);
+  }
+  .styled-table td {
+    padding: 14px 16px;
+    background: #fff;
+    font-size: 0.95rem;
+  }
+  .styled-table tr td:first-child {
+    border-radius: 12px 0 0 12px;
+    font-weight: 700;
+  }
+  .styled-table tr td:last-child {
+    border-radius: 0 12px 12px 0;
+  }
+  .styled-table tr {
+    box-shadow: 0 2px 12px rgba(233,30,140,0.06);
+  }
+
+  /* Pill tags */
+  .pill {
+    display: inline-block;
+    padding: 4px 14px;
+    border-radius: 20px;
+    font-size: 0.78rem;
+    font-weight: 700;
+    margin: 2px;
+  }
+  .pill-pink { background: var(--pink-light); color: var(--pink); }
+  .pill-orange { background: var(--orange-light); color: var(--orange); }
+  .pill-gold { background: var(--gold-light); color: #c49800; }
+
+  /* CTA slide */
+  .cta-box {
+    background: linear-gradient(135deg, var(--pink), var(--orange), var(--gold));
+    border-radius: 24px;
+    padding: 48px 56px;
+    color: #fff;
+    text-align: center;
+    max-width: 700px;
+    box-shadow:
+      0 20px 60px rgba(233,30,140,0.25),
+      0 0 80px rgba(255,107,53,0.15);
+  }
+  .cta-box h2 {
+    font-size: 2.4rem;
+    font-weight: 900;
+    margin-bottom: 16px;
+  }
+  .cta-box p {
+    font-size: 1.1rem;
+    opacity: 0.95;
+    line-height: 1.7;
+    margin-bottom: 8px;
+  }
+
+  /* Timeline */
+  .timeline {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    width: 100%;
+    max-width: 750px;
+  }
+  .timeline-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 16px;
+  }
+  .timeline-marker {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    min-width: 50px;
+  }
+  .timeline-dot {
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--pink), var(--orange));
+    box-shadow: 0 0 12px rgba(233,30,140,0.3);
+  }
+  .timeline-line {
+    width: 3px;
+    height: 40px;
+    background: linear-gradient(180deg, var(--pink), var(--orange));
+    opacity: 0.3;
+    margin-top: 4px;
+  }
+
+  /* Highlight text */
+  .highlight-pink { color: var(--pink); font-weight: 700; }
+  .highlight-orange { color: var(--orange); font-weight: 700; }
+
+  /* Icon emoji sizing */
+  .icon-lg { font-size: 2rem; margin-bottom: 10px; display: block; }
+  .icon-md { font-size: 1.4rem; margin-bottom: 6px; display: block; }
+
+  /* Responsive */
+  @media (max-width: 768px) {
+    .slide { padding: 40px 20px 100px; }
+    .title-main { font-size: 2.4rem; }
+    .slide-title { font-size: 1.6rem; }
+    .grid-2, .grid-3, .grid-4, .grid-5 { grid-template-columns: 1fr; }
+    .big-number { font-size: 2rem; }
+    .cta-box { padding: 32px 24px; }
+    .cta-box h2 { font-size: 1.8rem; }
+  }
+
+  /* Arrow connector between grid items */
+  .arrow-right::after {
+    content: '→';
+    position: absolute;
+    right: -16px;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 1.2rem;
+    color: var(--pink);
+    font-weight: 900;
+  }
+
+  /* Multiplier formula */
+  .formula {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex-wrap: wrap;
+    justify-content: center;
+    margin: 20px 0;
+  }
+  .formula-item {
+    background: #fff;
+    border-radius: 14px;
+    padding: 14px 22px;
+    font-weight: 700;
+    font-size: 1rem;
+    box-shadow: 0 4px 20px rgba(233,30,140,0.1);
+    border: 1px solid rgba(233,30,140,0.1);
+  }
+  .formula-op {
+    font-size: 1.6rem;
+    font-weight: 900;
+    color: var(--pink);
+  }
+  .formula-result {
+    background: linear-gradient(135deg, var(--pink), var(--orange));
+    color: #fff;
+    border-radius: 14px;
+    padding: 14px 28px;
+    font-weight: 900;
+    font-size: 1.1rem;
+    box-shadow: 0 8px 30px rgba(233,30,140,0.25);
+  }
+
+  /* Skill path */
+  .skill-path {
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+    width: 100%;
+    max-width: 1100px;
+    flex-wrap: nowrap;
+    overflow-x: auto;
+  }
+  .skill-path .card {
+    flex: 1;
+    min-width: 170px;
+    text-align: center;
+    position: relative;
+    padding: 20px 16px;
+  }
+  .skill-arrow {
+    display: flex;
+    align-items: center;
+    font-size: 1.5rem;
+    color: var(--pink);
+    font-weight: 900;
+    padding-top: 50px;
+    flex-shrink: 0;
+  }
+
+  /* Success story highlight */
+  .success-card {
+    background: #fff;
+    border-radius: 20px;
+    padding: 24px;
+    text-align: center;
+    box-shadow: 0 8px 30px rgba(233,30,140,0.1);
+    border: 1px solid rgba(233,30,140,0.08);
+    position: relative;
+    overflow: hidden;
+  }
+  .success-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: linear-gradient(90deg, var(--pink), var(--orange), var(--gold));
+  }
+
+  .content-area {
+    max-height: calc(100vh - 180px);
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+    padding: 0 10px;
+  }
+
+  .content-area::-webkit-scrollbar {
+    width: 4px;
+  }
+  .content-area::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  .content-area::-webkit-scrollbar-thumb {
+    background: rgba(233,30,140,0.2);
+    border-radius: 2px;
+  }
+</style>
+</head>
+<body>
+
+<!-- Background decorations -->
+<div class="bg-decor">
+  <div class="blob blob-1"></div>
+  <div class="blob blob-2"></div>
+  <div class="blob blob-3"></div>
+</div>
+
+<!-- Confetti dots -->
+<div class="confetti" id="confetti"></div>
+
+<!-- Slides -->
+<div class="slides-wrapper">
+
+  <!-- ========== SLIDE 1: Title ========== -->
+  <div class="slide active" data-slide="0">
+    <div class="content-area">
+      <div class="title-decoration">
+        <span></span><span></span><span></span><span></span><span></span>
+      </div>
+      <div class="badge" style="font-size:0.9rem; padding:8px 28px; margin-bottom:24px;">COMPLETE GUIDE 2026</div>
+      <h1 class="title-main">
+        <span class="grad-text">AIマネタイズ</span><br>全体像
+      </h1>
+      <p class="title-sub">
+        AI技術を活用して<span class="highlight-pink">月100万円以上</span>を稼ぐ人が続出中。<br>
+        初心者でも始められる、AIマネタイズの完全ロードマップ。
+      </p>
+      <div style="display:flex; gap:12px; flex-wrap:wrap; justify-content:center;">
+        <span class="pill pill-pink">画像生成</span>
+        <span class="pill pill-orange">動画制作</span>
+        <span class="pill pill-gold">自動化</span>
+        <span class="pill pill-pink">SNS集客</span>
+        <span class="pill pill-orange">マルチ展開</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- ========== SLIDE 2: Market Reality ========== -->
+  <div class="slide" data-slide="1">
+    <div class="content-area">
+      <span class="badge">MARKET REALITY</span>
+      <h2 class="slide-title">いま<span class="grad-text">月100万円到達者</span>が続出している</h2>
+      <p class="slide-subtitle">AI副業の収益レベル別の到達者が急増中。あなたはどこを目指す？</p>
+      <div class="grid-4" style="margin-bottom:24px;">
+        <div class="card card-pink" style="text-align:center;">
+          <span class="icon-md">🌱</span>
+          <div class="big-number grad-text-pink" style="font-size:2rem;">1〜5万円</div>
+          <div style="font-weight:700; margin:6px 0;">初心者レベル</div>
+          <div style="font-size:0.8rem; color:var(--text-mid);">最初の1〜2ヶ月<br>画像生成を覚える段階</div>
+          <div class="level-bar" style="width:20%;"></div>
+        </div>
+        <div class="card card-orange" style="text-align:center;">
+          <span class="icon-md">🔥</span>
+          <div class="big-number grad-text-orange" style="font-size:2rem;">10〜30万円</div>
+          <div style="font-weight:700; margin:6px 0;">中級レベル</div>
+          <div style="font-size:0.8rem; color:var(--text-mid);">3〜6ヶ月目<br>売れる作品が作れる段階</div>
+          <div class="level-bar" style="width:50%;"></div>
+        </div>
+        <div class="card card-gold" style="text-align:center;">
+          <span class="icon-md">💎</span>
+          <div class="big-number grad-text" style="font-size:2rem;">50〜100万円</div>
+          <div style="font-weight:700; margin:6px 0;">上級レベル</div>
+          <div style="font-size:0.8rem; color:var(--text-mid);">6ヶ月〜1年<br>動画＋マルチ展開</div>
+          <div class="level-bar" style="width:80%;"></div>
+        </div>
+        <div class="card" style="text-align:center; border-left:4px solid var(--pink); background:linear-gradient(135deg, rgba(233,30,140,0.03), rgba(255,107,53,0.03));">
+          <span class="icon-md">👑</span>
+          <div class="big-number grad-text" style="font-size:2rem;">200〜300万円</div>
+          <div style="font-weight:700; margin:6px 0;">トップレベル</div>
+          <div style="font-size:0.8rem; color:var(--text-mid);">1年以上<br>ブランド＋自動化完成</div>
+          <div class="level-bar" style="width:100%; background:linear-gradient(90deg, var(--pink), var(--orange), var(--gold));"></div>
+        </div>
+      </div>
+      <div class="glow-box" style="max-width:600px;">
+        <span style="font-size:1rem; font-weight:700;">ポイント：<span class="highlight-pink">正しい戦略</span>と<span class="highlight-orange">継続</span>があれば、誰でも中級レベル以上に到達可能</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- ========== SLIDE 3: Why Now ========== -->
+  <div class="slide" data-slide="2">
+    <div class="content-area">
+      <span class="badge gold">WHY NOW?</span>
+      <h2 class="slide-title"><span class="grad-text">今が最大のチャンス</span>である3つの理由</h2>
+      <p class="slide-subtitle">2024-2026年にかけて、AI副業の環境が劇的に整った</p>
+      <div class="grid-3">
+        <div class="card card-pink" style="text-align:center;">
+          <span class="icon-lg">🧠</span>
+          <h3 style="font-size:1.2rem; font-weight:900; margin-bottom:10px;">技術の成熟</h3>
+          <p style="font-size:0.9rem; color:var(--text-mid); line-height:1.7;">
+            <span class="highlight-pink">Illustrious / Pony</span>など高品質モデルが<strong>完全無料</strong>で使える時代に。<br>
+            誰でもプロ級の画像・動画を生成可能。
+          </p>
+          <div style="margin-top:12px;">
+            <span class="pill pill-pink">無料</span>
+            <span class="pill pill-pink">高品質</span>
+          </div>
+        </div>
+        <div class="card card-orange" style="text-align:center;">
+          <span class="icon-lg">📈</span>
+          <h3 style="font-size:1.2rem; font-weight:900; margin-bottom:10px;">市場の拡大</h3>
+          <p style="font-size:0.9rem; color:var(--text-mid); line-height:1.7;">
+            AI生成コンテンツの<span class="highlight-orange">需要が爆発的に増加</span>。<br>
+            購入者層が拡大し、市場規模は年々2倍ペースで成長中。
+          </p>
+          <div style="margin-top:12px;">
+            <span class="pill pill-orange">需要増</span>
+            <span class="pill pill-orange">成長市場</span>
+          </div>
+        </div>
+        <div class="card card-gold" style="text-align:center;">
+          <span class="icon-lg">🛒</span>
+          <h3 style="font-size:1.2rem; font-weight:900; margin-bottom:10px;">販売ルートの整備</h3>
+          <p style="font-size:0.9rem; color:var(--text-mid); line-height:1.7;">
+            <span class="highlight-pink">FANZA / DLsite / BOOTH</span><br>
+            <span class="highlight-orange">Patreon / Fantia</span><br>
+            今すぐ販売を始められるプラットフォームが充実。
+          </p>
+          <div style="margin-top:12px;">
+            <span class="pill pill-gold">国内</span>
+            <span class="pill pill-gold">海外</span>
+            <span class="pill pill-gold">物販</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ========== SLIDE 4: What to Create ========== -->
+  <div class="slide" data-slide="3">
+    <div class="content-area">
+      <span class="badge pink">PRODUCTS</span>
+      <h2 class="slide-title">何を作って<span class="grad-text">売るのか？</span></h2>
+      <p class="slide-subtitle">AI副業で売れる4大ジャンルを押さえよう</p>
+      <div class="grid-2">
+        <div class="card card-pink">
+          <div style="display:flex; align-items:center; gap:12px; margin-bottom:14px;">
+            <span style="font-size:2rem;">🖼️</span>
+            <div>
+              <h3 style="font-weight:900; font-size:1.1rem;">CG集（画像集）</h3>
+              <span class="pill pill-pink">王道</span>
+            </div>
+          </div>
+          <p style="font-size:0.9rem; color:var(--text-mid); line-height:1.7; margin-bottom:10px;">
+            1作品 <strong>30〜50枚</strong>のCG集を作成。<br>
+            テーマ・キャラ・シチュエーションを統一。
+          </p>
+          <div style="background:var(--pink-light); border-radius:10px; padding:10px 14px; font-weight:700; color:var(--pink); text-align:center;">
+            販売価格：500〜3,000円
+          </div>
+        </div>
+        <div class="card card-orange">
+          <div style="display:flex; align-items:center; gap:12px; margin-bottom:14px;">
+            <span style="font-size:2rem;">🎬</span>
+            <div>
+              <h3 style="font-weight:900; font-size:1.1rem;">AI動画</h3>
+              <span class="pill pill-orange">高単価</span>
+            </div>
+          </div>
+          <p style="font-size:0.9rem; color:var(--text-mid); line-height:1.7; margin-bottom:10px;">
+            <strong>2〜30分</strong>の動画コンテンツ。<br>
+            画像に動きを加えるだけで価値が数倍に。
+          </p>
+          <div style="background:var(--orange-light); border-radius:10px; padding:10px 14px; font-weight:700; color:var(--orange); text-align:center;">
+            販売価格：1,000〜2,980円
+          </div>
+        </div>
+        <div class="card card-gold">
+          <div style="display:flex; align-items:center; gap:12px; margin-bottom:14px;">
+            <span style="font-size:2rem;">✨</span>
+            <div>
+              <h3 style="font-weight:900; font-size:1.1rem;">オリキャラ展開</h3>
+              <span class="pill pill-gold">ファン化</span>
+            </div>
+          </div>
+          <p style="font-size:0.9rem; color:var(--text-mid); line-height:1.7; margin-bottom:10px;">
+            独自キャラクターを作り、シリーズ展開。<br>
+            <strong>ファンがつく</strong>とリピート購入が生まれる。
+          </p>
+          <div style="background:var(--gold-light); border-radius:10px; padding:10px 14px; font-weight:700; color:#c49800; text-align:center;">
+            継続収入の源泉
+          </div>
+        </div>
+        <div class="card" style="border-left:4px solid var(--pink);">
+          <div style="display:flex; align-items:center; gap:12px; margin-bottom:14px;">
+            <span style="font-size:2rem;">🎨</span>
+            <div>
+              <h3 style="font-weight:900; font-size:1.1rem;">ポスター・グッズ</h3>
+              <span class="pill pill-pink">物販</span>
+            </div>
+          </div>
+          <p style="font-size:0.9rem; color:var(--text-mid); line-height:1.7; margin-bottom:10px;">
+            高解像度ポスター、アクキー、マグカップなど。<br>
+            <strong>ヤフオク・BOOTH</strong>で販売。
+          </p>
+          <div style="background:var(--pink-light); border-radius:10px; padding:10px 14px; font-weight:700; color:var(--pink); text-align:center;">
+            原価が安く利益率が高い
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ========== SLIDE 5: Where to Sell ========== -->
+  <div class="slide" data-slide="4">
+    <div class="content-area">
+      <span class="badge">PLATFORMS</span>
+      <h2 class="slide-title"><span class="grad-text">どこで売る？</span>販売プラットフォーム</h2>
+      <p class="slide-subtitle">目的に合わせて最適なプラットフォームを選ぼう</p>
+      <table class="styled-table">
+        <thead>
+          <tr>
+            <th>プラットフォーム</th>
+            <th>特徴</th>
+            <th>向いている人</th>
+            <th>手数料</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><span class="highlight-pink">FANZA</span></td>
+            <td>国内最大の販売サイト。圧倒的な集客力</td>
+            <td>売上を最大化したい人</td>
+            <td>約40〜50%</td>
+          </tr>
+          <tr>
+            <td><span class="highlight-orange">DLsite</span></td>
+            <td>同人に強い。AI作品の受け入れも進む</td>
+            <td>同人文化に馴染みがある人</td>
+            <td>約35〜40%</td>
+          </tr>
+          <tr>
+            <td><span class="highlight-pink">BOOTH</span></td>
+            <td>初心者でも出品しやすい。手数料が安い</td>
+            <td>まず始めたい初心者</td>
+            <td>約5.6%</td>
+          </tr>
+          <tr>
+            <td><span class="highlight-orange">Patreon / Fantia</span></td>
+            <td>月額課金型。ファンからの安定収入</td>
+            <td>ファンを育てたい人</td>
+            <td>約5〜12%</td>
+          </tr>
+          <tr>
+            <td><span style="color:var(--gold); font-weight:700;">ヤフオク</span></td>
+            <td>物販（ポスター等）に強い。意外な穴場</td>
+            <td>グッズ・ポスター販売</td>
+            <td>約10%</td>
+          </tr>
+        </tbody>
+      </table>
+      <div class="glow-box" style="max-width:600px; margin-top:20px;">
+        <span style="font-weight:700;">戦略：<span class="highlight-pink">FANZA×DLsite</span>で売上を作り、<span class="highlight-orange">Patreon/Fantia</span>で安定化</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- ========== SLIDE 6: 3 Revenue Patterns ========== -->
+  <div class="slide" data-slide="5">
+    <div class="content-area">
+      <span class="badge gold">REVENUE PATTERNS</span>
+      <h2 class="slide-title"><span class="grad-text">3つの収益パターン</span></h2>
+      <p class="slide-subtitle">あなたに合ったスタイルを見つけよう</p>
+      <div class="grid-3">
+        <div class="card" style="text-align:center; border-top:4px solid var(--pink); border-left:none;">
+          <span class="icon-lg">🖼️</span>
+          <h3 style="font-weight:900; font-size:1.1rem; margin-bottom:8px;">画像メイン型</h3>
+          <div class="big-number grad-text-pink" style="font-size:2.2rem; margin:12px 0;">月10〜30万円</div>
+          <ul style="text-align:left; font-size:0.85rem; color:var(--text-mid); line-height:2; list-style:none; padding:0;">
+            <li>✅ CG集を月2〜4作品リリース</li>
+            <li>✅ FANZA + DLsiteで販売</li>
+            <li>✅ サムネイル・タイトル命</li>
+            <li>✅ 比較的取り組みやすい</li>
+          </ul>
+          <span class="pill pill-pink" style="margin-top:12px;">初心者おすすめ</span>
+        </div>
+        <div class="card" style="text-align:center; border-top:4px solid var(--orange); border-left:none;">
+          <span class="icon-lg">🎬</span>
+          <h3 style="font-weight:900; font-size:1.1rem; margin-bottom:8px;">動画特化型</h3>
+          <div class="big-number grad-text-orange" style="font-size:2.2rem; margin:12px 0;">月20〜50万円</div>
+          <ul style="text-align:left; font-size:0.85rem; color:var(--text-mid); line-height:2; list-style:none; padding:0;">
+            <li>✅ 動画作品を月2〜3本リリース</li>
+            <li>✅ 画像より単価が高い</li>
+            <li>✅ 競合がまだ少ない</li>
+            <li>✅ ComfyUIのスキルが必要</li>
+          </ul>
+          <span class="pill pill-orange" style="margin-top:12px;">高単価狙い</span>
+        </div>
+        <div class="card" style="text-align:center; border-top:4px solid var(--gold); border-left:none; background:linear-gradient(180deg, rgba(255,215,0,0.03), transparent);">
+          <span class="icon-lg">👑</span>
+          <h3 style="font-weight:900; font-size:1.1rem; margin-bottom:8px;">マルチ展開型</h3>
+          <div class="big-number grad-text" style="font-size:2.2rem; margin:12px 0;">月50〜300万円</div>
+          <ul style="text-align:left; font-size:0.85rem; color:var(--text-mid); line-height:2; list-style:none; padding:0;">
+            <li>✅ 画像+動画+グッズ同時展開</li>
+            <li>✅ オリキャラでファンベース構築</li>
+            <li>✅ 自動化で制作効率アップ</li>
+            <li>✅ 複数プラットフォーム活用</li>
+          </ul>
+          <span class="pill pill-gold" style="margin-top:12px;">最終目標</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ========== SLIDE 7: The Multiplier ========== -->
+  <div class="slide" data-slide="6">
+    <div class="content-area">
+      <span class="badge pink">MULTIPLIER</span>
+      <h2 class="slide-title">収益を<span class="grad-text">爆発させる</span>掛け算の法則</h2>
+      <p class="slide-subtitle">単体では限界がある。掛け合わせることで収益が何倍にもなる</p>
+      <div class="formula">
+        <div class="formula-item">🖼️ 画像</div>
+        <span class="formula-op">&times;</span>
+        <div class="formula-item">🎬 動画</div>
+        <span class="formula-op">&times;</span>
+        <div class="formula-item">🤖 自動化</div>
+        <span class="formula-op">&times;</span>
+        <div class="formula-item">📱 SNS集客</div>
+        <span class="formula-op">=</span>
+        <div class="formula-result">💰 収益最大化</div>
+      </div>
+      <div class="grid-2" style="margin-top:24px;">
+        <div class="card card-pink">
+          <h4 style="font-weight:900; margin-bottom:10px;">🖼️ &times; 🎬 画像 &times; 動画</h4>
+          <p style="font-size:0.9rem; color:var(--text-mid); line-height:1.7;">
+            同じキャラ・世界観で<strong>画像集と動画の両方</strong>をリリース。<br>
+            1つの素材から2つの商品が生まれる。
+          </p>
+          <div style="margin-top:10px; font-weight:700; color:var(--pink);">収益効果：2〜3倍</div>
+        </div>
+        <div class="card card-orange">
+          <h4 style="font-weight:900; margin-bottom:10px;">🤖 自動化の威力</h4>
+          <p style="font-size:0.9rem; color:var(--text-mid); line-height:1.7;">
+            AIエージェントでワークフロー自動化。<br>
+            <strong>制作時間を1/3に短縮</strong>しながら品質維持。
+          </p>
+          <div style="margin-top:10px; font-weight:700; color:var(--orange);">生産性：3倍</div>
+        </div>
+        <div class="card card-gold">
+          <h4 style="font-weight:900; margin-bottom:10px;">📱 SNS集客</h4>
+          <p style="font-size:0.9rem; color:var(--text-mid); line-height:1.7;">
+            X(Twitter)やPixivで作品を拡散。<br>
+            <strong>フォロワー＝見込み客</strong>を自動で集める。
+          </p>
+          <div style="margin-top:10px; font-weight:700; color:#c49800;">集客力：5〜10倍</div>
+        </div>
+        <div class="card" style="border-left:4px solid var(--pink); background:linear-gradient(135deg, rgba(233,30,140,0.03), rgba(255,107,53,0.03));">
+          <h4 style="font-weight:900; margin-bottom:10px;">💎 掛け算の結果</h4>
+          <p style="font-size:0.9rem; color:var(--text-mid); line-height:1.7;">
+            すべてを組み合わせると、<br>
+            単品販売の<strong class="highlight-pink">10〜30倍の収益</strong>が見込める。
+          </p>
+          <div style="margin-top:10px; font-weight:900; font-size:1.2rem;" class="grad-text">月5万 → 月50〜150万</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ========== SLIDE 8: 5 Skills ========== -->
+  <div class="slide" data-slide="7">
+    <div class="content-area">
+      <span class="badge">5 SKILLS</span>
+      <h2 class="slide-title">習得すべき<span class="grad-text">5つのスキル</span></h2>
+      <p class="slide-subtitle">この順番で学べば最短で収益化できる</p>
+      <div class="skill-path">
+        <div class="card" style="text-align:center;">
+          <div class="step-number">1</div>
+          <span class="icon-md">🗺️</span>
+          <h4 style="font-weight:900; font-size:0.95rem; margin-bottom:6px;">全体像把握</h4>
+          <p style="font-size:0.78rem; color:var(--text-mid); line-height:1.6;">マネタイズの仕組みを理解する</p>
+          <span class="pill pill-pink" style="margin-top:8px; font-size:0.7rem;">今ここ</span>
+        </div>
+        <div class="skill-arrow">→</div>
+        <div class="card" style="text-align:center;">
+          <div class="step-number">2</div>
+          <span class="icon-md">🖼️</span>
+          <h4 style="font-weight:900; font-size:0.95rem; margin-bottom:6px;">AI画像生成</h4>
+          <p style="font-size:0.78rem; color:var(--text-mid); line-height:1.6;">Stable Diffusion<br>高品質画像の量産</p>
+          <span class="pill pill-orange" style="margin-top:8px; font-size:0.7rem;">基礎スキル</span>
+        </div>
+        <div class="skill-arrow">→</div>
+        <div class="card" style="text-align:center;">
+          <div class="step-number">3</div>
+          <span class="icon-md">🎬</span>
+          <h4 style="font-weight:900; font-size:0.95rem; margin-bottom:6px;">AI動画制作</h4>
+          <p style="font-size:0.78rem; color:var(--text-mid); line-height:1.6;">ComfyUI<br>動画ワークフロー</p>
+          <span class="pill pill-orange" style="margin-top:8px; font-size:0.7rem;">差別化スキル</span>
+        </div>
+        <div class="skill-arrow">→</div>
+        <div class="card" style="text-align:center;">
+          <div class="step-number">4</div>
+          <span class="icon-md">🤖</span>
+          <h4 style="font-weight:900; font-size:0.95rem; margin-bottom:6px;">AI自動化</h4>
+          <p style="font-size:0.78rem; color:var(--text-mid); line-height:1.6;">AIエージェント<br>ワークフロー自動化</p>
+          <span class="pill pill-gold" style="margin-top:8px; font-size:0.7rem;">効率化スキル</span>
+        </div>
+        <div class="skill-arrow">→</div>
+        <div class="card" style="text-align:center; background:linear-gradient(135deg, rgba(233,30,140,0.04), rgba(255,107,53,0.04));">
+          <div class="step-number" style="background:linear-gradient(135deg, var(--orange), var(--gold));">5</div>
+          <span class="icon-md">💰</span>
+          <h4 style="font-weight:900; font-size:0.95rem; margin-bottom:6px;">マネタイズ戦略</h4>
+          <p style="font-size:0.78rem; color:var(--text-mid); line-height:1.6;">販売戦略・価格設定<br>ファンベース構築</p>
+          <span class="pill pill-pink" style="margin-top:8px; font-size:0.7rem;">収益化</span>
+        </div>
+      </div>
+      <div class="glow-box" style="max-width:650px; margin-top:24px;">
+        <span style="font-weight:700;">全5スキルを習得すれば、<span class="highlight-pink">月50万円以上</span>の収益が現実的に見えてくる</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- ========== SLIDE 9: Mindset ========== -->
+  <div class="slide" data-slide="8">
+    <div class="content-area">
+      <span class="badge gold">MINDSET</span>
+      <h2 class="slide-title">売れる人の<span class="grad-text">マインドセット</span></h2>
+      <p class="slide-subtitle">技術だけでは稼げない。「売れる人」の考え方を身につけよう</p>
+      <div class="grid-2">
+        <div class="card card-pink">
+          <h3 style="font-weight:900; margin-bottom:14px; font-size:1.1rem;">❌ 売れない3大原因</h3>
+          <ul style="list-style:none; padding:0; font-size:0.9rem; line-height:2.2;">
+            <li style="padding:6px 0; border-bottom:1px solid rgba(233,30,140,0.08);">
+              <strong style="color:var(--pink);">1.</strong> サムネイルが魅力的でない
+            </li>
+            <li style="padding:6px 0; border-bottom:1px solid rgba(233,30,140,0.08);">
+              <strong style="color:var(--pink);">2.</strong> タイトルが刺さらない
+            </li>
+            <li style="padding:6px 0;">
+              <strong style="color:var(--pink);">3.</strong> ジャンル選定を間違えている
+            </li>
+          </ul>
+        </div>
+        <div class="card card-orange">
+          <h3 style="font-weight:900; margin-bottom:14px; font-size:1.1rem;">✅ 売れる3つの条件</h3>
+          <ul style="list-style:none; padding:0; font-size:0.9rem; line-height:2.2;">
+            <li style="padding:6px 0; border-bottom:1px solid rgba(255,107,53,0.08);">
+              <strong style="color:var(--orange);">1.</strong> 目を引くサムネイル（第一印象が9割）
+            </li>
+            <li style="padding:6px 0; border-bottom:1px solid rgba(255,107,53,0.08);">
+              <strong style="color:var(--orange);">2.</strong> 購買意欲を刺激するタイトル
+            </li>
+            <li style="padding:6px 0;">
+              <strong style="color:var(--orange);">3.</strong> 需要のあるジャンルを狙い撃ち
+            </li>
+          </ul>
+        </div>
+      </div>
+      <div class="card" style="max-width:900px; margin-top:20px; text-align:center; border-top:4px solid var(--gold); border-left:none; background:linear-gradient(180deg, rgba(255,215,0,0.04), transparent);">
+        <span class="icon-lg">⭐</span>
+        <h3 style="font-weight:900; font-size:1.3rem; margin-bottom:10px;">最強の資産＝<span class="grad-text">ファン</span></h3>
+        <p style="font-size:0.95rem; color:var(--text-mid); line-height:1.8; max-width:600px; margin:0 auto;">
+          一度ファンになってもらえれば、新作を出すたびに<strong>自動的に売れる</strong>。<br>
+          ファンを作ることは、<span class="highlight-pink">自動販売機を設置する</span>ようなもの。<br>
+          <strong>ファン数 &times; 作品数 = 継続的な収入</strong>
+        </p>
+      </div>
+    </div>
+  </div>
+
+  <!-- ========== SLIDE 10: Revenue Roadmap ========== -->
+  <div class="slide" data-slide="9">
+    <div class="content-area">
+      <span class="badge pink">ROADMAP</span>
+      <h2 class="slide-title">収益化<span class="grad-text">ロードマップ</span></h2>
+      <p class="slide-subtitle">段階的に収益を伸ばしていく現実的なプラン</p>
+      <div class="timeline">
+        <div class="timeline-item">
+          <div class="timeline-marker">
+            <div class="timeline-dot" style="background:linear-gradient(135deg, var(--pink), #ff4ecd);"></div>
+            <div class="timeline-line"></div>
+          </div>
+          <div class="card card-pink" style="flex:1;">
+            <div style="display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:10px;">
+              <div>
+                <span class="pill pill-pink">Phase 1</span>
+                <h3 style="font-weight:900; font-size:1.1rem; margin-top:8px;">1〜3ヶ月目</h3>
+              </div>
+              <div class="big-number grad-text-pink" style="font-size:2.4rem;">月3〜10万円</div>
+            </div>
+            <p style="font-size:0.9rem; color:var(--text-mid); line-height:1.7; margin-top:10px;">
+              Stable Diffusionを習得 → CG集を制作 → FANZA/DLsiteに出品<br>
+              <strong>目標：初の販売実績を作る。月2〜3作品リリース</strong>
+            </p>
+          </div>
+        </div>
+        <div class="timeline-item">
+          <div class="timeline-marker">
+            <div class="timeline-dot" style="background:linear-gradient(135deg, var(--orange), var(--pink));"></div>
+            <div class="timeline-line"></div>
+          </div>
+          <div class="card card-orange" style="flex:1;">
+            <div style="display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:10px;">
+              <div>
+                <span class="pill pill-orange">Phase 2</span>
+                <h3 style="font-weight:900; font-size:1.1rem; margin-top:8px;">3〜6ヶ月目</h3>
+              </div>
+              <div class="big-number grad-text-orange" style="font-size:2.4rem;">月10〜50万円</div>
+            </div>
+            <p style="font-size:0.9rem; color:var(--text-mid); line-height:1.7; margin-top:10px;">
+              動画制作スキルを追加 → 高単価商品をリリース → SNS集客開始<br>
+              <strong>目標：動画＋画像の2軸で安定した売上を作る</strong>
+            </p>
+          </div>
+        </div>
+        <div class="timeline-item">
+          <div class="timeline-marker">
+            <div class="timeline-dot" style="background:linear-gradient(135deg, var(--gold), var(--orange));"></div>
+          </div>
+          <div class="card card-gold" style="flex:1; background:linear-gradient(135deg, rgba(255,215,0,0.03), rgba(255,107,53,0.03));">
+            <div style="display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:10px;">
+              <div>
+                <span class="pill pill-gold">Phase 3</span>
+                <h3 style="font-weight:900; font-size:1.1rem; margin-top:8px;">6ヶ月〜</h3>
+              </div>
+              <div class="big-number grad-text" style="font-size:2.4rem;">月50万円〜</div>
+            </div>
+            <p style="font-size:0.9rem; color:var(--text-mid); line-height:1.7; margin-top:10px;">
+              自動化ワークフロー構築 → マルチ展開 → オリキャラブランド確立<br>
+              <strong>目標：自動化×ファンベースで安定した高収益を実現</strong>
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ========== SLIDE 11: Success Stories ========== -->
+  <div class="slide" data-slide="10">
+    <div class="content-area">
+      <span class="badge gold">SUCCESS STORIES</span>
+      <h2 class="slide-title">実際の<span class="grad-text">成功パターン</span></h2>
+      <p class="slide-subtitle">さまざまなジャンルで成果を出しているケース</p>
+      <div class="grid-4">
+        <div class="success-card">
+          <span class="icon-lg">📖</span>
+          <h4 style="font-weight:900; margin-bottom:6px;">AI漫画</h4>
+          <div class="big-number grad-text-pink" style="font-size:1.8rem; margin:10px 0;">月15〜30万円</div>
+          <p style="font-size:0.82rem; color:var(--text-mid); line-height:1.6;">
+            AI生成画像でストーリー漫画を制作。<br>
+            DLsiteで月4〜6作品リリース。<br>
+            シリーズ化でファン獲得。
+          </p>
+          <div style="margin-top:12px;">
+            <span class="pill pill-pink" style="font-size:0.7rem;">画像生成</span>
+            <span class="pill pill-pink" style="font-size:0.7rem;">ストーリー</span>
+          </div>
+        </div>
+        <div class="success-card">
+          <span class="icon-lg">🎬</span>
+          <h4 style="font-weight:900; margin-bottom:6px;">AI動画</h4>
+          <div class="big-number grad-text-orange" style="font-size:1.8rem; margin:10px 0;">月20〜50万円</div>
+          <p style="font-size:0.82rem; color:var(--text-mid); line-height:1.6;">
+            ComfyUIで高品質動画を量産。<br>
+            FANZAで月2〜3本リリース。<br>
+            動画は単価が高く効率的。
+          </p>
+          <div style="margin-top:12px;">
+            <span class="pill pill-orange" style="font-size:0.7rem;">動画制作</span>
+            <span class="pill pill-orange" style="font-size:0.7rem;">高単価</span>
+          </div>
+        </div>
+        <div class="success-card">
+          <span class="icon-lg">🎨</span>
+          <h4 style="font-weight:900; margin-bottom:6px;">ポスター販売</h4>
+          <div class="big-number grad-text" style="font-size:1.8rem; margin:10px 0;">月15〜30万円</div>
+          <p style="font-size:0.82rem; color:var(--text-mid); line-height:1.6;">
+            高解像度AIアートをポスター化。<br>
+            ヤフオク＋BOOTHで販売。<br>
+            原価が安く利益率80%超。
+          </p>
+          <div style="margin-top:12px;">
+            <span class="pill pill-gold" style="font-size:0.7rem;">物販</span>
+            <span class="pill pill-gold" style="font-size:0.7rem;">高利益率</span>
+          </div>
+        </div>
+        <div class="success-card">
+          <span class="icon-lg">✨</span>
+          <h4 style="font-weight:900; margin-bottom:6px;">オリキャラ展開</h4>
+          <div class="big-number grad-text-pink" style="font-size:1.8rem; margin:10px 0;">月10〜25万円</div>
+          <p style="font-size:0.82rem; color:var(--text-mid); line-height:1.6;">
+            独自キャラをブランド化。<br>
+            Fantiaで月額課金＋BOOTH販売。<br>
+            ファンが増えるほど安定。
+          </p>
+          <div style="margin-top:12px;">
+            <span class="pill pill-pink" style="font-size:0.7rem;">ファン化</span>
+            <span class="pill pill-pink" style="font-size:0.7rem;">継続収入</span>
+          </div>
+        </div>
+      </div>
+      <div class="glow-box" style="max-width:700px; margin-top:20px;">
+        <span style="font-weight:700;">共通点：<span class="highlight-pink">継続的にリリース</span>し、<span class="highlight-orange">ファンとの関係</span>を築いている</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- ========== SLIDE 12: CTA ========== -->
+  <div class="slide" data-slide="11">
+    <div class="content-area">
+      <div class="title-decoration">
+        <span></span><span></span><span></span><span></span><span></span>
+      </div>
+      <div class="cta-box">
+        <div style="font-size:3rem; margin-bottom:16px;">🚀</div>
+        <h2>さあ、始めよう。</h2>
+        <p style="margin-top:16px;">
+          AIマネタイズの全体像は見えた。<br>
+          あとは<strong>行動するだけ</strong>。
+        </p>
+        <div style="margin:28px 0; padding:20px; background:rgba(255,255,255,0.15); border-radius:16px; backdrop-filter:blur(4px);">
+          <p style="font-size:1.3rem; font-weight:900; margin-bottom:8px;">
+            次のステップ
+          </p>
+          <p style="font-size:1rem; opacity:0.95;">
+            Step 1. AI画像生成（Stable Diffusion）を学ぶ<br>
+            Step 2. 最初の作品を作ってみる<br>
+            Step 3. BOOTHに出品してみる
+          </p>
+        </div>
+        <p style="font-size:1.1rem; font-weight:700;">
+          「知っている」だけでは1円にもならない。<br>
+          「やった人」だけが稼げる世界。
+        </p>
+        <div style="margin-top:20px; display:flex; gap:8px; justify-content:center; flex-wrap:wrap;">
+          <span class="pill" style="background:rgba(255,255,255,0.2); color:#fff;">画像生成</span>
+          <span class="pill" style="background:rgba(255,255,255,0.2); color:#fff;">動画制作</span>
+          <span class="pill" style="background:rgba(255,255,255,0.2); color:#fff;">自動化</span>
+          <span class="pill" style="background:rgba(255,255,255,0.2); color:#fff;">マネタイズ</span>
+        </div>
+      </div>
+      <p style="margin-top:24px; font-size:0.9rem; color:var(--text-mid); font-weight:500;">
+        AIマネタイズ全体像 — Complete Guide 2026
+      </p>
+    </div>
+  </div>
+
+</div>
+
+<!-- Navigation Bar -->
+<div class="nav-bar">
+  <button class="nav-btn" id="prevBtn" onclick="prevSlide()" disabled>◀</button>
+  <span class="slide-counter" id="slideCounter">1 / 12</span>
+  <div class="progress-container">
+    <div class="progress-fill" id="progressFill" style="width: 8.33%"></div>
+  </div>
+  <button class="nav-btn" id="nextBtn" onclick="nextSlide()">▶</button>
+</div>
+
+<script>
+  // Generate confetti dots
+  (function generateConfetti() {
+    const container = document.getElementById('confetti');
+    const colors = ['#e91e8c', '#ff6b35', '#ffd700', '#ff4ecd', '#ffaa33'];
+    for (let i = 0; i < 30; i++) {
+      const dot = document.createElement('div');
+      dot.className = 'dot';
+      const size = Math.random() * 8 + 4;
+      dot.style.width = size + 'px';
+      dot.style.height = size + 'px';
+      dot.style.left = Math.random() * 100 + '%';
+      dot.style.top = Math.random() * 100 + '%';
+      dot.style.background = colors[Math.floor(Math.random() * colors.length)];
+      dot.style.animationDelay = (Math.random() * 8) + 's';
+      dot.style.animationDuration = (6 + Math.random() * 6) + 's';
+      container.appendChild(dot);
+    }
+  })();
+
+  // Slide navigation
+  let currentSlide = 0;
+  const totalSlides = 12;
+  const slides = document.querySelectorAll('.slide');
+
+  function updateSlide(newIndex, direction) {
+    if (newIndex < 0 || newIndex >= totalSlides) return;
+
+    const oldSlide = slides[currentSlide];
+    const newSlide = slides[newIndex];
+
+    // Remove active, add exit
+    oldSlide.classList.remove('active');
+    if (direction === 'next') {
+      oldSlide.classList.add('exit-left');
+    } else {
+      oldSlide.style.transform = 'translateX(60px)';
+      oldSlide.style.opacity = '0';
+    }
+
+    // Reset new slide position
+    if (direction === 'next') {
+      newSlide.style.transform = 'translateX(60px)';
+    } else {
+      newSlide.classList.add('exit-left');
+    }
+    newSlide.style.opacity = '0';
+
+    // Trigger reflow
+    void newSlide.offsetWidth;
+
+    // Remove exit classes and activate
+    setTimeout(() => {
+      oldSlide.classList.remove('exit-left');
+      oldSlide.style.transform = '';
+      oldSlide.style.opacity = '';
+      newSlide.classList.remove('exit-left');
+      newSlide.style.transform = '';
+      newSlide.style.opacity = '';
+      newSlide.classList.add('active');
+    }, 20);
+
+    currentSlide = newIndex;
+
+    // Update controls
+    document.getElementById('prevBtn').disabled = currentSlide === 0;
+    document.getElementById('nextBtn').disabled = currentSlide === totalSlides - 1;
+    document.getElementById('slideCounter').textContent = (currentSlide + 1) + ' / ' + totalSlides;
+    document.getElementById('progressFill').style.width = ((currentSlide + 1) / totalSlides * 100) + '%';
+  }
+
+  function nextSlide() {
+    updateSlide(currentSlide + 1, 'next');
+  }
+
+  function prevSlide() {
+    updateSlide(currentSlide - 1, 'prev');
+  }
+
+  // Keyboard navigation
+  document.addEventListener('keydown', function(e) {
+    if (e.key === 'ArrowRight' || e.key === 'ArrowDown' || e.key === ' ') {
+      e.preventDefault();
+      nextSlide();
+    } else if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') {
+      e.preventDefault();
+      prevSlide();
+    } else if (e.key === 'Home') {
+      e.preventDefault();
+      updateSlide(0, 'prev');
+    } else if (e.key === 'End') {
+      e.preventDefault();
+      updateSlide(totalSlides - 1, 'next');
+    }
+  });
+
+  // Touch/swipe support
+  let touchStartX = 0;
+  let touchEndX = 0;
+  document.addEventListener('touchstart', function(e) {
+    touchStartX = e.changedTouches[0].screenX;
+  }, { passive: true });
+  document.addEventListener('touchend', function(e) {
+    touchEndX = e.changedTouches[0].screenX;
+    const diff = touchStartX - touchEndX;
+    if (Math.abs(diff) > 50) {
+      if (diff > 0) nextSlide();
+      else prevSlide();
+    }
+  }, { passive: true });
+</script>
+</body>
+</html>

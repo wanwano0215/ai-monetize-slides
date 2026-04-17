@@ -1,0 +1,1278 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AIマネタイズ完全ガイド - Deep Space Edition</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;500;700;900&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+:root {
+  --bg-deep: #0a0a2e;
+  --bg-mid: #0d0d3a;
+  --electric-blue: #00d4ff;
+  --violet: #7c3aed;
+  --cyan: #06b6d4;
+  --white: #ffffff;
+  --white-soft: #e0e7ff;
+  --glass-bg: rgba(255,255,255,0.04);
+  --glass-border: rgba(255,255,255,0.1);
+  --glass-bg-strong: rgba(255,255,255,0.07);
+  --glass-border-strong: rgba(255,255,255,0.15);
+}
+
+body {
+  font-family: 'Noto Sans JP', sans-serif;
+  background: var(--bg-deep);
+  color: var(--white-soft);
+  overflow: hidden;
+  width: 100vw;
+  height: 100vh;
+}
+
+/* === STARFIELD === */
+#starfield {
+  position: fixed;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  z-index: 0;
+  pointer-events: none;
+}
+
+.star {
+  position: absolute;
+  border-radius: 50%;
+  background: #fff;
+}
+
+/* === GRID OVERLAY === */
+.grid-overlay {
+  position: fixed;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  z-index: 0;
+  pointer-events: none;
+  background-image:
+    linear-gradient(rgba(0,212,255,0.03) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(0,212,255,0.03) 1px, transparent 1px);
+  background-size: 80px 80px;
+}
+
+/* === GLOWING ORBS === */
+.orb {
+  position: fixed;
+  border-radius: 50%;
+  filter: blur(80px);
+  opacity: 0.15;
+  pointer-events: none;
+  z-index: 0;
+  animation: orbFloat 20s ease-in-out infinite;
+}
+.orb-1 { width: 400px; height: 400px; background: var(--violet); top: -100px; right: -100px; animation-delay: 0s; }
+.orb-2 { width: 350px; height: 350px; background: var(--electric-blue); bottom: -80px; left: -80px; animation-delay: -7s; }
+.orb-3 { width: 300px; height: 300px; background: var(--cyan); top: 50%; left: 50%; transform: translate(-50%,-50%); animation-delay: -14s; }
+
+@keyframes orbFloat {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  25% { transform: translate(30px, -20px) scale(1.1); }
+  50% { transform: translate(-20px, 30px) scale(0.95); }
+  75% { transform: translate(15px, 15px) scale(1.05); }
+}
+
+/* === SLIDE CONTAINER === */
+.slide-container {
+  position: relative;
+  z-index: 1;
+  width: 100vw;
+  height: 100vh;
+  overflow: hidden;
+}
+
+.slide {
+  position: absolute;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding: 60px 80px;
+  opacity: 0;
+  transform: translateX(60px);
+  transition: opacity 0.6s ease, transform 0.6s ease;
+  pointer-events: none;
+  text-align: center;
+}
+
+.slide.active {
+  opacity: 1;
+  transform: translateX(0);
+  pointer-events: auto;
+}
+
+.slide.prev {
+  opacity: 0;
+  transform: translateX(-60px);
+}
+
+/* === TYPOGRAPHY === */
+.gradient-text {
+  background: linear-gradient(135deg, var(--electric-blue), var(--violet), var(--cyan));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.gradient-text-blue {
+  background: linear-gradient(135deg, var(--electric-blue), var(--cyan));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.slide-title {
+  font-size: 2.8rem;
+  font-weight: 900;
+  margin-bottom: 40px;
+  line-height: 1.3;
+  letter-spacing: -0.02em;
+}
+
+.slide-subtitle {
+  font-size: 1.15rem;
+  color: rgba(224,231,255,0.6);
+  margin-bottom: 30px;
+  font-weight: 300;
+}
+
+/* === GLASS CARDS === */
+.glass {
+  background: var(--glass-bg);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid var(--glass-border);
+  border-radius: 20px;
+  padding: 28px 32px;
+  position: relative;
+  overflow: hidden;
+}
+
+.glass::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(0,212,255,0.3), transparent);
+}
+
+.glass-strong {
+  background: var(--glass-bg-strong);
+  border: 1px solid var(--glass-border-strong);
+}
+
+/* === HOLOGRAPHIC NUMBER === */
+.holo-number {
+  font-size: 3.5rem;
+  font-weight: 900;
+  background: linear-gradient(135deg, var(--electric-blue), #a78bfa, var(--violet), var(--cyan), var(--electric-blue));
+  background-size: 200% 200%;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  animation: holoShift 4s ease-in-out infinite;
+  text-shadow: none;
+  filter: drop-shadow(0 0 20px rgba(0,212,255,0.3));
+  line-height: 1.1;
+}
+
+@keyframes holoShift {
+  0%, 100% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+}
+
+.holo-number-sm {
+  font-size: 2.2rem;
+}
+
+/* === GRIDS === */
+.card-grid {
+  display: grid;
+  gap: 20px;
+  width: 100%;
+  max-width: 1100px;
+}
+
+.card-grid-2 { grid-template-columns: 1fr 1fr; }
+.card-grid-3 { grid-template-columns: 1fr 1fr 1fr; }
+.card-grid-4 { grid-template-columns: 1fr 1fr 1fr 1fr; }
+.card-grid-5 { grid-template-columns: 1fr 1fr 1fr 1fr 1fr; }
+
+/* === BADGES === */
+.badge {
+  display: inline-block;
+  padding: 4px 14px;
+  border-radius: 999px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  margin-bottom: 10px;
+}
+
+.badge-blue { background: rgba(0,212,255,0.15); color: var(--electric-blue); border: 1px solid rgba(0,212,255,0.3); }
+.badge-violet { background: rgba(124,58,237,0.15); color: #a78bfa; border: 1px solid rgba(124,58,237,0.3); }
+.badge-cyan { background: rgba(6,182,212,0.15); color: var(--cyan); border: 1px solid rgba(6,182,212,0.3); }
+.badge-green { background: rgba(16,185,129,0.15); color: #34d399; border: 1px solid rgba(16,185,129,0.3); }
+.badge-orange { background: rgba(251,146,60,0.15); color: #fb923c; border: 1px solid rgba(251,146,60,0.3); }
+.badge-pink { background: rgba(244,114,182,0.15); color: #f472b6; border: 1px solid rgba(244,114,182,0.3); }
+
+/* === GLOW LINE === */
+.glow-line {
+  width: 80px;
+  height: 3px;
+  background: linear-gradient(90deg, var(--electric-blue), var(--violet));
+  border-radius: 2px;
+  margin: 0 auto 24px;
+  box-shadow: 0 0 15px rgba(0,212,255,0.4);
+}
+
+/* === TAG === */
+.tag {
+  display: inline-block;
+  padding: 3px 10px;
+  border-radius: 8px;
+  font-size: 0.7rem;
+  font-weight: 500;
+  background: rgba(255,255,255,0.06);
+  color: rgba(224,231,255,0.5);
+  border: 1px solid rgba(255,255,255,0.08);
+}
+
+/* === PROGRESS BAR === */
+.progress-bar {
+  position: fixed;
+  bottom: 0; left: 0;
+  height: 3px;
+  background: linear-gradient(90deg, var(--electric-blue), var(--violet), var(--cyan));
+  z-index: 100;
+  transition: width 0.5s ease;
+  box-shadow: 0 0 10px rgba(0,212,255,0.5);
+}
+
+/* === NAVIGATION === */
+.nav-controls {
+  position: fixed;
+  bottom: 30px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  align-items: center;
+  gap: 24px;
+  z-index: 100;
+}
+
+.nav-btn {
+  width: 48px; height: 48px;
+  border-radius: 50%;
+  background: var(--glass-bg-strong);
+  backdrop-filter: blur(12px);
+  border: 1px solid var(--glass-border-strong);
+  color: var(--white-soft);
+  font-size: 1.2rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s ease;
+}
+
+.nav-btn:hover {
+  background: rgba(0,212,255,0.15);
+  border-color: rgba(0,212,255,0.4);
+  box-shadow: 0 0 20px rgba(0,212,255,0.2);
+}
+
+.nav-counter {
+  font-size: 0.85rem;
+  color: rgba(224,231,255,0.5);
+  font-weight: 500;
+  min-width: 60px;
+  text-align: center;
+}
+
+/* === SLIDE SPECIFIC STYLES === */
+
+/* Title slide */
+.title-main {
+  font-size: 4rem;
+  font-weight: 900;
+  line-height: 1.2;
+  margin-bottom: 20px;
+  letter-spacing: -0.03em;
+}
+
+.title-sub {
+  font-size: 1.3rem;
+  color: rgba(224,231,255,0.5);
+  font-weight: 300;
+  margin-bottom: 40px;
+}
+
+.title-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 20px;
+  border-radius: 999px;
+  background: rgba(0,212,255,0.08);
+  border: 1px solid rgba(0,212,255,0.2);
+  font-size: 0.85rem;
+  color: var(--electric-blue);
+  font-weight: 500;
+}
+
+.title-decoration {
+  width: 120px;
+  height: 4px;
+  background: linear-gradient(90deg, var(--electric-blue), var(--violet), var(--cyan));
+  border-radius: 2px;
+  margin: 0 auto 30px;
+  box-shadow: 0 0 20px rgba(0,212,255,0.4);
+}
+
+/* Tier card */
+.tier-card {
+  text-align: center;
+  padding: 24px 16px;
+}
+
+.tier-card .tier-label {
+  font-size: 0.8rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  margin-bottom: 8px;
+  text-transform: uppercase;
+}
+
+.tier-card .tier-range {
+  font-weight: 300;
+  font-size: 0.85rem;
+  color: rgba(224,231,255,0.5);
+  margin-top: 6px;
+}
+
+/* Platform table */
+.platform-row {
+  display: grid;
+  grid-template-columns: 140px 1fr 100px 120px;
+  gap: 16px;
+  align-items: center;
+  padding: 16px 20px;
+  border-bottom: 1px solid rgba(255,255,255,0.05);
+  text-align: left;
+}
+
+.platform-row:last-child { border-bottom: none; }
+
+.platform-header {
+  font-size: 0.7rem;
+  color: rgba(224,231,255,0.35);
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.platform-name {
+  font-weight: 700;
+  font-size: 0.95rem;
+}
+
+.platform-desc {
+  font-size: 0.8rem;
+  color: rgba(224,231,255,0.5);
+}
+
+.platform-fee {
+  font-size: 0.85rem;
+  font-weight: 500;
+}
+
+.platform-type {
+  font-size: 0.75rem;
+}
+
+/* Pattern cards */
+.pattern-card {
+  text-align: left;
+  padding: 28px;
+}
+
+.pattern-card .pattern-icon {
+  font-size: 2rem;
+  margin-bottom: 12px;
+}
+
+.pattern-card .pattern-title {
+  font-size: 1.1rem;
+  font-weight: 700;
+  margin-bottom: 8px;
+}
+
+.pattern-card .pattern-revenue {
+  font-weight: 900;
+  font-size: 1.4rem;
+  margin-bottom: 14px;
+}
+
+.pattern-card .pattern-items {
+  list-style: none;
+  font-size: 0.8rem;
+  color: rgba(224,231,255,0.55);
+  line-height: 1.8;
+}
+
+.pattern-card .pattern-items li::before {
+  content: '▸ ';
+  color: var(--electric-blue);
+}
+
+/* Timeline */
+.timeline-phase {
+  display: flex;
+  align-items: flex-start;
+  gap: 24px;
+  text-align: left;
+  padding: 24px;
+}
+
+.timeline-dot {
+  width: 14px; height: 14px;
+  border-radius: 50%;
+  flex-shrink: 0;
+  margin-top: 6px;
+  box-shadow: 0 0 15px currentColor;
+}
+
+.timeline-content h3 {
+  font-size: 1rem;
+  font-weight: 700;
+  margin-bottom: 4px;
+}
+
+.timeline-content p {
+  font-size: 0.85rem;
+  color: rgba(224,231,255,0.5);
+  line-height: 1.6;
+}
+
+/* Roadmap */
+.roadmap-step {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 16px 20px;
+}
+
+.roadmap-num {
+  width: 36px; height: 36px;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.85rem;
+  font-weight: 900;
+  flex-shrink: 0;
+}
+
+.roadmap-text {
+  text-align: left;
+}
+
+.roadmap-text h4 {
+  font-size: 0.95rem;
+  font-weight: 700;
+  margin-bottom: 2px;
+}
+
+.roadmap-text p {
+  font-size: 0.75rem;
+  color: rgba(224,231,255,0.45);
+}
+
+/* Multiplier */
+.multiplier-flow {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.multiplier-item {
+  padding: 18px 24px;
+  text-align: center;
+}
+
+.multiplier-item .m-icon { font-size: 1.8rem; margin-bottom: 8px; }
+.multiplier-item .m-label { font-size: 0.85rem; font-weight: 700; }
+
+.multiplier-sign {
+  font-size: 2rem;
+  font-weight: 300;
+  color: rgba(0,212,255,0.5);
+}
+
+/* Case card */
+.case-card {
+  text-align: left;
+  padding: 24px;
+}
+
+.case-card .case-icon { font-size: 1.6rem; margin-bottom: 10px; }
+.case-card .case-title { font-size: 0.95rem; font-weight: 700; margin-bottom: 6px; }
+.case-card .case-revenue { font-weight: 900; font-size: 1.1rem; margin-bottom: 10px; }
+.case-card .case-desc {
+  font-size: 0.75rem;
+  color: rgba(224,231,255,0.5);
+  line-height: 1.7;
+}
+
+/* Mindset */
+.mindset-block {
+  text-align: left;
+  padding: 24px;
+}
+
+.mindset-block h3 {
+  font-size: 1rem;
+  font-weight: 700;
+  margin-bottom: 12px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.mindset-block ul {
+  list-style: none;
+  font-size: 0.82rem;
+  color: rgba(224,231,255,0.55);
+  line-height: 1.9;
+}
+
+.mindset-block ul li::before {
+  content: '→ ';
+  color: var(--electric-blue);
+}
+
+/* Closing */
+.closing-cta {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 14px 36px;
+  border-radius: 999px;
+  background: linear-gradient(135deg, var(--electric-blue), var(--violet));
+  color: #fff;
+  font-size: 1.1rem;
+  font-weight: 700;
+  margin-top: 30px;
+  box-shadow: 0 0 30px rgba(0,212,255,0.3), 0 0 60px rgba(124,58,237,0.2);
+  border: none;
+  cursor: pointer;
+  transition: transform 0.3s, box-shadow 0.3s;
+}
+
+.closing-cta:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 0 40px rgba(0,212,255,0.4), 0 0 80px rgba(124,58,237,0.3);
+}
+
+/* Product card */
+.product-card { text-align: left; padding: 22px; }
+.product-card .p-icon { font-size: 1.5rem; margin-bottom: 10px; }
+.product-card .p-title { font-size: 0.95rem; font-weight: 700; margin-bottom: 4px; }
+.product-card .p-spec { font-size: 0.75rem; color: rgba(224,231,255,0.4); margin-bottom: 8px; }
+.product-card .p-price { font-weight: 700; font-size: 0.9rem; }
+
+/* Why-now items */
+.why-item {
+  text-align: center;
+  padding: 28px 20px;
+}
+.why-item .w-icon { font-size: 2rem; margin-bottom: 12px; }
+.why-item .w-title { font-size: 1rem; font-weight: 700; margin-bottom: 8px; }
+.why-item .w-desc { font-size: 0.8rem; color: rgba(224,231,255,0.5); line-height: 1.7; }
+
+/* Animate-in utility */
+.fade-up {
+  opacity: 0;
+  transform: translateY(20px);
+  transition: opacity 0.5s ease, transform 0.5s ease;
+}
+
+.slide.active .fade-up {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.slide.active .fade-up:nth-child(1) { transition-delay: 0.1s; }
+.slide.active .fade-up:nth-child(2) { transition-delay: 0.2s; }
+.slide.active .fade-up:nth-child(3) { transition-delay: 0.3s; }
+.slide.active .fade-up:nth-child(4) { transition-delay: 0.4s; }
+.slide.active .fade-up:nth-child(5) { transition-delay: 0.5s; }
+.slide.active .fade-up:nth-child(6) { transition-delay: 0.6s; }
+
+/* Scanline overlay */
+.scanline {
+  position: fixed;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  pointer-events: none;
+  z-index: 2;
+  background: repeating-linear-gradient(
+    0deg,
+    transparent,
+    transparent 2px,
+    rgba(0,0,0,0.03) 2px,
+    rgba(0,0,0,0.03) 4px
+  );
+}
+
+/* Responsive */
+@media (max-width: 900px) {
+  .slide { padding: 40px 30px; }
+  .title-main { font-size: 2.5rem; }
+  .slide-title { font-size: 2rem; }
+  .card-grid-3, .card-grid-4, .card-grid-5 { grid-template-columns: 1fr 1fr; }
+  .holo-number { font-size: 2.5rem; }
+  .platform-row { grid-template-columns: 100px 1fr 80px; }
+  .platform-row > :last-child { display: none; }
+}
+</style>
+</head>
+<body>
+
+<!-- Background layers -->
+<div id="starfield"></div>
+<div class="grid-overlay"></div>
+<div class="orb orb-1"></div>
+<div class="orb orb-2"></div>
+<div class="orb orb-3"></div>
+<div class="scanline"></div>
+
+<!-- Progress bar -->
+<div class="progress-bar" id="progressBar"></div>
+
+<!-- Slides -->
+<div class="slide-container">
+
+  <!-- SLIDE 1: Title -->
+  <div class="slide active" data-slide="0">
+    <div class="title-badge fade-up" style="margin-bottom: 30px;">
+      <span style="font-size:1rem;">&#9889;</span> 2026年最新版
+    </div>
+    <div class="title-decoration fade-up"></div>
+    <h1 class="title-main gradient-text fade-up">AIマネタイズ<br>完全ガイド</h1>
+    <p class="title-sub fade-up">AI画像・AI動画で収益化する全体像をつかむ</p>
+    <div style="display:flex; gap:16px; flex-wrap:wrap; justify-content:center;" class="fade-up">
+      <span class="tag">Stable Diffusion</span>
+      <span class="tag">ComfyUI</span>
+      <span class="tag">AI動画</span>
+      <span class="tag">FANZA / DLsite</span>
+      <span class="tag">自動化</span>
+    </div>
+  </div>
+
+  <!-- SLIDE 2: Market Numbers -->
+  <div class="slide" data-slide="1">
+    <h2 class="slide-title gradient-text fade-up">AIマネタイズの市場規模</h2>
+    <div class="glow-line fade-up"></div>
+    <p class="slide-subtitle fade-up">月100万円到達者が続出 ─ 収益レンジの全体像</p>
+    <div class="card-grid card-grid-4 fade-up">
+      <div class="glass tier-card">
+        <span class="badge badge-cyan">BEGINNER</span>
+        <div class="tier-label" style="color:var(--cyan);">初心者</div>
+        <div class="holo-number holo-number-sm">1-5万</div>
+        <div class="tier-range">月額 / 開始1-2ヶ月</div>
+      </div>
+      <div class="glass tier-card">
+        <span class="badge badge-blue">INTERMEDIATE</span>
+        <div class="tier-label" style="color:var(--electric-blue);">中級者</div>
+        <div class="holo-number holo-number-sm">10-30万</div>
+        <div class="tier-range">月額 / 3-6ヶ月</div>
+      </div>
+      <div class="glass tier-card">
+        <span class="badge badge-violet">ADVANCED</span>
+        <div class="tier-label" style="color:#a78bfa;">上級者</div>
+        <div class="holo-number holo-number-sm">50-100万</div>
+        <div class="tier-range">月額 / 6ヶ月〜</div>
+      </div>
+      <div class="glass tier-card">
+        <span class="badge badge-pink">TOP PLAYER</span>
+        <div class="tier-label" style="color:#f472b6;">トップ層</div>
+        <div class="holo-number holo-number-sm">200-300万</div>
+        <div class="tier-range">月額 / 1年〜</div>
+      </div>
+    </div>
+    <p style="margin-top:24px; font-size:0.8rem; color:rgba(224,231,255,0.35);" class="fade-up">※ 個人差あり。継続的な改善と市場理解が前提</p>
+  </div>
+
+  <!-- SLIDE 3: Why Now -->
+  <div class="slide" data-slide="2">
+    <h2 class="slide-title gradient-text fade-up">なぜ「今」なのか</h2>
+    <div class="glow-line fade-up"></div>
+    <p class="slide-subtitle fade-up">3つの追い風が同時に吹いている</p>
+    <div class="card-grid card-grid-3 fade-up">
+      <div class="glass why-item">
+        <div class="w-icon">&#129302;</div>
+        <div class="w-title gradient-text-blue">技術の成熟</div>
+        <div class="w-desc">Illustrious / Ponyなど<br>無料で商用利用可能な<br>高品質モデルが充実</div>
+      </div>
+      <div class="glass why-item">
+        <div class="w-icon">&#128200;</div>
+        <div class="w-title gradient-text-blue">市場の拡大</div>
+        <div class="w-desc">AI生成コンテンツの<br>需要が急増中<br>購入者層が拡大している</div>
+      </div>
+      <div class="glass why-item">
+        <div class="w-icon">&#128722;</div>
+        <div class="w-title gradient-text-blue">販売環境の整備</div>
+        <div class="w-desc">FANZA / DLsite / BOOTH<br>Patreon / Fantiaなど<br>販売チャネルが豊富</div>
+      </div>
+    </div>
+    <div style="margin-top:30px; display:flex; gap:12px; flex-wrap:wrap; justify-content:center;" class="fade-up">
+      <span class="badge badge-green">参入障壁が低い</span>
+      <span class="badge badge-blue">先行者優位あり</span>
+      <span class="badge badge-violet">スケーラブル</span>
+    </div>
+  </div>
+
+  <!-- SLIDE 4: Products -->
+  <div class="slide" data-slide="3">
+    <h2 class="slide-title gradient-text fade-up">売れる商品ラインナップ</h2>
+    <div class="glow-line fade-up"></div>
+    <p class="slide-subtitle fade-up">AI画像・動画を軸にした収益化プロダクト</p>
+    <div class="card-grid card-grid-3 fade-up" style="max-width:1000px;">
+      <div class="glass product-card">
+        <div class="p-icon">&#128444;&#65039;</div>
+        <div class="p-title">CG集</div>
+        <div class="p-spec">30〜50枚 / セット</div>
+        <div class="p-price gradient-text-blue">500〜3,000円</div>
+        <div style="margin-top:8px;"><span class="tag">最も始めやすい</span></div>
+      </div>
+      <div class="glass product-card">
+        <div class="p-icon">&#127909;</div>
+        <div class="p-title">AI動画</div>
+        <div class="p-spec">2〜30分</div>
+        <div class="p-price gradient-text-blue">1,000〜2,980円</div>
+        <div style="margin-top:8px;"><span class="tag">高単価</span></div>
+      </div>
+      <div class="glass product-card">
+        <div class="p-icon">&#127912;</div>
+        <div class="p-title">オリジナルキャラクター</div>
+        <div class="p-spec">キャラ設計 + 展開</div>
+        <div class="p-price gradient-text-blue">ブランド資産化</div>
+        <div style="margin-top:8px;"><span class="tag">長期収益</span></div>
+      </div>
+      <div class="glass product-card">
+        <div class="p-icon">&#128220;</div>
+        <div class="p-title">ポスター・グッズ</div>
+        <div class="p-spec">物販展開</div>
+        <div class="p-price gradient-text-blue">1,000〜5,000円</div>
+        <div style="margin-top:8px;"><span class="tag">リアル販路</span></div>
+      </div>
+      <div class="glass product-card">
+        <div class="p-icon">&#128176;</div>
+        <div class="p-title">月額制（サブスク）</div>
+        <div class="p-spec">Patreon / Fantia</div>
+        <div class="p-price gradient-text-blue">500〜3,000円/月</div>
+        <div style="margin-top:8px;"><span class="tag">安定収益</span></div>
+      </div>
+      <div class="glass product-card">
+        <div class="p-icon">&#128214;</div>
+        <div class="p-title">AI漫画</div>
+        <div class="p-spec">10〜30ページ</div>
+        <div class="p-price gradient-text-blue">500〜1,500円</div>
+        <div style="margin-top:8px;"><span class="tag">ストーリー性</span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SLIDE 5: Platforms -->
+  <div class="slide" data-slide="4">
+    <h2 class="slide-title gradient-text fade-up">販売プラットフォーム比較</h2>
+    <div class="glow-line fade-up"></div>
+    <div class="glass fade-up" style="width:100%; max-width:900px; padding:0; overflow:hidden;">
+      <div class="platform-row" style="background:rgba(255,255,255,0.03);">
+        <div class="platform-header">プラットフォーム</div>
+        <div class="platform-header">特徴</div>
+        <div class="platform-header">手数料</div>
+        <div class="platform-header">向いている商品</div>
+      </div>
+      <div class="platform-row">
+        <div class="platform-name" style="color:var(--electric-blue);">FANZA</div>
+        <div class="platform-desc">最大級の成人向けDLプラットフォーム</div>
+        <div class="platform-fee" style="color:#34d399;">40%前後</div>
+        <div class="platform-type"><span class="badge badge-blue" style="margin:0;">CG集・動画</span></div>
+      </div>
+      <div class="platform-row">
+        <div class="platform-name" style="color:#a78bfa;">DLsite</div>
+        <div class="platform-desc">同人・インディーの定番。検索流入強い</div>
+        <div class="platform-fee" style="color:#34d399;">35%前後</div>
+        <div class="platform-type"><span class="badge badge-violet" style="margin:0;">CG集・漫画</span></div>
+      </div>
+      <div class="platform-row">
+        <div class="platform-name" style="color:#fb923c;">BOOTH</div>
+        <div class="platform-desc">クリエイター向け。全年齢もOK</div>
+        <div class="platform-fee" style="color:#34d399;">5.6%+決済</div>
+        <div class="platform-type"><span class="badge badge-orange" style="margin:0;">グッズ・DL</span></div>
+      </div>
+      <div class="platform-row">
+        <div class="platform-name" style="color:#f472b6;">Patreon / Fantia</div>
+        <div class="platform-desc">月額サブスク型。ファン直結</div>
+        <div class="platform-fee" style="color:#34d399;">5-12%</div>
+        <div class="platform-type"><span class="badge badge-pink" style="margin:0;">月額制</span></div>
+      </div>
+      <div class="platform-row">
+        <div class="platform-name" style="color:var(--cyan);">ヤフオク</div>
+        <div class="platform-desc">物販・ポスター。意外な穴場</div>
+        <div class="platform-fee" style="color:#34d399;">10%</div>
+        <div class="platform-type"><span class="badge badge-cyan" style="margin:0;">ポスター・物販</span></div>
+      </div>
+    </div>
+    <p style="margin-top:20px; font-size:0.75rem; color:rgba(224,231,255,0.3);" class="fade-up">※ 手数料は目安。プランや条件により変動</p>
+  </div>
+
+  <!-- SLIDE 6: 3 Patterns -->
+  <div class="slide" data-slide="5">
+    <h2 class="slide-title gradient-text fade-up">3つの収益パターン</h2>
+    <div class="glow-line fade-up"></div>
+    <p class="slide-subtitle fade-up">自分に合ったスタイルを選ぶ</p>
+    <div class="card-grid card-grid-3 fade-up">
+      <div class="glass pattern-card">
+        <div class="pattern-icon">&#128444;&#65039;</div>
+        <span class="badge badge-blue">PATTERN 1</span>
+        <div class="pattern-title">画像メイン</div>
+        <div class="pattern-revenue gradient-text-blue">月10〜30万円</div>
+        <ul class="pattern-items">
+          <li>CG集を量産</li>
+          <li>FANZA / DLsite中心</li>
+          <li>月2-4作品リリース</li>
+          <li>オリキャラで差別化</li>
+          <li>最も参入しやすい</li>
+        </ul>
+      </div>
+      <div class="glass glass-strong pattern-card" style="border-color:rgba(0,212,255,0.25);">
+        <div class="pattern-icon">&#127909;</div>
+        <span class="badge badge-violet">PATTERN 2</span>
+        <div class="pattern-title">動画特化</div>
+        <div class="pattern-revenue" style="background:linear-gradient(135deg,#a78bfa,var(--electric-blue));-webkit-background-clip:text;-webkit-text-fill-color:transparent;">月20〜50万円</div>
+        <ul class="pattern-items">
+          <li>AI動画で高単価</li>
+          <li>ComfyUIワークフロー</li>
+          <li>月1-2本の高品質動画</li>
+          <li>SNSでの拡散力が強い</li>
+          <li>競合がまだ少ない</li>
+        </ul>
+      </div>
+      <div class="glass pattern-card">
+        <div class="pattern-icon">&#127775;</div>
+        <span class="badge badge-pink">PATTERN 3</span>
+        <div class="pattern-title">マルチ展開</div>
+        <div class="pattern-revenue" style="background:linear-gradient(135deg,#f472b6,var(--violet));-webkit-background-clip:text;-webkit-text-fill-color:transparent;">月50〜300万円</div>
+        <ul class="pattern-items">
+          <li>画像+動画+サブスク</li>
+          <li>複数プラットフォーム展開</li>
+          <li>自動化パイプライン構築</li>
+          <li>オリキャラブランド化</li>
+          <li>スケール型の収益構造</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- SLIDE 7: Multiplier Effect -->
+  <div class="slide" data-slide="6">
+    <h2 class="slide-title gradient-text fade-up">掛け算の収益構造</h2>
+    <div class="glow-line fade-up"></div>
+    <p class="slide-subtitle fade-up">単体ではなく「掛け合わせ」で爆発的に伸びる</p>
+    <div class="multiplier-flow fade-up">
+      <div class="glass multiplier-item">
+        <div class="m-icon">&#128444;&#65039;</div>
+        <div class="m-label">AI画像</div>
+      </div>
+      <div class="multiplier-sign">&times;</div>
+      <div class="glass multiplier-item">
+        <div class="m-icon">&#127909;</div>
+        <div class="m-label">AI動画</div>
+      </div>
+      <div class="multiplier-sign">&times;</div>
+      <div class="glass multiplier-item">
+        <div class="m-icon">&#9881;&#65039;</div>
+        <div class="m-label">自動化</div>
+      </div>
+      <div class="multiplier-sign">&times;</div>
+      <div class="glass multiplier-item">
+        <div class="m-icon">&#128225;</div>
+        <div class="m-label">SNS</div>
+      </div>
+    </div>
+    <div style="margin-top:36px; display:flex; justify-content:center;" class="fade-up">
+      <div class="glass glass-strong" style="padding:24px 40px; text-align:center; border-color:rgba(0,212,255,0.2);">
+        <div style="font-size:0.8rem; color:rgba(224,231,255,0.4); margin-bottom:8px;">掛け合わせた結果</div>
+        <div class="holo-number" style="font-size:2.8rem;">収益 10倍以上</div>
+        <div style="font-size:0.8rem; color:rgba(224,231,255,0.4); margin-top:8px;">1つの素材 → 複数商品 → 複数チャネル → 自動収益</div>
+      </div>
+    </div>
+    <div style="margin-top:28px; display:flex; gap:20px; flex-wrap:wrap; justify-content:center;" class="fade-up">
+      <div class="glass" style="padding:14px 20px; text-align:center; min-width:160px;">
+        <div style="font-size:0.7rem; color:rgba(224,231,255,0.35);">画像だけ</div>
+        <div style="font-weight:700; color:rgba(224,231,255,0.6);">月5万円</div>
+      </div>
+      <div style="font-size:1.5rem; color:rgba(0,212,255,0.4); display:flex; align-items:center;">&#10132;</div>
+      <div class="glass" style="padding:14px 20px; text-align:center; min-width:160px;">
+        <div style="font-size:0.7rem; color:rgba(224,231,255,0.35);">画像 &times; 動画</div>
+        <div style="font-weight:700; color:var(--electric-blue);">月20万円</div>
+      </div>
+      <div style="font-size:1.5rem; color:rgba(0,212,255,0.4); display:flex; align-items:center;">&#10132;</div>
+      <div class="glass glass-strong" style="padding:14px 20px; text-align:center; min-width:160px; border-color:rgba(0,212,255,0.25);">
+        <div style="font-size:0.7rem; color:rgba(224,231,255,0.35);">全掛け合わせ</div>
+        <div style="font-weight:700; color:#a78bfa;">月50-100万円</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SLIDE 8: Skills Roadmap -->
+  <div class="slide" data-slide="7">
+    <h2 class="slide-title gradient-text fade-up">スキル習得ロードマップ</h2>
+    <div class="glow-line fade-up"></div>
+    <p class="slide-subtitle fade-up">全体像 → 各スキルを順番に積み上げる</p>
+    <div class="glass fade-up" style="width:100%; max-width:750px; padding:8px 0;">
+      <div class="roadmap-step">
+        <div class="roadmap-num" style="background:rgba(0,212,255,0.15); color:var(--electric-blue);">1</div>
+        <div class="roadmap-text">
+          <h4 class="gradient-text-blue">全体像の理解</h4>
+          <p>マネタイズの仕組み・市場・商品を把握する</p>
+        </div>
+      </div>
+      <div style="width:2px; height:20px; background:rgba(255,255,255,0.08); margin:0 auto;"></div>
+      <div class="roadmap-step">
+        <div class="roadmap-num" style="background:rgba(124,58,237,0.15); color:#a78bfa;">2</div>
+        <div class="roadmap-text">
+          <h4 style="color:#a78bfa;">AI画像生成（Stable Diffusion）</h4>
+          <p>プロンプト設計・LoRA活用・高品質画像の量産体制</p>
+        </div>
+      </div>
+      <div style="width:2px; height:20px; background:rgba(255,255,255,0.08); margin:0 auto;"></div>
+      <div class="roadmap-step">
+        <div class="roadmap-num" style="background:rgba(6,182,212,0.15); color:var(--cyan);">3</div>
+        <div class="roadmap-text">
+          <h4 style="color:var(--cyan);">AI動画制作（ComfyUI）</h4>
+          <p>ワークフロー構築・動画生成・編集テクニック</p>
+        </div>
+      </div>
+      <div style="width:2px; height:20px; background:rgba(255,255,255,0.08); margin:0 auto;"></div>
+      <div class="roadmap-step">
+        <div class="roadmap-num" style="background:rgba(251,146,60,0.15); color:#fb923c;">4</div>
+        <div class="roadmap-text">
+          <h4 style="color:#fb923c;">AI自動化パイプライン</h4>
+          <p>バッチ処理・自動投稿・効率化の仕組みづくり</p>
+        </div>
+      </div>
+      <div style="width:2px; height:20px; background:rgba(255,255,255,0.08); margin:0 auto;"></div>
+      <div class="roadmap-step">
+        <div class="roadmap-num" style="background:rgba(244,114,182,0.15); color:#f472b6;">5</div>
+        <div class="roadmap-text">
+          <h4 style="color:#f472b6;">マネタイズ戦略</h4>
+          <p>価格設計・プラットフォーム戦略・ファン構築・ブランディング</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SLIDE 9: Selling Mindset -->
+  <div class="slide" data-slide="8">
+    <h2 class="slide-title gradient-text fade-up">売れるマインドセット</h2>
+    <div class="glow-line fade-up"></div>
+    <div class="card-grid card-grid-3 fade-up" style="max-width:1050px;">
+      <div class="glass mindset-block">
+        <h3><span style="color:#ef4444;">&#10006;</span> <span style="color:#ef4444;">売れない原因</span></h3>
+        <ul>
+          <li>自分の好みだけで作る</li>
+          <li>市場リサーチをしない</li>
+          <li>サムネイルが弱い</li>
+          <li>タイトル・説明文が雑</li>
+          <li>リリース頻度が低い</li>
+          <li>1作品で諦める</li>
+        </ul>
+      </div>
+      <div class="glass glass-strong mindset-block" style="border-color:rgba(0,212,255,0.2);">
+        <h3><span style="color:#34d399;">&#10004;</span> <span style="color:#34d399;">売れる条件</span></h3>
+        <ul>
+          <li>ランキング分析から逆算</li>
+          <li>需要のあるジャンルを選ぶ</li>
+          <li>サムネで「クリック」させる</li>
+          <li>検索に引っかかるタイトル</li>
+          <li>週1-2本のリリースペース</li>
+          <li>データを見て改善し続ける</li>
+        </ul>
+      </div>
+      <div class="glass mindset-block">
+        <h3><span style="color:var(--electric-blue);">&#9733;</span> <span class="gradient-text-blue">ファン = 資産</span></h3>
+        <ul>
+          <li>新作を出せば即購入する層</li>
+          <li>SNSフォロワー = 見込み客</li>
+          <li>Patreon/Fantiaで月額収入</li>
+          <li>ファン100人 &times; 1,000円 = 月10万</li>
+          <li>ブランドが育つと複利で増える</li>
+          <li>「作品」ではなく「関係」を売る</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- SLIDE 10: Revenue Timeline -->
+  <div class="slide" data-slide="9">
+    <h2 class="slide-title gradient-text fade-up">収益タイムライン</h2>
+    <div class="glow-line fade-up"></div>
+    <p class="slide-subtitle fade-up">現実的な成長カーブ</p>
+    <div style="width:100%; max-width:800px; display:flex; flex-direction:column; gap:16px;" class="fade-up">
+      <div class="glass timeline-phase">
+        <div class="timeline-dot" style="background:var(--cyan); color:var(--cyan);"></div>
+        <div class="timeline-content" style="flex:1;">
+          <h3 class="gradient-text-blue">Phase 1 ─ 1〜3ヶ月目</h3>
+          <div class="holo-number" style="font-size:2rem; margin:8px 0;">月3〜10万円</div>
+          <p>AI画像の基礎習得 → 初CG集をリリース → 最初の売上を経験<br>ここで「売れる感覚」を掴むことが最重要</p>
+        </div>
+      </div>
+      <div class="glass timeline-phase">
+        <div class="timeline-dot" style="background:var(--electric-blue); color:var(--electric-blue);"></div>
+        <div class="timeline-content" style="flex:1;">
+          <h3 style="color:var(--electric-blue);">Phase 2 ─ 3〜6ヶ月目</h3>
+          <div class="holo-number" style="font-size:2rem; margin:8px 0;">月10〜50万円</div>
+          <p>AI動画スキル追加 → 複数プラットフォーム展開 → リピーター獲得<br>ファン基盤ができ始め、新作リリース時の初動が大きくなる</p>
+        </div>
+      </div>
+      <div class="glass glass-strong timeline-phase" style="border-color:rgba(124,58,237,0.25);">
+        <div class="timeline-dot" style="background:var(--violet); color:var(--violet);"></div>
+        <div class="timeline-content" style="flex:1;">
+          <h3 style="color:#a78bfa;">Phase 3 ─ 6ヶ月〜</h3>
+          <div class="holo-number" style="font-size:2rem; margin:8px 0;">月50万円〜</div>
+          <p>自動化パイプライン完成 → マルチ展開 → サブスク収益も合流<br>「仕組み」で稼ぐステージ。時間あたり収益が飛躍的に向上</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SLIDE 11: Case Studies -->
+  <div class="slide" data-slide="10">
+    <h2 class="slide-title gradient-text fade-up">実践例・ケーススタディ</h2>
+    <div class="glow-line fade-up"></div>
+    <p class="slide-subtitle fade-up">実際に収益を上げているパターン</p>
+    <div class="card-grid card-grid-4 fade-up" style="max-width:1100px;">
+      <div class="glass case-card">
+        <div class="case-icon">&#128214;</div>
+        <span class="badge badge-blue">CASE 1</span>
+        <div class="case-title">AI漫画作家</div>
+        <div class="case-revenue gradient-text-blue">月15-25万円</div>
+        <div class="case-desc">
+          DLsiteでAI漫画を月2本リリース。ストーリー性で差別化。固定ファンがつきやすく安定収益。
+        </div>
+      </div>
+      <div class="glass case-card">
+        <div class="case-icon">&#127909;</div>
+        <span class="badge badge-violet">CASE 2</span>
+        <div class="case-title">AI動画クリエイター</div>
+        <div class="case-revenue" style="background:linear-gradient(135deg,#a78bfa,var(--electric-blue));-webkit-background-clip:text;-webkit-text-fill-color:transparent;">月30-60万円</div>
+        <div class="case-desc">
+          FANZAでAI動画を月1-2本。高単価＆競合少で利益率が高い。SNS集客も組み合わせ。
+        </div>
+      </div>
+      <div class="glass case-card">
+        <div class="case-icon">&#128220;</div>
+        <span class="badge badge-orange">CASE 3</span>
+        <div class="case-title">ポスター物販</div>
+        <div class="case-revenue" style="color:#fb923c;">月10-20万円</div>
+        <div class="case-desc">
+          ヤフオク＋BOOTHでポスター販売。印刷コストを引いても利益率50%以上。穴場市場。
+        </div>
+      </div>
+      <div class="glass case-card">
+        <div class="case-icon">&#127912;</div>
+        <span class="badge badge-pink">CASE 4</span>
+        <div class="case-title">オリキャラブランド</div>
+        <div class="case-revenue" style="color:#f472b6;">月50-100万円</div>
+        <div class="case-desc">
+          オリジナルキャラを軸にCG集・動画・グッズ・月額を展開。ファン経済圏を構築。
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SLIDE 12: Closing -->
+  <div class="slide" data-slide="11">
+    <div class="title-decoration fade-up"></div>
+    <h2 class="slide-title gradient-text fade-up" style="font-size:3rem;">AIマネタイズを始めよう</h2>
+    <p class="slide-subtitle fade-up" style="font-size:1.1rem; max-width:600px; line-height:1.8;">
+      技術は揃った。市場は拡大中。<br>
+      あとは「行動」するだけ。
+    </p>
+    <div style="display:flex; gap:20px; flex-wrap:wrap; justify-content:center; margin:20px 0;" class="fade-up">
+      <div class="glass" style="padding:18px 28px; text-align:center;">
+        <div style="font-size:1.6rem; margin-bottom:6px;">&#128640;</div>
+        <div style="font-size:0.8rem; color:rgba(224,231,255,0.4);">STEP 1</div>
+        <div style="font-size:0.9rem; font-weight:700;">全体像を掴む</div>
+      </div>
+      <div class="glass" style="padding:18px 28px; text-align:center;">
+        <div style="font-size:1.6rem; margin-bottom:6px;">&#128295;</div>
+        <div style="font-size:0.8rem; color:rgba(224,231,255,0.4);">STEP 2</div>
+        <div style="font-size:0.9rem; font-weight:700;">スキルを習得</div>
+      </div>
+      <div class="glass" style="padding:18px 28px; text-align:center;">
+        <div style="font-size:1.6rem; margin-bottom:6px;">&#128176;</div>
+        <div style="font-size:0.8rem; color:rgba(224,231,255,0.4);">STEP 3</div>
+        <div style="font-size:0.9rem; font-weight:700;">初収益を出す</div>
+      </div>
+      <div class="glass" style="padding:18px 28px; text-align:center;">
+        <div style="font-size:1.6rem; margin-bottom:6px;">&#128200;</div>
+        <div style="font-size:0.8rem; color:rgba(224,231,255,0.4);">STEP 4</div>
+        <div style="font-size:0.9rem; font-weight:700;">スケールさせる</div>
+      </div>
+    </div>
+    <div class="closing-cta fade-up">
+      &#9889; さあ、始めよう
+    </div>
+    <p style="margin-top:24px; font-size:0.75rem; color:rgba(224,231,255,0.3);" class="fade-up">
+      AIマネタイズ完全ガイド &mdash; Overview Edition
+    </p>
+  </div>
+
+</div>
+
+<!-- Navigation -->
+<div class="nav-controls">
+  <button class="nav-btn" id="prevBtn" onclick="changeSlide(-1)">&#9664;</button>
+  <div class="nav-counter" id="navCounter">1 / 12</div>
+  <button class="nav-btn" id="nextBtn" onclick="changeSlide(1)">&#9654;</button>
+</div>
+
+<script>
+// === STARFIELD ===
+(function createStars() {
+  const field = document.getElementById('starfield');
+  const count = 200;
+  for (let i = 0; i < count; i++) {
+    const star = document.createElement('div');
+    star.className = 'star';
+    const size = Math.random() * 2 + 0.5;
+    star.style.width = size + 'px';
+    star.style.height = size + 'px';
+    star.style.left = Math.random() * 100 + '%';
+    star.style.top = Math.random() * 100 + '%';
+    star.style.opacity = Math.random() * 0.7 + 0.1;
+    star.style.animation = `twinkle ${Math.random() * 4 + 2}s ease-in-out ${Math.random() * 4}s infinite`;
+    field.appendChild(star);
+  }
+
+  // Add keyframes for twinkling
+  const style = document.createElement('style');
+  style.textContent = `
+    @keyframes twinkle {
+      0%, 100% { opacity: var(--tw-start, 0.2); }
+      50% { opacity: var(--tw-peak, 0.9); }
+    }
+  `;
+  document.head.appendChild(style);
+
+  // Assign random twinkle values
+  document.querySelectorAll('.star').forEach(s => {
+    const start = Math.random() * 0.3 + 0.1;
+    const peak = Math.random() * 0.5 + 0.5;
+    s.style.setProperty('--tw-start', start);
+    s.style.setProperty('--tw-peak', peak);
+  });
+})();
+
+// === SLIDE NAVIGATION ===
+let currentSlide = 0;
+const slides = document.querySelectorAll('.slide');
+const totalSlides = slides.length;
+const progressBar = document.getElementById('progressBar');
+const navCounter = document.getElementById('navCounter');
+
+function updateProgress() {
+  const pct = ((currentSlide + 1) / totalSlides) * 100;
+  progressBar.style.width = pct + '%';
+  navCounter.textContent = (currentSlide + 1) + ' / ' + totalSlides;
+}
+
+function changeSlide(direction) {
+  const newIndex = currentSlide + direction;
+  if (newIndex < 0 || newIndex >= totalSlides) return;
+
+  slides[currentSlide].classList.remove('active');
+  slides[currentSlide].classList.add(direction > 0 ? 'prev' : '');
+
+  currentSlide = newIndex;
+
+  // Reset all slides
+  slides.forEach((s, i) => {
+    s.classList.remove('active', 'prev');
+    if (i < currentSlide) s.classList.add('prev');
+  });
+
+  slides[currentSlide].classList.add('active');
+  updateProgress();
+}
+
+function goToSlide(index) {
+  if (index < 0 || index >= totalSlides || index === currentSlide) return;
+  const dir = index > currentSlide ? 1 : -1;
+  slides[currentSlide].classList.remove('active');
+  if (dir > 0) slides[currentSlide].classList.add('prev');
+  currentSlide = index;
+  slides.forEach((s, i) => {
+    s.classList.remove('active', 'prev');
+    if (i < currentSlide) s.classList.add('prev');
+  });
+  slides[currentSlide].classList.add('active');
+  updateProgress();
+}
+
+// Keyboard navigation
+document.addEventListener('keydown', (e) => {
+  if (e.key === 'ArrowRight' || e.key === 'ArrowDown' || e.key === ' ') {
+    e.preventDefault();
+    changeSlide(1);
+  } else if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') {
+    e.preventDefault();
+    changeSlide(-1);
+  } else if (e.key === 'Home') {
+    e.preventDefault();
+    goToSlide(0);
+  } else if (e.key === 'End') {
+    e.preventDefault();
+    goToSlide(totalSlides - 1);
+  }
+});
+
+// Touch support
+let touchStartX = 0;
+let touchStartY = 0;
+document.addEventListener('touchstart', (e) => {
+  touchStartX = e.changedTouches[0].screenX;
+  touchStartY = e.changedTouches[0].screenY;
+}, { passive: true });
+
+document.addEventListener('touchend', (e) => {
+  const dx = e.changedTouches[0].screenX - touchStartX;
+  const dy = e.changedTouches[0].screenY - touchStartY;
+  if (Math.abs(dx) > Math.abs(dy) && Math.abs(dx) > 50) {
+    changeSlide(dx < 0 ? 1 : -1);
+  }
+}, { passive: true });
+
+// Initialize
+updateProgress();
+</script>
+</body>
+</html>

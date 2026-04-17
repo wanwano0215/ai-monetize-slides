@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AIマネタイズ完全攻略 — スライド一覧</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;700;900&display=swap" rel="stylesheet">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    html, body {
+      min-height: 100vh;
+      background: #07070e;
+      color: #fff;
+      font-family: 'Noto Sans JP', sans-serif;
+    }
+    body::before {
+      content: "";
+      position: fixed; inset: 0;
+      background:
+        radial-gradient(ellipse 60% 40% at 12% 20%, rgba(255,185,0,.08), transparent),
+        radial-gradient(ellipse 50% 50% at 85% 75%, rgba(255,0,120,.06), transparent),
+        radial-gradient(ellipse 40% 30% at 50% 50%, rgba(120,0,255,.05), transparent);
+      pointer-events: none;
+    }
+    .container {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 60px 24px 80px;
+      position: relative;
+      z-index: 1;
+    }
+    .eyebrow {
+      display: inline-block;
+      padding: 10px 28px;
+      border-radius: 999px;
+      background: linear-gradient(90deg, #ffb900, #ff6a00);
+      color: #000;
+      font-size: 16px; font-weight: 800;
+      letter-spacing: .1em;
+      box-shadow: 0 0 30px rgba(255,185,0,.3);
+      margin-bottom: 20px;
+    }
+    h1 {
+      font-size: clamp(36px, 5vw, 56px);
+      font-weight: 900;
+      letter-spacing: -.03em;
+      line-height: 1.2;
+      margin-bottom: 12px;
+      background: linear-gradient(135deg, #ffd700, #ffb900, #ff8c00, #ffd700);
+      background-size: 300% 300%;
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      animation: shimmer 3s ease infinite;
+    }
+    @keyframes shimmer {
+      0%, 100% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+    }
+    .subtitle {
+      font-size: 18px;
+      color: rgba(255,255,255,.5);
+      margin-bottom: 48px;
+      line-height: 1.7;
+    }
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+      gap: 24px;
+    }
+    .card {
+      position: relative;
+      background: rgba(255,255,255,.03);
+      border: 1px solid rgba(255,255,255,.08);
+      border-radius: 24px;
+      padding: 32px 28px;
+      transition: transform .25s, border-color .25s, box-shadow .25s;
+      text-decoration: none;
+      color: inherit;
+      display: block;
+      overflow: hidden;
+    }
+    .card:hover {
+      transform: translateY(-6px);
+      box-shadow: 0 24px 60px rgba(255,185,0,.12);
+    }
+    .card.c1 { border-color: rgba(255,185,0,.25); }
+    .card.c1:hover { border-color: rgba(255,185,0,.5); }
+    .card.c2 { border-color: rgba(233,30,140,.25); }
+    .card.c2:hover { border-color: rgba(233,30,140,.5); }
+    .card.c3 { border-color: rgba(0,212,255,.25); }
+    .card.c3:hover { border-color: rgba(0,212,255,.5); }
+    .card.c4 { border-color: rgba(239,68,68,.25); }
+    .card.c4:hover { border-color: rgba(239,68,68,.5); }
+    .card.c5 { border-color: rgba(16,185,129,.25); }
+    .card.c5:hover { border-color: rgba(16,185,129,.5); }
+
+    .card-num {
+      font-size: 80px; font-weight: 900;
+      position: absolute; top: -10px; right: 16px;
+      opacity: .06;
+      letter-spacing: -.06em;
+    }
+    .card-badge {
+      display: inline-block;
+      padding: 6px 16px;
+      border-radius: 999px;
+      font-size: 12px; font-weight: 800;
+      letter-spacing: .08em;
+      margin-bottom: 16px;
+    }
+    .card.c1 .card-badge { background: rgba(255,185,0,.15); color: #ffd700; }
+    .card.c2 .card-badge { background: rgba(233,30,140,.15); color: #ff79c6; }
+    .card.c3 .card-badge { background: rgba(0,212,255,.15); color: #00d4ff; }
+    .card.c4 .card-badge { background: rgba(239,68,68,.15); color: #ef4444; }
+    .card.c5 .card-badge { background: rgba(16,185,129,.15); color: #34d399; }
+
+    .card-title {
+      font-size: 22px; font-weight: 800;
+      margin-bottom: 8px;
+    }
+    .card-design {
+      font-size: 15px;
+      color: rgba(255,255,255,.45);
+      margin-bottom: 14px;
+      line-height: 1.5;
+    }
+    .card-meta {
+      display: flex; gap: 12px; flex-wrap: wrap;
+    }
+    .card-tag {
+      padding: 5px 14px;
+      border-radius: 999px;
+      font-size: 13px; font-weight: 700;
+      background: rgba(255,255,255,.06);
+      border: 1px solid rgba(255,255,255,.1);
+      color: rgba(255,255,255,.6);
+    }
+    .card-tag.detail {
+      background: rgba(255,185,0,.1);
+      border-color: rgba(255,185,0,.3);
+      color: #ffd700;
+    }
+    .card-arrow {
+      position: absolute;
+      bottom: 28px; right: 28px;
+      width: 40px; height: 40px;
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 18px;
+      background: rgba(255,255,255,.06);
+      border: 1px solid rgba(255,255,255,.1);
+      transition: background .2s;
+    }
+    .card:hover .card-arrow {
+      background: rgba(255,255,255,.12);
+    }
+
+    .footer-note {
+      margin-top: 48px;
+      text-align: center;
+      font-size: 14px;
+      color: rgba(255,255,255,.3);
+      line-height: 1.8;
+    }
+
+    @media (max-width: 700px) {
+      .grid { grid-template-columns: 1fr; }
+      .container { padding: 40px 16px 60px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="eyebrow">SLIDE COLLECTION</div>
+    <h1>AIマネタイズ完全攻略</h1>
+    <p class="subtitle">
+      画像生成・動画制作・AI自動化を掛け合わせた収益化の全体像。<br>
+      5つのデザインパターンから、お好みのスライドをご覧ください。
+    </p>
+
+    <div class="grid">
+
+      <a href="pattern1.html" class="card c1">
+        <div class="card-num">01</div>
+        <div class="card-badge">PATTERN 1</div>
+        <div class="card-title">ダーク × ゴールドネオン</div>
+        <div class="card-design">黒背景にゴールド・ピンク・紫のネオングロー。パーティクルアニメーション付き。</div>
+        <div class="card-meta">
+          <span class="card-tag">12 SLIDES</span>
+          <span class="card-tag">概要</span>
+        </div>
+        <div class="card-arrow">→</div>
+      </a>
+
+      <a href="pattern2.html" class="card c2">
+        <div class="card-num">02</div>
+        <div class="card-badge">PATTERN 2</div>
+        <div class="card-title">ホワイト × ホットピンク&オレンジ</div>
+        <div class="card-design">白背景にピンク→オレンジのグラデーション。情報商材の王道スタイル。</div>
+        <div class="card-meta">
+          <span class="card-tag">12 SLIDES</span>
+          <span class="card-tag">概要</span>
+        </div>
+        <div class="card-arrow">→</div>
+      </a>
+
+      <a href="pattern3.html" class="card c3">
+        <div class="card-num">03</div>
+        <div class="card-badge">PATTERN 3</div>
+        <div class="card-title">宇宙 × エレクトリックブルー</div>
+        <div class="card-design">ダークネイビーに星空アニメ。グラスモーフィズムとホログラフィック効果。</div>
+        <div class="card-meta">
+          <span class="card-tag">12 SLIDES</span>
+          <span class="card-tag">概要</span>
+        </div>
+        <div class="card-arrow">→</div>
+      </a>
+
+      <a href="pattern4.html" class="card c4">
+        <div class="card-num">04</div>
+        <div class="card-badge">PATTERN 4</div>
+        <div class="card-title">ブラック × ファイヤーレッド</div>
+        <div class="card-design">黒×赤のアグレッシブデザイン。SD比較・動画制作フロー・自動化まで深掘り。</div>
+        <div class="card-meta">
+          <span class="card-tag">20 SLIDES</span>
+          <span class="card-tag detail">詳細版</span>
+        </div>
+        <div class="card-arrow">→</div>
+      </a>
+
+      <a href="pattern5.html" class="card c5">
+        <div class="card-num">05</div>
+        <div class="card-badge">PATTERN 5</div>
+        <div class="card-title">エメラルド × ゴールド高級感</div>
+        <div class="card-design">深緑×金のラグジュアリーデザイン。価格戦略・ファン構築まで完全網羅。</div>
+        <div class="card-meta">
+          <span class="card-tag">22 SLIDES</span>
+          <span class="card-tag detail">詳細版</span>
+        </div>
+        <div class="card-arrow">→</div>
+      </a>
+
+    </div>
+
+    <p class="footer-note">
+      操作方法: ← → 矢印キー / スペースキー / 画面下のボタン / タッチスワイプ
+    </p>
+  </div>
+</body>
+</html>
