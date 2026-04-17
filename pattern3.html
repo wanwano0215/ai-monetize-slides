@@ -3,650 +3,259 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>AIマネタイズ完全ガイド - Deep Space Edition</title>
+<title>AIマネタイズ完全ガイド</title>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;500;700;900&display=swap" rel="stylesheet">
 <style>
 *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
 
 :root {
-  --bg-deep: #0a0a2e;
-  --bg-mid: #0d0d3a;
-  --electric-blue: #00d4ff;
+  --bg: #0a0a2e;
+  --blue: #00d4ff;
   --violet: #7c3aed;
   --cyan: #06b6d4;
   --white: #ffffff;
-  --white-soft: #e0e7ff;
-  --glass-bg: rgba(255,255,255,0.04);
+  --text: #e0e7ff;
+  --sub: #94a3b8;
+  --dim: #475569;
+  --glass-bg: rgba(255,255,255,0.05);
   --glass-border: rgba(255,255,255,0.1);
-  --glass-bg-strong: rgba(255,255,255,0.07);
-  --glass-border-strong: rgba(255,255,255,0.15);
+  --glow-blue: rgba(0,212,255,0.3);
+  --glow-violet: rgba(124,58,237,0.3);
 }
 
-body {
-  font-family: 'Noto Sans JP', sans-serif;
-  background: var(--bg-deep);
-  color: var(--white-soft);
-  overflow: hidden;
-  width: 100vw;
-  height: 100vh;
-}
-
-/* === STARFIELD === */
-#starfield {
-  position: fixed;
-  top: 0; left: 0;
+html, body {
   width: 100%; height: 100%;
-  z-index: 0;
-  pointer-events: none;
+  font-family: 'Noto Sans JP', sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  overflow: hidden;
+  user-select: none;
+  -webkit-user-select: none;
 }
 
+/* ── Starfield ── */
+#starfield {
+  position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+  z-index: 0; pointer-events: none;
+}
 .star {
   position: absolute;
   border-radius: 50%;
   background: #fff;
+  animation: twinkle var(--dur) ease-in-out infinite alternate;
+}
+@keyframes twinkle {
+  0% { opacity: var(--o1); transform: scale(1); }
+  100% { opacity: var(--o2); transform: scale(1.3); }
 }
 
-/* === GRID OVERLAY === */
-.grid-overlay {
-  position: fixed;
-  top: 0; left: 0;
-  width: 100%; height: 100%;
-  z-index: 0;
-  pointer-events: none;
+/* ── Grid overlay ── */
+#grid-overlay {
+  position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+  z-index: 0; pointer-events: none; opacity: 0.03;
   background-image:
-    linear-gradient(rgba(0,212,255,0.03) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(0,212,255,0.03) 1px, transparent 1px);
-  background-size: 80px 80px;
+    linear-gradient(rgba(0,212,255,0.5) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(0,212,255,0.5) 1px, transparent 1px);
+  background-size: 60px 60px;
 }
 
-/* === GLOWING ORBS === */
+/* ── Glowing orbs ── */
 .orb {
-  position: fixed;
-  border-radius: 50%;
-  filter: blur(80px);
-  opacity: 0.15;
-  pointer-events: none;
-  z-index: 0;
-  animation: orbFloat 20s ease-in-out infinite;
+  position: fixed; border-radius: 50%; pointer-events: none; z-index: 0;
+  filter: blur(80px); opacity: 0.15;
 }
-.orb-1 { width: 400px; height: 400px; background: var(--violet); top: -100px; right: -100px; animation-delay: 0s; }
-.orb-2 { width: 350px; height: 350px; background: var(--electric-blue); bottom: -80px; left: -80px; animation-delay: -7s; }
-.orb-3 { width: 300px; height: 300px; background: var(--cyan); top: 50%; left: 50%; transform: translate(-50%,-50%); animation-delay: -14s; }
+.orb-1 { width: 400px; height: 400px; background: var(--violet); top: -10%; left: -5%; animation: orbFloat1 20s ease-in-out infinite; }
+.orb-2 { width: 350px; height: 350px; background: var(--blue); bottom: -10%; right: -5%; animation: orbFloat2 25s ease-in-out infinite; }
+.orb-3 { width: 300px; height: 300px; background: var(--cyan); top: 50%; left: 50%; transform: translate(-50%,-50%); animation: orbFloat3 18s ease-in-out infinite; }
 
-@keyframes orbFloat {
-  0%, 100% { transform: translate(0, 0) scale(1); }
-  25% { transform: translate(30px, -20px) scale(1.1); }
-  50% { transform: translate(-20px, 30px) scale(0.95); }
-  75% { transform: translate(15px, 15px) scale(1.05); }
-}
+@keyframes orbFloat1 { 0%,100%{transform:translate(0,0)} 50%{transform:translate(50px,30px)} }
+@keyframes orbFloat2 { 0%,100%{transform:translate(0,0)} 50%{transform:translate(-40px,-25px)} }
+@keyframes orbFloat3 { 0%,100%{transform:translate(-50%,-50%)} 50%{transform:translate(-40%,-40%)} }
 
-/* === SLIDE CONTAINER === */
-.slide-container {
-  position: relative;
-  z-index: 1;
-  width: 100vw;
-  height: 100vh;
-  overflow: hidden;
+/* ── Presentation container ── */
+#presentation {
+  position: relative; z-index: 1;
+  width: 100%; height: 100%;
 }
 
 .slide {
-  position: absolute;
-  top: 0; left: 0;
+  position: absolute; top: 0; left: 0;
   width: 100%; height: 100%;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  padding: 60px 80px;
-  opacity: 0;
-  transform: translateX(60px);
+  display: flex; align-items: center; justify-content: center;
+  padding: 60px 40px 80px;
+  opacity: 0; visibility: hidden;
   transition: opacity 0.6s ease, transform 0.6s ease;
-  pointer-events: none;
-  text-align: center;
+  transform: translateX(40px);
 }
-
 .slide.active {
-  opacity: 1;
-  transform: translateX(0);
-  pointer-events: auto;
+  opacity: 1; visibility: visible; transform: translateX(0);
 }
-
 .slide.prev {
-  opacity: 0;
-  transform: translateX(-60px);
+  opacity: 0; visibility: hidden; transform: translateX(-40px);
 }
 
-/* === TYPOGRAPHY === */
-.gradient-text {
-  background: linear-gradient(135deg, var(--electric-blue), var(--violet), var(--cyan));
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
+.slide-inner {
+  width: 100%; max-width: 1100px; max-height: 100%;
+  overflow-y: auto;
 }
 
-.gradient-text-blue {
-  background: linear-gradient(135deg, var(--electric-blue), var(--cyan));
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-}
-
-.slide-title {
-  font-size: 2.8rem;
-  font-weight: 900;
-  margin-bottom: 40px;
-  line-height: 1.3;
-  letter-spacing: -0.02em;
-}
-
-.slide-subtitle {
-  font-size: 1.15rem;
-  color: rgba(224,231,255,0.6);
-  margin-bottom: 30px;
-  font-weight: 300;
-}
-
-/* === GLASS CARDS === */
+/* ── Glass card ── */
 .glass {
   background: var(--glass-bg);
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
+  backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
   border: 1px solid var(--glass-border);
   border-radius: 20px;
-  padding: 28px 32px;
-  position: relative;
-  overflow: hidden;
+  padding: 40px;
+}
+.glass-sm {
+  background: rgba(255,255,255,0.04);
+  backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 14px;
+  padding: 24px;
 }
 
-.glass::before {
-  content: '';
-  position: absolute;
-  top: 0; left: 0; right: 0;
-  height: 1px;
-  background: linear-gradient(90deg, transparent, rgba(0,212,255,0.3), transparent);
-}
-
-.glass-strong {
-  background: var(--glass-bg-strong);
-  border: 1px solid var(--glass-border-strong);
-}
-
-/* === HOLOGRAPHIC NUMBER === */
-.holo-number {
-  font-size: 3.5rem;
-  font-weight: 900;
-  background: linear-gradient(135deg, var(--electric-blue), #a78bfa, var(--violet), var(--cyan), var(--electric-blue));
-  background-size: 200% 200%;
-  -webkit-background-clip: text;
+/* ── Typography ── */
+.holo-text {
+  background: linear-gradient(135deg, var(--blue), var(--violet), var(--cyan));
+  -webkit-background-clip: text; background-clip: text;
   -webkit-text-fill-color: transparent;
-  background-clip: text;
-  animation: holoShift 4s ease-in-out infinite;
-  text-shadow: none;
-  filter: drop-shadow(0 0 20px rgba(0,212,255,0.3));
-  line-height: 1.1;
 }
+.title-xl { font-size: clamp(2rem, 5vw, 3.5rem); font-weight: 900; line-height: 1.2; }
+.title-lg { font-size: clamp(1.6rem, 3.5vw, 2.5rem); font-weight: 700; line-height: 1.3; }
+.title-md { font-size: clamp(1.2rem, 2.5vw, 1.8rem); font-weight: 700; line-height: 1.4; }
+.title-sm { font-size: clamp(1rem, 2vw, 1.4rem); font-weight: 500; line-height: 1.5; }
+.body-text { font-size: clamp(0.85rem, 1.5vw, 1.1rem); line-height: 1.7; color: var(--sub); }
+.small-text { font-size: clamp(0.75rem, 1.2vw, 0.95rem); line-height: 1.6; color: var(--dim); }
 
-@keyframes holoShift {
-  0%, 100% { background-position: 0% 50%; }
-  50% { background-position: 100% 50%; }
-}
-
-.holo-number-sm {
-  font-size: 2.2rem;
-}
-
-/* === GRIDS === */
-.card-grid {
-  display: grid;
-  gap: 20px;
-  width: 100%;
-  max-width: 1100px;
-}
-
-.card-grid-2 { grid-template-columns: 1fr 1fr; }
-.card-grid-3 { grid-template-columns: 1fr 1fr 1fr; }
-.card-grid-4 { grid-template-columns: 1fr 1fr 1fr 1fr; }
-.card-grid-5 { grid-template-columns: 1fr 1fr 1fr 1fr 1fr; }
-
-/* === BADGES === */
-.badge {
+.section-label {
   display: inline-block;
-  padding: 4px 14px;
-  border-radius: 999px;
-  font-size: 0.75rem;
-  font-weight: 700;
-  letter-spacing: 0.05em;
-  margin-bottom: 10px;
+  font-size: 0.75rem; font-weight: 700; letter-spacing: 0.15em; text-transform: uppercase;
+  color: var(--cyan);
+  background: rgba(6,182,212,0.1);
+  border: 1px solid rgba(6,182,212,0.2);
+  border-radius: 100px;
+  padding: 6px 18px;
+  margin-bottom: 16px;
 }
 
-.badge-blue { background: rgba(0,212,255,0.15); color: var(--electric-blue); border: 1px solid rgba(0,212,255,0.3); }
+/* ── Utility ── */
+.mt-1 { margin-top: 8px; } .mt-2 { margin-top: 16px; } .mt-3 { margin-top: 24px; } .mt-4 { margin-top: 32px; }
+.mb-2 { margin-bottom: 16px; } .mb-3 { margin-bottom: 24px; }
+.flex { display: flex; } .flex-wrap { flex-wrap: wrap; } .gap-2 { gap: 16px; } .gap-3 { gap: 24px; }
+.grid-2 { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 20px; }
+.grid-3 { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px; }
+.text-center { text-align: center; }
+.glow-line {
+  height: 2px; border: none;
+  background: linear-gradient(90deg, transparent, var(--blue), var(--violet), transparent);
+  margin: 20px 0;
+}
+
+/* ── Badge ── */
+.badge {
+  display: inline-block; padding: 4px 12px; border-radius: 100px;
+  font-size: 0.75rem; font-weight: 700;
+}
+.badge-blue { background: rgba(0,212,255,0.15); color: var(--blue); border: 1px solid rgba(0,212,255,0.3); }
 .badge-violet { background: rgba(124,58,237,0.15); color: #a78bfa; border: 1px solid rgba(124,58,237,0.3); }
 .badge-cyan { background: rgba(6,182,212,0.15); color: var(--cyan); border: 1px solid rgba(6,182,212,0.3); }
 .badge-green { background: rgba(16,185,129,0.15); color: #34d399; border: 1px solid rgba(16,185,129,0.3); }
-.badge-orange { background: rgba(251,146,60,0.15); color: #fb923c; border: 1px solid rgba(251,146,60,0.3); }
-.badge-pink { background: rgba(244,114,182,0.15); color: #f472b6; border: 1px solid rgba(244,114,182,0.3); }
 
-/* === GLOW LINE === */
-.glow-line {
-  width: 80px;
-  height: 3px;
-  background: linear-gradient(90deg, var(--electric-blue), var(--violet));
-  border-radius: 2px;
-  margin: 0 auto 24px;
-  box-shadow: 0 0 15px rgba(0,212,255,0.4);
+/* ── Stat box ── */
+.stat-box {
+  text-align: center; padding: 20px;
+  background: rgba(255,255,255,0.03); border-radius: 14px; border: 1px solid rgba(255,255,255,0.06);
+}
+.stat-value { font-size: clamp(1.5rem, 3vw, 2.2rem); font-weight: 900; }
+.stat-label { font-size: 0.8rem; color: var(--sub); margin-top: 4px; }
+
+/* ── List ── */
+.check-list { list-style: none; padding: 0; }
+.check-list li {
+  padding: 8px 0; padding-left: 28px; position: relative;
+  font-size: clamp(0.85rem, 1.4vw, 1.05rem); color: var(--text);
+}
+.check-list li::before {
+  content: '✦'; position: absolute; left: 0; color: var(--cyan);
 }
 
-/* === TAG === */
-.tag {
-  display: inline-block;
-  padding: 3px 10px;
-  border-radius: 8px;
-  font-size: 0.7rem;
-  font-weight: 500;
-  background: rgba(255,255,255,0.06);
-  color: rgba(224,231,255,0.5);
-  border: 1px solid rgba(255,255,255,0.08);
+/* ── Table ── */
+.data-table {
+  width: 100%; border-collapse: collapse; font-size: clamp(0.75rem, 1.2vw, 0.95rem);
 }
+.data-table th {
+  text-align: left; padding: 10px 14px;
+  background: rgba(0,212,255,0.08); color: var(--blue);
+  border-bottom: 1px solid rgba(0,212,255,0.2);
+  font-weight: 700;
+}
+.data-table td {
+  padding: 10px 14px; border-bottom: 1px solid rgba(255,255,255,0.05); color: var(--text);
+}
+.data-table tr:hover td { background: rgba(255,255,255,0.03); }
 
-/* === PROGRESS BAR === */
-.progress-bar {
-  position: fixed;
-  bottom: 0; left: 0;
-  height: 3px;
-  background: linear-gradient(90deg, var(--electric-blue), var(--violet), var(--cyan));
-  z-index: 100;
-  transition: width 0.5s ease;
+/* ── Phase timeline ── */
+.phase-card {
+  position: relative; padding: 24px; border-radius: 16px;
+  background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08);
+}
+.phase-card::before {
+  content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px;
+  border-radius: 16px 16px 0 0;
+}
+.phase-1::before { background: linear-gradient(90deg, var(--cyan), var(--blue)); }
+.phase-2::before { background: linear-gradient(90deg, var(--blue), var(--violet)); }
+.phase-3::before { background: linear-gradient(90deg, var(--violet), #f472b6); }
+
+/* ── CTA button ── */
+.cta-btn {
+  display: inline-block; padding: 16px 48px; border-radius: 100px;
+  background: linear-gradient(135deg, var(--blue), var(--violet));
+  color: #fff; font-weight: 700; font-size: 1.1rem;
+  text-decoration: none; border: none; cursor: pointer;
+  box-shadow: 0 0 30px rgba(0,212,255,0.3), 0 0 60px rgba(124,58,237,0.2);
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+.cta-btn:hover { transform: translateY(-2px); box-shadow: 0 0 40px rgba(0,212,255,0.5), 0 0 80px rgba(124,58,237,0.3); }
+
+/* ── Navigation ── */
+#nav {
+  position: fixed; bottom: 0; left: 0; right: 0; z-index: 100;
+  display: flex; align-items: center; justify-content: center; gap: 20px;
+  padding: 12px 24px;
+  background: rgba(10,10,46,0.85); backdrop-filter: blur(12px);
+  border-top: 1px solid rgba(255,255,255,0.06);
+}
+.nav-btn {
+  width: 44px; height: 44px; border-radius: 50%;
+  background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.12);
+  color: var(--text); font-size: 1.1rem; cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  transition: background 0.2s, border-color 0.2s;
+}
+.nav-btn:hover { background: rgba(0,212,255,0.15); border-color: rgba(0,212,255,0.3); }
+#slide-counter { font-size: 0.85rem; color: var(--sub); font-weight: 500; min-width: 70px; text-align: center; }
+#progress-bar {
+  position: fixed; top: 0; left: 0; height: 3px; z-index: 100;
+  background: linear-gradient(90deg, var(--cyan), var(--blue), var(--violet));
+  transition: width 0.4s ease;
   box-shadow: 0 0 10px rgba(0,212,255,0.5);
 }
 
-/* === NAVIGATION === */
-.nav-controls {
-  position: fixed;
-  bottom: 30px;
-  left: 50%;
-  transform: translateX(-50%);
-  display: flex;
-  align-items: center;
-  gap: 24px;
-  z-index: 100;
-}
+/* ── Arrow indicators ── */
+.arrow-flow { display: flex; align-items: center; justify-content: center; gap: 12px; flex-wrap: wrap; }
+.arrow-flow .arr { color: var(--cyan); font-weight: 300; }
 
-.nav-btn {
-  width: 48px; height: 48px;
-  border-radius: 50%;
-  background: var(--glass-bg-strong);
-  backdrop-filter: blur(12px);
-  border: 1px solid var(--glass-border-strong);
-  color: var(--white-soft);
-  font-size: 1.2rem;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: all 0.3s ease;
-}
+/* ── Comparison ── */
+.vs-container { display: grid; grid-template-columns: 1fr auto 1fr; gap: 20px; align-items: start; }
+.vs-divider { display: flex; align-items: center; justify-content: center; font-size: 1.5rem; font-weight: 900; color: var(--violet); padding-top: 40px; }
 
-.nav-btn:hover {
-  background: rgba(0,212,255,0.15);
-  border-color: rgba(0,212,255,0.4);
-  box-shadow: 0 0 20px rgba(0,212,255,0.2);
-}
-
-.nav-counter {
-  font-size: 0.85rem;
-  color: rgba(224,231,255,0.5);
-  font-weight: 500;
-  min-width: 60px;
-  text-align: center;
-}
-
-/* === SLIDE SPECIFIC STYLES === */
-
-/* Title slide */
-.title-main {
-  font-size: 4rem;
-  font-weight: 900;
-  line-height: 1.2;
-  margin-bottom: 20px;
-  letter-spacing: -0.03em;
-}
-
-.title-sub {
-  font-size: 1.3rem;
-  color: rgba(224,231,255,0.5);
-  font-weight: 300;
-  margin-bottom: 40px;
-}
-
-.title-badge {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  padding: 8px 20px;
-  border-radius: 999px;
-  background: rgba(0,212,255,0.08);
-  border: 1px solid rgba(0,212,255,0.2);
-  font-size: 0.85rem;
-  color: var(--electric-blue);
-  font-weight: 500;
-}
-
-.title-decoration {
-  width: 120px;
-  height: 4px;
-  background: linear-gradient(90deg, var(--electric-blue), var(--violet), var(--cyan));
-  border-radius: 2px;
-  margin: 0 auto 30px;
-  box-shadow: 0 0 20px rgba(0,212,255,0.4);
-}
-
-/* Tier card */
-.tier-card {
-  text-align: center;
-  padding: 24px 16px;
-}
-
-.tier-card .tier-label {
-  font-size: 0.8rem;
-  font-weight: 700;
-  letter-spacing: 0.1em;
-  margin-bottom: 8px;
-  text-transform: uppercase;
-}
-
-.tier-card .tier-range {
-  font-weight: 300;
-  font-size: 0.85rem;
-  color: rgba(224,231,255,0.5);
-  margin-top: 6px;
-}
-
-/* Platform table */
-.platform-row {
-  display: grid;
-  grid-template-columns: 140px 1fr 100px 120px;
-  gap: 16px;
-  align-items: center;
-  padding: 16px 20px;
-  border-bottom: 1px solid rgba(255,255,255,0.05);
-  text-align: left;
-}
-
-.platform-row:last-child { border-bottom: none; }
-
-.platform-header {
-  font-size: 0.7rem;
-  color: rgba(224,231,255,0.35);
-  font-weight: 700;
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
-}
-
-.platform-name {
-  font-weight: 700;
-  font-size: 0.95rem;
-}
-
-.platform-desc {
-  font-size: 0.8rem;
-  color: rgba(224,231,255,0.5);
-}
-
-.platform-fee {
-  font-size: 0.85rem;
-  font-weight: 500;
-}
-
-.platform-type {
-  font-size: 0.75rem;
-}
-
-/* Pattern cards */
-.pattern-card {
-  text-align: left;
-  padding: 28px;
-}
-
-.pattern-card .pattern-icon {
-  font-size: 2rem;
-  margin-bottom: 12px;
-}
-
-.pattern-card .pattern-title {
-  font-size: 1.1rem;
-  font-weight: 700;
-  margin-bottom: 8px;
-}
-
-.pattern-card .pattern-revenue {
-  font-weight: 900;
-  font-size: 1.4rem;
-  margin-bottom: 14px;
-}
-
-.pattern-card .pattern-items {
-  list-style: none;
-  font-size: 0.8rem;
-  color: rgba(224,231,255,0.55);
-  line-height: 1.8;
-}
-
-.pattern-card .pattern-items li::before {
-  content: '▸ ';
-  color: var(--electric-blue);
-}
-
-/* Timeline */
-.timeline-phase {
-  display: flex;
-  align-items: flex-start;
-  gap: 24px;
-  text-align: left;
-  padding: 24px;
-}
-
-.timeline-dot {
-  width: 14px; height: 14px;
-  border-radius: 50%;
-  flex-shrink: 0;
-  margin-top: 6px;
-  box-shadow: 0 0 15px currentColor;
-}
-
-.timeline-content h3 {
-  font-size: 1rem;
-  font-weight: 700;
-  margin-bottom: 4px;
-}
-
-.timeline-content p {
-  font-size: 0.85rem;
-  color: rgba(224,231,255,0.5);
-  line-height: 1.6;
-}
-
-/* Roadmap */
-.roadmap-step {
-  display: flex;
-  align-items: center;
-  gap: 16px;
-  padding: 16px 20px;
-}
-
-.roadmap-num {
-  width: 36px; height: 36px;
-  border-radius: 10px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 0.85rem;
-  font-weight: 900;
-  flex-shrink: 0;
-}
-
-.roadmap-text {
-  text-align: left;
-}
-
-.roadmap-text h4 {
-  font-size: 0.95rem;
-  font-weight: 700;
-  margin-bottom: 2px;
-}
-
-.roadmap-text p {
-  font-size: 0.75rem;
-  color: rgba(224,231,255,0.45);
-}
-
-/* Multiplier */
-.multiplier-flow {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  flex-wrap: wrap;
-  justify-content: center;
-}
-
-.multiplier-item {
-  padding: 18px 24px;
-  text-align: center;
-}
-
-.multiplier-item .m-icon { font-size: 1.8rem; margin-bottom: 8px; }
-.multiplier-item .m-label { font-size: 0.85rem; font-weight: 700; }
-
-.multiplier-sign {
-  font-size: 2rem;
-  font-weight: 300;
-  color: rgba(0,212,255,0.5);
-}
-
-/* Case card */
-.case-card {
-  text-align: left;
-  padding: 24px;
-}
-
-.case-card .case-icon { font-size: 1.6rem; margin-bottom: 10px; }
-.case-card .case-title { font-size: 0.95rem; font-weight: 700; margin-bottom: 6px; }
-.case-card .case-revenue { font-weight: 900; font-size: 1.1rem; margin-bottom: 10px; }
-.case-card .case-desc {
-  font-size: 0.75rem;
-  color: rgba(224,231,255,0.5);
-  line-height: 1.7;
-}
-
-/* Mindset */
-.mindset-block {
-  text-align: left;
-  padding: 24px;
-}
-
-.mindset-block h3 {
-  font-size: 1rem;
-  font-weight: 700;
-  margin-bottom: 12px;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-
-.mindset-block ul {
-  list-style: none;
-  font-size: 0.82rem;
-  color: rgba(224,231,255,0.55);
-  line-height: 1.9;
-}
-
-.mindset-block ul li::before {
-  content: '→ ';
-  color: var(--electric-blue);
-}
-
-/* Closing */
-.closing-cta {
-  display: inline-flex;
-  align-items: center;
-  gap: 10px;
-  padding: 14px 36px;
-  border-radius: 999px;
-  background: linear-gradient(135deg, var(--electric-blue), var(--violet));
-  color: #fff;
-  font-size: 1.1rem;
-  font-weight: 700;
-  margin-top: 30px;
-  box-shadow: 0 0 30px rgba(0,212,255,0.3), 0 0 60px rgba(124,58,237,0.2);
-  border: none;
-  cursor: pointer;
-  transition: transform 0.3s, box-shadow 0.3s;
-}
-
-.closing-cta:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 0 40px rgba(0,212,255,0.4), 0 0 80px rgba(124,58,237,0.3);
-}
-
-/* Product card */
-.product-card { text-align: left; padding: 22px; }
-.product-card .p-icon { font-size: 1.5rem; margin-bottom: 10px; }
-.product-card .p-title { font-size: 0.95rem; font-weight: 700; margin-bottom: 4px; }
-.product-card .p-spec { font-size: 0.75rem; color: rgba(224,231,255,0.4); margin-bottom: 8px; }
-.product-card .p-price { font-weight: 700; font-size: 0.9rem; }
-
-/* Why-now items */
-.why-item {
-  text-align: center;
-  padding: 28px 20px;
-}
-.why-item .w-icon { font-size: 2rem; margin-bottom: 12px; }
-.why-item .w-title { font-size: 1rem; font-weight: 700; margin-bottom: 8px; }
-.why-item .w-desc { font-size: 0.8rem; color: rgba(224,231,255,0.5); line-height: 1.7; }
-
-/* Animate-in utility */
-.fade-up {
-  opacity: 0;
-  transform: translateY(20px);
-  transition: opacity 0.5s ease, transform 0.5s ease;
-}
-
-.slide.active .fade-up {
-  opacity: 1;
-  transform: translateY(0);
-}
-
-.slide.active .fade-up:nth-child(1) { transition-delay: 0.1s; }
-.slide.active .fade-up:nth-child(2) { transition-delay: 0.2s; }
-.slide.active .fade-up:nth-child(3) { transition-delay: 0.3s; }
-.slide.active .fade-up:nth-child(4) { transition-delay: 0.4s; }
-.slide.active .fade-up:nth-child(5) { transition-delay: 0.5s; }
-.slide.active .fade-up:nth-child(6) { transition-delay: 0.6s; }
-
-/* Scanline overlay */
-.scanline {
-  position: fixed;
-  top: 0; left: 0;
-  width: 100%; height: 100%;
-  pointer-events: none;
-  z-index: 2;
-  background: repeating-linear-gradient(
-    0deg,
-    transparent,
-    transparent 2px,
-    rgba(0,0,0,0.03) 2px,
-    rgba(0,0,0,0.03) 4px
-  );
-}
-
-/* Responsive */
-@media (max-width: 900px) {
-  .slide { padding: 40px 30px; }
-  .title-main { font-size: 2.5rem; }
-  .slide-title { font-size: 2rem; }
-  .card-grid-3, .card-grid-4, .card-grid-5 { grid-template-columns: 1fr 1fr; }
-  .holo-number { font-size: 2.5rem; }
-  .platform-row { grid-template-columns: 100px 1fr 80px; }
-  .platform-row > :last-child { display: none; }
+@media (max-width: 768px) {
+  .slide { padding: 40px 20px 80px; }
+  .glass { padding: 24px; }
+  .vs-container { grid-template-columns: 1fr; }
+  .vs-divider { padding-top: 0; }
 }
 </style>
 </head>
@@ -654,625 +263,1586 @@ body {
 
 <!-- Background layers -->
 <div id="starfield"></div>
-<div class="grid-overlay"></div>
+<div id="grid-overlay"></div>
 <div class="orb orb-1"></div>
 <div class="orb orb-2"></div>
 <div class="orb orb-3"></div>
-<div class="scanline"></div>
 
 <!-- Progress bar -->
-<div class="progress-bar" id="progressBar"></div>
+<div id="progress-bar" style="width:2%"></div>
 
-<!-- Slides -->
-<div class="slide-container">
+<!-- Presentation -->
+<div id="presentation">
 
-  <!-- SLIDE 1: Title -->
-  <div class="slide active" data-slide="0">
-    <div class="title-badge fade-up" style="margin-bottom: 30px;">
-      <span style="font-size:1rem;">&#9889;</span> 2026年最新版
-    </div>
-    <div class="title-decoration fade-up"></div>
-    <h1 class="title-main gradient-text fade-up">AIマネタイズ<br>完全ガイド</h1>
-    <p class="title-sub fade-up">AI画像・AI動画で収益化する全体像をつかむ</p>
-    <div style="display:flex; gap:16px; flex-wrap:wrap; justify-content:center;" class="fade-up">
-      <span class="tag">Stable Diffusion</span>
-      <span class="tag">ComfyUI</span>
-      <span class="tag">AI動画</span>
-      <span class="tag">FANZA / DLsite</span>
-      <span class="tag">自動化</span>
-    </div>
-  </div>
-
-  <!-- SLIDE 2: Market Numbers -->
-  <div class="slide" data-slide="1">
-    <h2 class="slide-title gradient-text fade-up">AIマネタイズの市場規模</h2>
-    <div class="glow-line fade-up"></div>
-    <p class="slide-subtitle fade-up">月100万円到達者が続出 ─ 収益レンジの全体像</p>
-    <div class="card-grid card-grid-4 fade-up">
-      <div class="glass tier-card">
-        <span class="badge badge-cyan">BEGINNER</span>
-        <div class="tier-label" style="color:var(--cyan);">初心者</div>
-        <div class="holo-number holo-number-sm">1-5万</div>
-        <div class="tier-range">月額 / 開始1-2ヶ月</div>
-      </div>
-      <div class="glass tier-card">
-        <span class="badge badge-blue">INTERMEDIATE</span>
-        <div class="tier-label" style="color:var(--electric-blue);">中級者</div>
-        <div class="holo-number holo-number-sm">10-30万</div>
-        <div class="tier-range">月額 / 3-6ヶ月</div>
-      </div>
-      <div class="glass tier-card">
-        <span class="badge badge-violet">ADVANCED</span>
-        <div class="tier-label" style="color:#a78bfa;">上級者</div>
-        <div class="holo-number holo-number-sm">50-100万</div>
-        <div class="tier-range">月額 / 6ヶ月〜</div>
-      </div>
-      <div class="glass tier-card">
-        <span class="badge badge-pink">TOP PLAYER</span>
-        <div class="tier-label" style="color:#f472b6;">トップ層</div>
-        <div class="holo-number holo-number-sm">200-300万</div>
-        <div class="tier-range">月額 / 1年〜</div>
-      </div>
-    </div>
-    <p style="margin-top:24px; font-size:0.8rem; color:rgba(224,231,255,0.35);" class="fade-up">※ 個人差あり。継続的な改善と市場理解が前提</p>
-  </div>
-
-  <!-- SLIDE 3: Why Now -->
-  <div class="slide" data-slide="2">
-    <h2 class="slide-title gradient-text fade-up">なぜ「今」なのか</h2>
-    <div class="glow-line fade-up"></div>
-    <p class="slide-subtitle fade-up">3つの追い風が同時に吹いている</p>
-    <div class="card-grid card-grid-3 fade-up">
-      <div class="glass why-item">
-        <div class="w-icon">&#129302;</div>
-        <div class="w-title gradient-text-blue">技術の成熟</div>
-        <div class="w-desc">Illustrious / Ponyなど<br>無料で商用利用可能な<br>高品質モデルが充実</div>
-      </div>
-      <div class="glass why-item">
-        <div class="w-icon">&#128200;</div>
-        <div class="w-title gradient-text-blue">市場の拡大</div>
-        <div class="w-desc">AI生成コンテンツの<br>需要が急増中<br>購入者層が拡大している</div>
-      </div>
-      <div class="glass why-item">
-        <div class="w-icon">&#128722;</div>
-        <div class="w-title gradient-text-blue">販売環境の整備</div>
-        <div class="w-desc">FANZA / DLsite / BOOTH<br>Patreon / Fantiaなど<br>販売チャネルが豊富</div>
-      </div>
-    </div>
-    <div style="margin-top:30px; display:flex; gap:12px; flex-wrap:wrap; justify-content:center;" class="fade-up">
-      <span class="badge badge-green">参入障壁が低い</span>
-      <span class="badge badge-blue">先行者優位あり</span>
-      <span class="badge badge-violet">スケーラブル</span>
-    </div>
-  </div>
-
-  <!-- SLIDE 4: Products -->
-  <div class="slide" data-slide="3">
-    <h2 class="slide-title gradient-text fade-up">売れる商品ラインナップ</h2>
-    <div class="glow-line fade-up"></div>
-    <p class="slide-subtitle fade-up">AI画像・動画を軸にした収益化プロダクト</p>
-    <div class="card-grid card-grid-3 fade-up" style="max-width:1000px;">
-      <div class="glass product-card">
-        <div class="p-icon">&#128444;&#65039;</div>
-        <div class="p-title">CG集</div>
-        <div class="p-spec">30〜50枚 / セット</div>
-        <div class="p-price gradient-text-blue">500〜3,000円</div>
-        <div style="margin-top:8px;"><span class="tag">最も始めやすい</span></div>
-      </div>
-      <div class="glass product-card">
-        <div class="p-icon">&#127909;</div>
-        <div class="p-title">AI動画</div>
-        <div class="p-spec">2〜30分</div>
-        <div class="p-price gradient-text-blue">1,000〜2,980円</div>
-        <div style="margin-top:8px;"><span class="tag">高単価</span></div>
-      </div>
-      <div class="glass product-card">
-        <div class="p-icon">&#127912;</div>
-        <div class="p-title">オリジナルキャラクター</div>
-        <div class="p-spec">キャラ設計 + 展開</div>
-        <div class="p-price gradient-text-blue">ブランド資産化</div>
-        <div style="margin-top:8px;"><span class="tag">長期収益</span></div>
-      </div>
-      <div class="glass product-card">
-        <div class="p-icon">&#128220;</div>
-        <div class="p-title">ポスター・グッズ</div>
-        <div class="p-spec">物販展開</div>
-        <div class="p-price gradient-text-blue">1,000〜5,000円</div>
-        <div style="margin-top:8px;"><span class="tag">リアル販路</span></div>
-      </div>
-      <div class="glass product-card">
-        <div class="p-icon">&#128176;</div>
-        <div class="p-title">月額制（サブスク）</div>
-        <div class="p-spec">Patreon / Fantia</div>
-        <div class="p-price gradient-text-blue">500〜3,000円/月</div>
-        <div style="margin-top:8px;"><span class="tag">安定収益</span></div>
-      </div>
-      <div class="glass product-card">
-        <div class="p-icon">&#128214;</div>
-        <div class="p-title">AI漫画</div>
-        <div class="p-spec">10〜30ページ</div>
-        <div class="p-price gradient-text-blue">500〜1,500円</div>
-        <div style="margin-top:8px;"><span class="tag">ストーリー性</span></div>
-      </div>
-    </div>
-  </div>
-
-  <!-- SLIDE 5: Platforms -->
-  <div class="slide" data-slide="4">
-    <h2 class="slide-title gradient-text fade-up">販売プラットフォーム比較</h2>
-    <div class="glow-line fade-up"></div>
-    <div class="glass fade-up" style="width:100%; max-width:900px; padding:0; overflow:hidden;">
-      <div class="platform-row" style="background:rgba(255,255,255,0.03);">
-        <div class="platform-header">プラットフォーム</div>
-        <div class="platform-header">特徴</div>
-        <div class="platform-header">手数料</div>
-        <div class="platform-header">向いている商品</div>
-      </div>
-      <div class="platform-row">
-        <div class="platform-name" style="color:var(--electric-blue);">FANZA</div>
-        <div class="platform-desc">最大級の成人向けDLプラットフォーム</div>
-        <div class="platform-fee" style="color:#34d399;">40%前後</div>
-        <div class="platform-type"><span class="badge badge-blue" style="margin:0;">CG集・動画</span></div>
-      </div>
-      <div class="platform-row">
-        <div class="platform-name" style="color:#a78bfa;">DLsite</div>
-        <div class="platform-desc">同人・インディーの定番。検索流入強い</div>
-        <div class="platform-fee" style="color:#34d399;">35%前後</div>
-        <div class="platform-type"><span class="badge badge-violet" style="margin:0;">CG集・漫画</span></div>
-      </div>
-      <div class="platform-row">
-        <div class="platform-name" style="color:#fb923c;">BOOTH</div>
-        <div class="platform-desc">クリエイター向け。全年齢もOK</div>
-        <div class="platform-fee" style="color:#34d399;">5.6%+決済</div>
-        <div class="platform-type"><span class="badge badge-orange" style="margin:0;">グッズ・DL</span></div>
-      </div>
-      <div class="platform-row">
-        <div class="platform-name" style="color:#f472b6;">Patreon / Fantia</div>
-        <div class="platform-desc">月額サブスク型。ファン直結</div>
-        <div class="platform-fee" style="color:#34d399;">5-12%</div>
-        <div class="platform-type"><span class="badge badge-pink" style="margin:0;">月額制</span></div>
-      </div>
-      <div class="platform-row">
-        <div class="platform-name" style="color:var(--cyan);">ヤフオク</div>
-        <div class="platform-desc">物販・ポスター。意外な穴場</div>
-        <div class="platform-fee" style="color:#34d399;">10%</div>
-        <div class="platform-type"><span class="badge badge-cyan" style="margin:0;">ポスター・物販</span></div>
-      </div>
-    </div>
-    <p style="margin-top:20px; font-size:0.75rem; color:rgba(224,231,255,0.3);" class="fade-up">※ 手数料は目安。プランや条件により変動</p>
-  </div>
-
-  <!-- SLIDE 6: 3 Patterns -->
-  <div class="slide" data-slide="5">
-    <h2 class="slide-title gradient-text fade-up">3つの収益パターン</h2>
-    <div class="glow-line fade-up"></div>
-    <p class="slide-subtitle fade-up">自分に合ったスタイルを選ぶ</p>
-    <div class="card-grid card-grid-3 fade-up">
-      <div class="glass pattern-card">
-        <div class="pattern-icon">&#128444;&#65039;</div>
-        <span class="badge badge-blue">PATTERN 1</span>
-        <div class="pattern-title">画像メイン</div>
-        <div class="pattern-revenue gradient-text-blue">月10〜30万円</div>
-        <ul class="pattern-items">
-          <li>CG集を量産</li>
-          <li>FANZA / DLsite中心</li>
-          <li>月2-4作品リリース</li>
-          <li>オリキャラで差別化</li>
-          <li>最も参入しやすい</li>
-        </ul>
-      </div>
-      <div class="glass glass-strong pattern-card" style="border-color:rgba(0,212,255,0.25);">
-        <div class="pattern-icon">&#127909;</div>
-        <span class="badge badge-violet">PATTERN 2</span>
-        <div class="pattern-title">動画特化</div>
-        <div class="pattern-revenue" style="background:linear-gradient(135deg,#a78bfa,var(--electric-blue));-webkit-background-clip:text;-webkit-text-fill-color:transparent;">月20〜50万円</div>
-        <ul class="pattern-items">
-          <li>AI動画で高単価</li>
-          <li>ComfyUIワークフロー</li>
-          <li>月1-2本の高品質動画</li>
-          <li>SNSでの拡散力が強い</li>
-          <li>競合がまだ少ない</li>
-        </ul>
-      </div>
-      <div class="glass pattern-card">
-        <div class="pattern-icon">&#127775;</div>
-        <span class="badge badge-pink">PATTERN 3</span>
-        <div class="pattern-title">マルチ展開</div>
-        <div class="pattern-revenue" style="background:linear-gradient(135deg,#f472b6,var(--violet));-webkit-background-clip:text;-webkit-text-fill-color:transparent;">月50〜300万円</div>
-        <ul class="pattern-items">
-          <li>画像+動画+サブスク</li>
-          <li>複数プラットフォーム展開</li>
-          <li>自動化パイプライン構築</li>
-          <li>オリキャラブランド化</li>
-          <li>スケール型の収益構造</li>
-        </ul>
-      </div>
-    </div>
-  </div>
-
-  <!-- SLIDE 7: Multiplier Effect -->
-  <div class="slide" data-slide="6">
-    <h2 class="slide-title gradient-text fade-up">掛け算の収益構造</h2>
-    <div class="glow-line fade-up"></div>
-    <p class="slide-subtitle fade-up">単体ではなく「掛け合わせ」で爆発的に伸びる</p>
-    <div class="multiplier-flow fade-up">
-      <div class="glass multiplier-item">
-        <div class="m-icon">&#128444;&#65039;</div>
-        <div class="m-label">AI画像</div>
-      </div>
-      <div class="multiplier-sign">&times;</div>
-      <div class="glass multiplier-item">
-        <div class="m-icon">&#127909;</div>
-        <div class="m-label">AI動画</div>
-      </div>
-      <div class="multiplier-sign">&times;</div>
-      <div class="glass multiplier-item">
-        <div class="m-icon">&#9881;&#65039;</div>
-        <div class="m-label">自動化</div>
-      </div>
-      <div class="multiplier-sign">&times;</div>
-      <div class="glass multiplier-item">
-        <div class="m-icon">&#128225;</div>
-        <div class="m-label">SNS</div>
-      </div>
-    </div>
-    <div style="margin-top:36px; display:flex; justify-content:center;" class="fade-up">
-      <div class="glass glass-strong" style="padding:24px 40px; text-align:center; border-color:rgba(0,212,255,0.2);">
-        <div style="font-size:0.8rem; color:rgba(224,231,255,0.4); margin-bottom:8px;">掛け合わせた結果</div>
-        <div class="holo-number" style="font-size:2.8rem;">収益 10倍以上</div>
-        <div style="font-size:0.8rem; color:rgba(224,231,255,0.4); margin-top:8px;">1つの素材 → 複数商品 → 複数チャネル → 自動収益</div>
-      </div>
-    </div>
-    <div style="margin-top:28px; display:flex; gap:20px; flex-wrap:wrap; justify-content:center;" class="fade-up">
-      <div class="glass" style="padding:14px 20px; text-align:center; min-width:160px;">
-        <div style="font-size:0.7rem; color:rgba(224,231,255,0.35);">画像だけ</div>
-        <div style="font-weight:700; color:rgba(224,231,255,0.6);">月5万円</div>
-      </div>
-      <div style="font-size:1.5rem; color:rgba(0,212,255,0.4); display:flex; align-items:center;">&#10132;</div>
-      <div class="glass" style="padding:14px 20px; text-align:center; min-width:160px;">
-        <div style="font-size:0.7rem; color:rgba(224,231,255,0.35);">画像 &times; 動画</div>
-        <div style="font-weight:700; color:var(--electric-blue);">月20万円</div>
-      </div>
-      <div style="font-size:1.5rem; color:rgba(0,212,255,0.4); display:flex; align-items:center;">&#10132;</div>
-      <div class="glass glass-strong" style="padding:14px 20px; text-align:center; min-width:160px; border-color:rgba(0,212,255,0.25);">
-        <div style="font-size:0.7rem; color:rgba(224,231,255,0.35);">全掛け合わせ</div>
-        <div style="font-weight:700; color:#a78bfa;">月50-100万円</div>
-      </div>
-    </div>
-  </div>
-
-  <!-- SLIDE 8: Skills Roadmap -->
-  <div class="slide" data-slide="7">
-    <h2 class="slide-title gradient-text fade-up">スキル習得ロードマップ</h2>
-    <div class="glow-line fade-up"></div>
-    <p class="slide-subtitle fade-up">全体像 → 各スキルを順番に積み上げる</p>
-    <div class="glass fade-up" style="width:100%; max-width:750px; padding:8px 0;">
-      <div class="roadmap-step">
-        <div class="roadmap-num" style="background:rgba(0,212,255,0.15); color:var(--electric-blue);">1</div>
-        <div class="roadmap-text">
-          <h4 class="gradient-text-blue">全体像の理解</h4>
-          <p>マネタイズの仕組み・市場・商品を把握する</p>
-        </div>
-      </div>
-      <div style="width:2px; height:20px; background:rgba(255,255,255,0.08); margin:0 auto;"></div>
-      <div class="roadmap-step">
-        <div class="roadmap-num" style="background:rgba(124,58,237,0.15); color:#a78bfa;">2</div>
-        <div class="roadmap-text">
-          <h4 style="color:#a78bfa;">AI画像生成（Stable Diffusion）</h4>
-          <p>プロンプト設計・LoRA活用・高品質画像の量産体制</p>
-        </div>
-      </div>
-      <div style="width:2px; height:20px; background:rgba(255,255,255,0.08); margin:0 auto;"></div>
-      <div class="roadmap-step">
-        <div class="roadmap-num" style="background:rgba(6,182,212,0.15); color:var(--cyan);">3</div>
-        <div class="roadmap-text">
-          <h4 style="color:var(--cyan);">AI動画制作（ComfyUI）</h4>
-          <p>ワークフロー構築・動画生成・編集テクニック</p>
-        </div>
-      </div>
-      <div style="width:2px; height:20px; background:rgba(255,255,255,0.08); margin:0 auto;"></div>
-      <div class="roadmap-step">
-        <div class="roadmap-num" style="background:rgba(251,146,60,0.15); color:#fb923c;">4</div>
-        <div class="roadmap-text">
-          <h4 style="color:#fb923c;">AI自動化パイプライン</h4>
-          <p>バッチ処理・自動投稿・効率化の仕組みづくり</p>
-        </div>
-      </div>
-      <div style="width:2px; height:20px; background:rgba(255,255,255,0.08); margin:0 auto;"></div>
-      <div class="roadmap-step">
-        <div class="roadmap-num" style="background:rgba(244,114,182,0.15); color:#f472b6;">5</div>
-        <div class="roadmap-text">
-          <h4 style="color:#f472b6;">マネタイズ戦略</h4>
-          <p>価格設計・プラットフォーム戦略・ファン構築・ブランディング</p>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <!-- SLIDE 9: Selling Mindset -->
-  <div class="slide" data-slide="8">
-    <h2 class="slide-title gradient-text fade-up">売れるマインドセット</h2>
-    <div class="glow-line fade-up"></div>
-    <div class="card-grid card-grid-3 fade-up" style="max-width:1050px;">
-      <div class="glass mindset-block">
-        <h3><span style="color:#ef4444;">&#10006;</span> <span style="color:#ef4444;">売れない原因</span></h3>
-        <ul>
-          <li>自分の好みだけで作る</li>
-          <li>市場リサーチをしない</li>
-          <li>サムネイルが弱い</li>
-          <li>タイトル・説明文が雑</li>
-          <li>リリース頻度が低い</li>
-          <li>1作品で諦める</li>
-        </ul>
-      </div>
-      <div class="glass glass-strong mindset-block" style="border-color:rgba(0,212,255,0.2);">
-        <h3><span style="color:#34d399;">&#10004;</span> <span style="color:#34d399;">売れる条件</span></h3>
-        <ul>
-          <li>ランキング分析から逆算</li>
-          <li>需要のあるジャンルを選ぶ</li>
-          <li>サムネで「クリック」させる</li>
-          <li>検索に引っかかるタイトル</li>
-          <li>週1-2本のリリースペース</li>
-          <li>データを見て改善し続ける</li>
-        </ul>
-      </div>
-      <div class="glass mindset-block">
-        <h3><span style="color:var(--electric-blue);">&#9733;</span> <span class="gradient-text-blue">ファン = 資産</span></h3>
-        <ul>
-          <li>新作を出せば即購入する層</li>
-          <li>SNSフォロワー = 見込み客</li>
-          <li>Patreon/Fantiaで月額収入</li>
-          <li>ファン100人 &times; 1,000円 = 月10万</li>
-          <li>ブランドが育つと複利で増える</li>
-          <li>「作品」ではなく「関係」を売る</li>
-        </ul>
-      </div>
-    </div>
-  </div>
-
-  <!-- SLIDE 10: Revenue Timeline -->
-  <div class="slide" data-slide="9">
-    <h2 class="slide-title gradient-text fade-up">収益タイムライン</h2>
-    <div class="glow-line fade-up"></div>
-    <p class="slide-subtitle fade-up">現実的な成長カーブ</p>
-    <div style="width:100%; max-width:800px; display:flex; flex-direction:column; gap:16px;" class="fade-up">
-      <div class="glass timeline-phase">
-        <div class="timeline-dot" style="background:var(--cyan); color:var(--cyan);"></div>
-        <div class="timeline-content" style="flex:1;">
-          <h3 class="gradient-text-blue">Phase 1 ─ 1〜3ヶ月目</h3>
-          <div class="holo-number" style="font-size:2rem; margin:8px 0;">月3〜10万円</div>
-          <p>AI画像の基礎習得 → 初CG集をリリース → 最初の売上を経験<br>ここで「売れる感覚」を掴むことが最重要</p>
-        </div>
-      </div>
-      <div class="glass timeline-phase">
-        <div class="timeline-dot" style="background:var(--electric-blue); color:var(--electric-blue);"></div>
-        <div class="timeline-content" style="flex:1;">
-          <h3 style="color:var(--electric-blue);">Phase 2 ─ 3〜6ヶ月目</h3>
-          <div class="holo-number" style="font-size:2rem; margin:8px 0;">月10〜50万円</div>
-          <p>AI動画スキル追加 → 複数プラットフォーム展開 → リピーター獲得<br>ファン基盤ができ始め、新作リリース時の初動が大きくなる</p>
-        </div>
-      </div>
-      <div class="glass glass-strong timeline-phase" style="border-color:rgba(124,58,237,0.25);">
-        <div class="timeline-dot" style="background:var(--violet); color:var(--violet);"></div>
-        <div class="timeline-content" style="flex:1;">
-          <h3 style="color:#a78bfa;">Phase 3 ─ 6ヶ月〜</h3>
-          <div class="holo-number" style="font-size:2rem; margin:8px 0;">月50万円〜</div>
-          <p>自動化パイプライン完成 → マルチ展開 → サブスク収益も合流<br>「仕組み」で稼ぐステージ。時間あたり収益が飛躍的に向上</p>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <!-- SLIDE 11: Case Studies -->
-  <div class="slide" data-slide="10">
-    <h2 class="slide-title gradient-text fade-up">実践例・ケーススタディ</h2>
-    <div class="glow-line fade-up"></div>
-    <p class="slide-subtitle fade-up">実際に収益を上げているパターン</p>
-    <div class="card-grid card-grid-4 fade-up" style="max-width:1100px;">
-      <div class="glass case-card">
-        <div class="case-icon">&#128214;</div>
-        <span class="badge badge-blue">CASE 1</span>
-        <div class="case-title">AI漫画作家</div>
-        <div class="case-revenue gradient-text-blue">月15-25万円</div>
-        <div class="case-desc">
-          DLsiteでAI漫画を月2本リリース。ストーリー性で差別化。固定ファンがつきやすく安定収益。
-        </div>
-      </div>
-      <div class="glass case-card">
-        <div class="case-icon">&#127909;</div>
-        <span class="badge badge-violet">CASE 2</span>
-        <div class="case-title">AI動画クリエイター</div>
-        <div class="case-revenue" style="background:linear-gradient(135deg,#a78bfa,var(--electric-blue));-webkit-background-clip:text;-webkit-text-fill-color:transparent;">月30-60万円</div>
-        <div class="case-desc">
-          FANZAでAI動画を月1-2本。高単価＆競合少で利益率が高い。SNS集客も組み合わせ。
-        </div>
-      </div>
-      <div class="glass case-card">
-        <div class="case-icon">&#128220;</div>
-        <span class="badge badge-orange">CASE 3</span>
-        <div class="case-title">ポスター物販</div>
-        <div class="case-revenue" style="color:#fb923c;">月10-20万円</div>
-        <div class="case-desc">
-          ヤフオク＋BOOTHでポスター販売。印刷コストを引いても利益率50%以上。穴場市場。
-        </div>
-      </div>
-      <div class="glass case-card">
-        <div class="case-icon">&#127912;</div>
-        <span class="badge badge-pink">CASE 4</span>
-        <div class="case-title">オリキャラブランド</div>
-        <div class="case-revenue" style="color:#f472b6;">月50-100万円</div>
-        <div class="case-desc">
-          オリジナルキャラを軸にCG集・動画・グッズ・月額を展開。ファン経済圏を構築。
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <!-- SLIDE 12: Closing -->
-  <div class="slide" data-slide="11">
-    <div class="title-decoration fade-up"></div>
-    <h2 class="slide-title gradient-text fade-up" style="font-size:3rem;">AIマネタイズを始めよう</h2>
-    <p class="slide-subtitle fade-up" style="font-size:1.1rem; max-width:600px; line-height:1.8;">
-      技術は揃った。市場は拡大中。<br>
-      あとは「行動」するだけ。
-    </p>
-    <div style="display:flex; gap:20px; flex-wrap:wrap; justify-content:center; margin:20px 0;" class="fade-up">
-      <div class="glass" style="padding:18px 28px; text-align:center;">
-        <div style="font-size:1.6rem; margin-bottom:6px;">&#128640;</div>
-        <div style="font-size:0.8rem; color:rgba(224,231,255,0.4);">STEP 1</div>
-        <div style="font-size:0.9rem; font-weight:700;">全体像を掴む</div>
-      </div>
-      <div class="glass" style="padding:18px 28px; text-align:center;">
-        <div style="font-size:1.6rem; margin-bottom:6px;">&#128295;</div>
-        <div style="font-size:0.8rem; color:rgba(224,231,255,0.4);">STEP 2</div>
-        <div style="font-size:0.9rem; font-weight:700;">スキルを習得</div>
-      </div>
-      <div class="glass" style="padding:18px 28px; text-align:center;">
-        <div style="font-size:1.6rem; margin-bottom:6px;">&#128176;</div>
-        <div style="font-size:0.8rem; color:rgba(224,231,255,0.4);">STEP 3</div>
-        <div style="font-size:0.9rem; font-weight:700;">初収益を出す</div>
-      </div>
-      <div class="glass" style="padding:18px 28px; text-align:center;">
-        <div style="font-size:1.6rem; margin-bottom:6px;">&#128200;</div>
-        <div style="font-size:0.8rem; color:rgba(224,231,255,0.4);">STEP 4</div>
-        <div style="font-size:0.9rem; font-weight:700;">スケールさせる</div>
-      </div>
-    </div>
-    <div class="closing-cta fade-up">
-      &#9889; さあ、始めよう
-    </div>
-    <p style="margin-top:24px; font-size:0.75rem; color:rgba(224,231,255,0.3);" class="fade-up">
-      AIマネタイズ完全ガイド &mdash; Overview Edition
-    </p>
-  </div>
-
+<!-- ============================================ -->
+<!-- SLIDE 1: Title -->
+<!-- ============================================ -->
+<div class="slide active" data-slide="1">
+<div class="slide-inner text-center">
+  <div class="section-label">2026 Complete Guide</div>
+  <h1 class="title-xl holo-text mt-2">AIマネタイズ<br>完全ガイド</h1>
+  <p class="body-text mt-3" style="max-width:600px;margin-left:auto;margin-right:auto;">AI技術を活用して、あなたのクリエイティブを<br>収益に変えるための全50スライド</p>
+  <hr class="glow-line" style="max-width:300px;margin:28px auto;">
+  <p class="small-text">スワイプ or 矢印キーでスライド移動</p>
 </div>
+</div>
+
+<!-- SLIDE 2: Goals -->
+<div class="slide" data-slide="2">
+<div class="slide-inner">
+  <div class="section-label">Goals</div>
+  <h2 class="title-lg holo-text">このガイドのゴール</h2>
+  <div class="grid-2 mt-3">
+    <div class="glass-sm">
+      <div style="font-size:2rem;margin-bottom:8px;">🎯</div>
+      <div class="title-sm" style="color:var(--white)">収益化の全体像を把握</div>
+      <p class="body-text mt-1">AI副業の収益構造とプラットフォームを理解する</p>
+    </div>
+    <div class="glass-sm">
+      <div style="font-size:2rem;margin-bottom:8px;">💰</div>
+      <div class="title-sm" style="color:var(--white)">現実的な収益目標を設定</div>
+      <p class="body-text mt-1">初心者でも月1〜5万円からスタートできるロードマップ</p>
+    </div>
+    <div class="glass-sm">
+      <div style="font-size:2rem;margin-bottom:8px;">🛠️</div>
+      <div class="title-sm" style="color:var(--white)">必要なスキルを知る</div>
+      <p class="body-text mt-1">画像生成・動画制作・販売戦略の基礎を学ぶ</p>
+    </div>
+    <div class="glass-sm">
+      <div style="font-size:2rem;margin-bottom:8px;">🚀</div>
+      <div class="title-sm" style="color:var(--white)">最短で行動に移す</div>
+      <p class="body-text mt-1">Phase1〜3の段階的なステップで迷わず進む</p>
+    </div>
+  </div>
+</div>
+</div>
+
+<!-- SLIDE 3: Agenda -->
+<div class="slide" data-slide="3">
+<div class="slide-inner">
+  <div class="section-label">Agenda</div>
+  <h2 class="title-lg holo-text">全体アジェンダ</h2>
+  <div class="mt-3" style="display:grid;gap:12px;">
+    <div class="glass-sm flex" style="align-items:center;gap:16px;">
+      <span class="badge badge-blue">Part 1</span>
+      <span class="title-sm" style="color:var(--white)">なぜ今AIマネタイズなのか</span>
+      <span class="small-text" style="margin-left:auto;">Slide 5-12</span>
+    </div>
+    <div class="glass-sm flex" style="align-items:center;gap:16px;">
+      <span class="badge badge-violet">Part 2</span>
+      <span class="title-sm" style="color:var(--white)">売れるAI商品カテゴリ</span>
+      <span class="small-text" style="margin-left:auto;">Slide 13-22</span>
+    </div>
+    <div class="glass-sm flex" style="align-items:center;gap:16px;">
+      <span class="badge badge-cyan">Part 3</span>
+      <span class="title-sm" style="color:var(--white)">販売プラットフォーム攻略</span>
+      <span class="small-text" style="margin-left:auto;">Slide 23-29</span>
+    </div>
+    <div class="glass-sm flex" style="align-items:center;gap:16px;">
+      <span class="badge badge-green">Part 4</span>
+      <span class="title-sm" style="color:var(--white)">収益パターンと戦略</span>
+      <span class="small-text" style="margin-left:auto;">Slide 30-36</span>
+    </div>
+    <div class="glass-sm flex" style="align-items:center;gap:16px;">
+      <span class="badge badge-blue">Part 5</span>
+      <span class="title-sm" style="color:var(--white)">必要スキルとツール</span>
+      <span class="small-text" style="margin-left:auto;">Slide 37-42</span>
+    </div>
+    <div class="glass-sm flex" style="align-items:center;gap:16px;">
+      <span class="badge badge-violet">Part 6</span>
+      <span class="title-sm" style="color:var(--white)">売れるマインドセット</span>
+      <span class="small-text" style="margin-left:auto;">Slide 43-48</span>
+    </div>
+  </div>
+</div>
+</div>
+
+<!-- SLIDE 4: Market Overview -->
+<div class="slide" data-slide="4">
+<div class="slide-inner">
+  <div class="section-label">Market Overview</div>
+  <h2 class="title-lg holo-text">AI市場の全体像</h2>
+  <p class="body-text mt-2">AI生成コンテンツの市場は急拡大中。個人クリエイターにとって、かつてないチャンスが到来しています。</p>
+  <div class="grid-3 mt-3">
+    <div class="stat-box">
+      <div class="stat-value holo-text">急成長</div>
+      <div class="stat-label">AI生成コンテンツ市場</div>
+    </div>
+    <div class="stat-box">
+      <div class="stat-value holo-text">参入者増</div>
+      <div class="stat-label">個人クリエイター</div>
+    </div>
+    <div class="stat-box">
+      <div class="stat-value holo-text">多様化</div>
+      <div class="stat-label">販売チャネル</div>
+    </div>
+  </div>
+  <div class="glass-sm mt-3">
+    <p class="body-text">画像生成AIの普及により、従来はプロにしかできなかったコンテンツ制作が個人レベルで可能に。販売プラットフォームの整備も進み、<strong style="color:var(--cyan)">今がまさに参入の最適タイミング</strong>です。</p>
+  </div>
+</div>
+</div>
+
+<!-- ============================================ -->
+<!-- PART 1: WHY NOW (5-12) -->
+<!-- ============================================ -->
+
+<!-- SLIDE 5: Part 1 Section Title -->
+<div class="slide" data-slide="5">
+<div class="slide-inner text-center">
+  <span class="badge badge-blue" style="font-size:0.9rem;padding:8px 24px;">Part 1</span>
+  <h2 class="title-xl holo-text mt-3">なぜ今<br>AIマネタイズなのか</h2>
+  <p class="body-text mt-3" style="max-width:500px;margin:0 auto;">市場環境・技術進化・プラットフォーム整備<br>3つの追い風が揃った今こそ最大のチャンス</p>
+  <hr class="glow-line" style="max-width:200px;margin:28px auto;">
+</div>
+</div>
+
+<!-- SLIDE 6: Revenue Tiers -->
+<div class="slide" data-slide="6">
+<div class="slide-inner">
+  <div class="section-label">Part 1 — Revenue Tiers</div>
+  <h2 class="title-lg holo-text">月100万円も現実的な世界</h2>
+  <p class="body-text mt-2">AIマネタイズは段階的にスケールできます。始めたばかりの人からトップランナーまで、実際に達成されている収益帯です。</p>
+  <div class="grid-2 mt-3">
+    <div class="glass-sm" style="border-left:3px solid var(--cyan);">
+      <div class="badge badge-cyan mb-2">初心者</div>
+      <div class="stat-value" style="color:var(--cyan)">月1〜5万円</div>
+      <p class="body-text mt-1">基礎を学びながら最初の商品を出品。まずは実績づくり。</p>
+    </div>
+    <div class="glass-sm" style="border-left:3px solid var(--blue);">
+      <div class="badge badge-blue mb-2">中級者</div>
+      <div class="stat-value" style="color:var(--blue)">月10〜30万円</div>
+      <p class="body-text mt-1">売れ筋ジャンルを把握し、安定的に商品を量産。</p>
+    </div>
+    <div class="glass-sm" style="border-left:3px solid var(--violet);">
+      <div class="badge badge-violet mb-2">上級者</div>
+      <div class="stat-value" style="color:#a78bfa;">月50〜100万円</div>
+      <p class="body-text mt-1">複数プラットフォーム展開＋ファンベース構築。</p>
+    </div>
+    <div class="glass-sm" style="border-left:3px solid #f472b6;">
+      <div class="badge" style="background:rgba(244,114,182,0.15);color:#f472b6;border:1px solid rgba(244,114,182,0.3);">トップ</div>
+      <div class="stat-value" style="color:#f472b6;">月200〜300万円</div>
+      <p class="body-text mt-1">マルチ展開＋月額課金＋物販の複合型で最大化。</p>
+    </div>
+  </div>
+</div>
+</div>
+
+<!-- SLIDE 7: Tech Maturity -->
+<div class="slide" data-slide="7">
+<div class="slide-inner">
+  <div class="section-label">Part 1 — Technology</div>
+  <h2 class="title-lg holo-text">AI技術が成熟期に突入</h2>
+  <p class="body-text mt-2">画像生成AIはここ数年で劇的に進化しました。もはや「AIっぽい」時代は終わり、高品質なコンテンツを誰でも作れる環境が整っています。</p>
+  <div class="glass-sm mt-3">
+    <ul class="check-list">
+      <li>Stable Diffusion — オープンソースで無料、カスタマイズ自在</li>
+      <li>Midjourney — 美しいアート品質を簡単に生成</li>
+      <li>動画生成AI — 静止画から動画への変換が実用レベルに</li>
+      <li>高解像度対応 — 印刷物に耐えるクオリティが出力可能</li>
+      <li>LoRA・ControlNet — 自分だけのスタイルを学習可能</li>
+    </ul>
+  </div>
+  <p class="body-text mt-3" style="color:var(--cyan);">技術の壁は大幅に低下。今から始めても十分に間に合います。</p>
+</div>
+</div>
+
+<!-- SLIDE 8: Market Expansion -->
+<div class="slide" data-slide="8">
+<div class="slide-inner">
+  <div class="section-label">Part 1 — Market</div>
+  <h2 class="title-lg holo-text">市場の急拡大</h2>
+  <div class="grid-2 mt-3">
+    <div class="glass-sm text-center">
+      <div style="font-size:2.5rem;">📈</div>
+      <div class="title-sm mt-2" style="color:var(--white)">需要の増加</div>
+      <p class="body-text mt-1">デジタルコンテンツの消費量は年々増加。AI生成物への抵抗感も低下し、購入者が増え続けています。</p>
+    </div>
+    <div class="glass-sm text-center">
+      <div style="font-size:2.5rem;">🌐</div>
+      <div class="title-sm mt-2" style="color:var(--white)">海外市場もアクセス可能</div>
+      <p class="body-text mt-1">Patreonなど海外プラットフォームを活用すれば、日本のクリエイターでもグローバルに販売可能。</p>
+    </div>
+  </div>
+  <div class="glass-sm mt-3">
+    <p class="body-text">これまでニッチだったAIコンテンツ市場は、主流へ。<strong style="color:var(--blue)">先行者優位を取れる最後のタイミング</strong>かもしれません。</p>
+  </div>
+</div>
+</div>
+
+<!-- SLIDE 9: Platforms Ready -->
+<div class="slide" data-slide="9">
+<div class="slide-inner">
+  <div class="section-label">Part 1 — Platforms</div>
+  <h2 class="title-lg holo-text">販売プラットフォームが整備済み</h2>
+  <p class="body-text mt-2">もう自分でECサイトを構築する必要はありません。登録するだけで販売開始できるプラットフォームが揃っています。</p>
+  <div class="grid-3 mt-3">
+    <div class="stat-box">
+      <div class="stat-value" style="color:var(--blue);">FANZA</div>
+      <div class="stat-label">国内最大級の集客力</div>
+    </div>
+    <div class="stat-box">
+      <div class="stat-value" style="color:var(--violet);">DLsite</div>
+      <div class="stat-label">同人市場に強い</div>
+    </div>
+    <div class="stat-box">
+      <div class="stat-value" style="color:var(--cyan);">BOOTH</div>
+      <div class="stat-label">初心者でも出品簡単</div>
+    </div>
+    <div class="stat-box">
+      <div class="stat-value" style="color:#f472b6;">Patreon</div>
+      <div class="stat-label">月額課金で安定収入</div>
+    </div>
+    <div class="stat-box">
+      <div class="stat-value" style="color:#fbbf24;">ヤフオク</div>
+      <div class="stat-label">物販で月15-30万実績</div>
+    </div>
+  </div>
+</div>
+</div>
+
+<!-- SLIDE 10: AI Tech Evolution -->
+<div class="slide" data-slide="10">
+<div class="slide-inner">
+  <div class="section-label">Part 1 — Evolution</div>
+  <h2 class="title-lg holo-text">AI技術の進化スピード</h2>
+  <div class="glass-sm mt-3">
+    <table class="data-table">
+      <thead>
+        <tr><th>時期</th><th>技術レベル</th><th>できること</th></tr>
+      </thead>
+      <tbody>
+        <tr><td style="color:var(--dim);">2022年</td><td>黎明期</td><td>低解像度の画像生成がやっと</td></tr>
+        <tr><td style="color:var(--dim);">2023年</td><td>成長期</td><td>高品質画像＋LoRAで個性化</td></tr>
+        <tr><td style="color:var(--dim);">2024年</td><td>成熟期</td><td>商用品質＋動画生成が実用化</td></tr>
+        <tr><td style="color:var(--cyan);">2025〜</td><td style="color:var(--cyan);">展開期</td><td style="color:var(--cyan);">高品質動画＋マルチモーダル活用</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <p class="body-text mt-3">毎年劇的に進化するAI。今のツールと知識があれば、<strong style="color:var(--blue)">商用品質のコンテンツを個人で量産</strong>できます。</p>
+</div>
+</div>
+
+<!-- SLIDE 11: Before vs After -->
+<div class="slide" data-slide="11">
+<div class="slide-inner">
+  <div class="section-label">Part 1 — Transformation</div>
+  <h2 class="title-lg holo-text">Before vs After</h2>
+  <div class="vs-container mt-3">
+    <div class="glass-sm">
+      <div class="title-sm mb-2" style="color:#f87171;">❌ AI以前</div>
+      <ul class="check-list" style="--check-color:#f87171;">
+        <li>イラスト1枚に数時間〜数日</li>
+        <li>プロのスキルが必須</li>
+        <li>外注コストが高額</li>
+        <li>商品化まで数ヶ月</li>
+        <li>少量生産が限界</li>
+      </ul>
+    </div>
+    <div class="vs-divider">→</div>
+    <div class="glass-sm">
+      <div class="title-sm mb-2" style="color:var(--cyan);">✦ AI活用後</div>
+      <ul class="check-list">
+        <li>1枚数秒〜数分で生成</li>
+        <li>プロンプト入力だけでOK</li>
+        <li>ほぼゼロコストで制作</li>
+        <li>商品化まで数日</li>
+        <li>大量生産が可能</li>
+      </ul>
+    </div>
+  </div>
+</div>
+</div>
+
+<!-- SLIDE 12: Part 1 Summary -->
+<div class="slide" data-slide="12">
+<div class="slide-inner text-center">
+  <div class="section-label">Part 1 Summary</div>
+  <h2 class="title-lg holo-text">Part 1 まとめ</h2>
+  <div class="glass mt-3" style="max-width:700px;margin:0 auto;">
+    <ul class="check-list" style="text-align:left;">
+      <li>AI技術は成熟期に入り、商用品質が個人で出せる時代</li>
+      <li>販売プラットフォームが完備されており、すぐに出品可能</li>
+      <li>市場は急拡大中 — 先行者優位を取るなら今</li>
+      <li>月1万〜300万円の収益帯が実在する</li>
+      <li>初期投資ほぼゼロでスタートできる</li>
+    </ul>
+  </div>
+  <p class="body-text mt-3" style="color:var(--cyan);">次のPartでは、具体的に「何を売るか」を見ていきます →</p>
+</div>
+</div>
+
+<!-- ============================================ -->
+<!-- PART 2: PRODUCTS (13-22) -->
+<!-- ============================================ -->
+
+<!-- SLIDE 13: Part 2 Section Title -->
+<div class="slide" data-slide="13">
+<div class="slide-inner text-center">
+  <span class="badge badge-violet" style="font-size:0.9rem;padding:8px 24px;">Part 2</span>
+  <h2 class="title-xl holo-text mt-3">売れるAI商品<br>カテゴリ</h2>
+  <p class="body-text mt-3" style="max-width:500px;margin:0 auto;">画像・漫画・動画・物販・サブスクリプション<br>多彩な商品形態で収益を最大化する方法</p>
+  <hr class="glow-line" style="max-width:200px;margin:28px auto;">
+</div>
+</div>
+
+<!-- SLIDE 14: Category Overview -->
+<div class="slide" data-slide="14">
+<div class="slide-inner">
+  <div class="section-label">Part 2 — Overview</div>
+  <h2 class="title-lg holo-text">商品カテゴリ一覧</h2>
+  <div class="grid-3 mt-3">
+    <div class="glass-sm text-center">
+      <div style="font-size:2rem;">🖼️</div>
+      <div class="title-sm mt-1" style="color:var(--white)">CG集</div>
+      <p class="small-text mt-1">30〜50枚セット</p>
+    </div>
+    <div class="glass-sm text-center">
+      <div style="font-size:2rem;">📖</div>
+      <div class="title-sm mt-1" style="color:var(--white)">AI漫画</div>
+      <p class="small-text mt-1">30〜50ページ</p>
+    </div>
+    <div class="glass-sm text-center">
+      <div style="font-size:2rem;">🎬</div>
+      <div class="title-sm mt-1" style="color:var(--white)">短編動画</div>
+      <p class="small-text mt-1">2〜5分</p>
+    </div>
+    <div class="glass-sm text-center">
+      <div style="font-size:2rem;">🎥</div>
+      <div class="title-sm mt-1" style="color:var(--white)">中〜長編動画</div>
+      <p class="small-text mt-1">10分〜30分超</p>
+    </div>
+    <div class="glass-sm text-center">
+      <div style="font-size:2rem;">🖨️</div>
+      <div class="title-sm mt-1" style="color:var(--white)">ポスター・グッズ</div>
+      <p class="small-text mt-1">A3〜B2サイズ</p>
+    </div>
+    <div class="glass-sm text-center">
+      <div style="font-size:2rem;">💎</div>
+      <div class="title-sm mt-1" style="color:var(--white)">月額コンテンツ</div>
+      <p class="small-text mt-1">サブスクリプション</p>
+    </div>
+  </div>
+  <p class="body-text mt-3 text-center">それぞれの詳細を次のスライドから解説します。</p>
+</div>
+</div>
+
+<!-- SLIDE 15: CG集 Details -->
+<div class="slide" data-slide="15">
+<div class="slide-inner">
+  <div class="section-label">Part 2 — CG集</div>
+  <h2 class="title-lg holo-text">CG集（画像セット）</h2>
+  <div class="grid-2 mt-3">
+    <div class="glass-sm">
+      <div class="title-sm mb-2" style="color:var(--white);">📋 基本スペック</div>
+      <ul class="check-list">
+        <li>1セット 30〜50枚構成</li>
+        <li>価格帯: 500〜3,000円</li>
+        <li>主要販売先: FANZA, DLsite</li>
+        <li>制作期間: 数日〜1週間</li>
+      </ul>
+    </div>
+    <div class="glass-sm">
+      <div class="title-sm mb-2" style="color:var(--white);">✦ 成功のコツ</div>
+      <ul class="check-list">
+        <li>統一感のあるテーマ設定</li>
+        <li>高解像度＋丁寧な仕上げ</li>
+        <li>サムネイルの訴求力が命</li>
+        <li>シリーズ化で固定ファン獲得</li>
+      </ul>
+    </div>
+  </div>
+  <div class="glass-sm mt-3" style="border-left:3px solid var(--cyan);">
+    <p class="body-text">CG集は<strong style="color:var(--cyan);">最も参入しやすいカテゴリ</strong>。AI画像生成の基本スキルがあれば、すぐに商品化できます。まずはここから始めるのがおすすめです。</p>
+  </div>
+</div>
+</div>
+
+<!-- SLIDE 16: AI漫画 -->
+<div class="slide" data-slide="16">
+<div class="slide-inner">
+  <div class="section-label">Part 2 — AI漫画</div>
+  <h2 class="title-lg holo-text">AI漫画</h2>
+  <div class="grid-2 mt-3">
+    <div class="glass-sm">
+      <div class="title-sm mb-2" style="color:var(--white);">📋 基本スペック</div>
+      <ul class="check-list">
+        <li>1作品 30〜50ページ</li>
+        <li>販売先: FANZAやDLsite</li>
+        <li>目標収益: 月15〜30万円</li>
+        <li>制作期間: 1〜2週間</li>
+      </ul>
+    </div>
+    <div class="glass-sm">
+      <div class="title-sm mb-2" style="color:var(--white);">✦ ポイント</div>
+      <ul class="check-list">
+        <li>ストーリー性で差別化</li>
+        <li>キャラクターの一貫性が重要</li>
+        <li>セリフ・コマ割りの工夫</li>
+        <li>CG集より単価を上げやすい</li>
+      </ul>
+    </div>
+  </div>
+  <div class="glass-sm mt-3" style="border-left:3px solid var(--violet);">
+    <p class="body-text">漫画形式はCG集の上位互換。ストーリーという<strong style="color:#a78bfa">付加価値</strong>をつけることで、より高い価格設定が可能になります。</p>
+  </div>
+</div>
+</div>
+
+<!-- SLIDE 17: Short Video -->
+<div class="slide" data-slide="17">
+<div class="slide-inner">
+  <div class="section-label">Part 2 — 短編動画</div>
+  <h2 class="title-lg holo-text">短編動画</h2>
+  <div class="grid-2 mt-3">
+    <div class="glass-sm">
+      <div class="title-sm mb-2" style="color:var(--white);">📋 基本スペック</div>
+      <ul class="check-list">
+        <li>長さ: 2〜5分</li>
+        <li>価格: 約1,000円</li>
+        <li>AI画像 + 動画生成AI</li>
+        <li>BGM・SE・効果を追加</li>
+      </ul>
+    </div>
+    <div class="glass-sm">
+      <div class="title-sm mb-2" style="color:var(--white);">✦ メリット</div>
+      <ul class="check-list">
+        <li>画像より没入感が高い</li>
+        <li>動画は競合がまだ少ない</li>
+        <li>制作スキルの参入障壁あり</li>
+        <li>単価設定の幅が広い</li>
+      </ul>
+    </div>
+  </div>
+  <div class="glass-sm mt-3" style="border-left:3px solid var(--blue);">
+    <p class="body-text">短編動画は<strong style="color:var(--blue)">画像からのステップアップ</strong>に最適。動画生成AIの進化により、制作ハードルは大幅に下がっています。</p>
+  </div>
+</div>
+</div>
+
+<!-- SLIDE 18: Medium-Long Video -->
+<div class="slide" data-slide="18">
+<div class="slide-inner">
+  <div class="section-label">Part 2 — 中長編動画</div>
+  <h2 class="title-lg holo-text">中編・長編動画</h2>
+  <div class="grid-2 mt-3">
+    <div class="glass-sm" style="border-left:3px solid var(--blue);">
+      <div class="badge badge-blue mb-2">中編</div>
+      <div class="stat-value" style="color:var(--blue);">10〜20分</div>
+      <p class="body-text mt-1">価格帯: <strong style="color:var(--white);">2,000円</strong></p>
+      <p class="body-text mt-1">しっかりとしたストーリー展開が可能。短編との差別化ポイント。</p>
+    </div>
+    <div class="glass-sm" style="border-left:3px solid var(--violet);">
+      <div class="badge badge-violet mb-2">長編</div>
+      <div class="stat-value" style="color:#a78bfa;">30分〜</div>
+      <p class="body-text mt-1">価格帯: <strong style="color:var(--white);">2,980円</strong></p>
+      <p class="body-text mt-1">本格的な映像作品レベル。高単価＋リピーター獲得の鍵。</p>
+    </div>
+  </div>
+  <div class="glass-sm mt-3">
+    <p class="body-text">中長編は制作に手間がかかる分、<strong style="color:var(--cyan)">競合が少なく高単価が狙える</strong>ブルーオーシャン領域。動画制作に慣れたら積極的に狙いましょう。</p>
+  </div>
+</div>
+</div>
+
+<!-- SLIDE 19: Posters & Goods -->
+<div class="slide" data-slide="19">
+<div class="slide-inner">
+  <div class="section-label">Part 2 — ポスター・グッズ</div>
+  <h2 class="title-lg holo-text">ポスター・グッズ販売</h2>
+  <div class="grid-2 mt-3">
+    <div class="glass-sm">
+      <div class="title-sm mb-2" style="color:var(--white);">📋 基本情報</div>
+      <ul class="check-list">
+        <li>サイズ: A3〜B2</li>
+        <li>販売先: ヤフオク</li>
+        <li>月15〜30万円の実績あり</li>
+        <li>印刷＋発送の実コストあり</li>
+      </ul>
+    </div>
+    <div class="glass-sm">
+      <div class="title-sm mb-2" style="color:var(--white);">✦ 強み</div>
+      <ul class="check-list">
+        <li>「物」として手元に届く満足感</li>
+        <li>デジタル商品とは異なる客層</li>
+        <li>リピート購入率が高い</li>
+        <li>ヤフオクでの実績が豊富</li>
+      </ul>
+    </div>
+  </div>
+  <div class="glass-sm mt-3" style="border-left:3px solid #fbbf24;">
+    <p class="body-text">デジタルだけでなく<strong style="color:#fbbf24">物販</strong>の選択肢もあります。AI生成画像をポスターとして印刷し、ヤフオクで販売する手法は安定した実績があります。</p>
+  </div>
+</div>
+</div>
+
+<!-- SLIDE 20: Original Characters -->
+<div class="slide" data-slide="20">
+<div class="slide-inner">
+  <div class="section-label">Part 2 — オリジナルキャラ</div>
+  <h2 class="title-lg holo-text">オリジナルキャラクター</h2>
+  <p class="body-text mt-2">自分だけのオリジナルキャラクターを作ることで、あらゆる商品展開の軸になります。</p>
+  <div class="grid-2 mt-3">
+    <div class="glass-sm text-center">
+      <div style="font-size:2rem;">🎨</div>
+      <div class="title-sm mt-1" style="color:var(--white)">LoRAで学習</div>
+      <p class="body-text mt-1">独自のキャラをAIに学習させ、一貫性のある画像を量産</p>
+    </div>
+    <div class="glass-sm text-center">
+      <div style="font-size:2rem;">🔄</div>
+      <div class="title-sm mt-1" style="color:var(--white)">横展開が自在</div>
+      <p class="body-text mt-1">CG集・漫画・動画・グッズすべてに同じキャラを使用可能</p>
+    </div>
+    <div class="glass-sm text-center">
+      <div style="font-size:2rem;">❤️</div>
+      <div class="title-sm mt-1" style="color:var(--white)">ファンがつく</div>
+      <p class="body-text mt-1">キャラに愛着を持ったファンがリピーターになる</p>
+    </div>
+    <div class="glass-sm text-center">
+      <div style="font-size:2rem;">💰</div>
+      <div class="title-sm mt-1" style="color:var(--white)">ブランド資産</div>
+      <p class="body-text mt-1">長期的な収益の柱になるIP（知的財産）を形成</p>
+    </div>
+  </div>
+</div>
+</div>
+
+<!-- SLIDE 21: Subscription Content -->
+<div class="slide" data-slide="21">
+<div class="slide-inner">
+  <div class="section-label">Part 2 — サブスクリプション</div>
+  <h2 class="title-lg holo-text">月額課金コンテンツ</h2>
+  <div class="glass-sm mt-3">
+    <div class="grid-2" style="gap:24px;">
+      <div>
+        <div class="title-sm mb-2" style="color:var(--white);">Patreonで月額収入</div>
+        <ul class="check-list">
+          <li>月額 1,000〜5,000円/人</li>
+          <li>海外ユーザーにもリーチ</li>
+          <li>毎月安定した収入</li>
+          <li>ファンとの継続的な関係</li>
+        </ul>
+      </div>
+      <div>
+        <div class="title-sm mb-2" style="color:var(--white);">仕組みの作り方</div>
+        <ul class="check-list">
+          <li>無料層 → 有料層の導線設計</li>
+          <li>限定コンテンツの定期配信</li>
+          <li>早期アクセス特典</li>
+          <li>コミュニティ運営</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+  <div class="glass-sm mt-3" style="border-left:3px solid #34d399;">
+    <p class="body-text">サブスクリプションは<strong style="color:#34d399;">最も安定した収益源</strong>。売り切り型の不安定さを補い、毎月確実に入金がある安心感は大きいです。</p>
+  </div>
+</div>
+</div>
+
+<!-- SLIDE 22: One Asset Multiple Products -->
+<div class="slide" data-slide="22">
+<div class="slide-inner">
+  <div class="section-label">Part 2 — 横展開</div>
+  <h2 class="title-lg holo-text">1つの素材 → 複数商品化</h2>
+  <p class="body-text mt-2">同じAI生成素材を再利用し、複数の商品形態で販売。制作コストを最小化しながら売上を最大化する戦略です。</p>
+  <div class="glass-sm mt-3 text-center">
+    <div class="stat-value holo-text mb-3">AI生成画像 1セット</div>
+    <div class="arrow-flow">
+      <span class="badge badge-cyan">CG集</span>
+      <span class="arr">→</span>
+      <span class="badge badge-violet">漫画化</span>
+      <span class="arr">→</span>
+      <span class="badge badge-blue">動画化</span>
+      <span class="arr">→</span>
+      <span class="badge badge-green">ポスター</span>
+      <span class="arr">→</span>
+      <span class="badge" style="background:rgba(244,114,182,0.15);color:#f472b6;border:1px solid rgba(244,114,182,0.3);">月額配信</span>
+    </div>
+  </div>
+  <div class="grid-2 mt-3">
+    <div class="glass-sm text-center">
+      <div class="stat-value" style="color:var(--cyan);">5倍</div>
+      <div class="stat-label">1素材からの商品展開数</div>
+    </div>
+    <div class="glass-sm text-center">
+      <div class="stat-value" style="color:#34d399;">最小</div>
+      <div class="stat-label">追加の制作コスト</div>
+    </div>
+  </div>
+</div>
+</div>
+
+<!-- ============================================ -->
+<!-- PART 3: PLATFORMS (23-29) -->
+<!-- ============================================ -->
+
+<!-- SLIDE 23: Part 3 Section Title -->
+<div class="slide" data-slide="23">
+<div class="slide-inner text-center">
+  <span class="badge badge-cyan" style="font-size:0.9rem;padding:8px 24px;">Part 3</span>
+  <h2 class="title-xl holo-text mt-3">販売プラットフォーム<br>攻略</h2>
+  <p class="body-text mt-3" style="max-width:500px;margin:0 auto;">各プラットフォームの特徴と攻略法を把握し<br>最適な販売先を選択する</p>
+  <hr class="glow-line" style="max-width:200px;margin:28px auto;">
+</div>
+</div>
+
+<!-- SLIDE 24: FANZA -->
+<div class="slide" data-slide="24">
+<div class="slide-inner">
+  <div class="section-label">Part 3 — FANZA</div>
+  <h2 class="title-lg holo-text">FANZA</h2>
+  <div class="glass-sm mt-3" style="border-left:3px solid var(--blue);">
+    <div class="grid-2" style="gap:24px;">
+      <div>
+        <div class="title-sm mb-2" style="color:var(--white);">プラットフォーム特徴</div>
+        <ul class="check-list">
+          <li>国内最大級のデジタルコンテンツ販売サイト</li>
+          <li>圧倒的な集客力 — 集客コストがかからない</li>
+          <li>検索・ランキングからの流入が強い</li>
+          <li>決済システム完備で手間なし</li>
+        </ul>
+      </div>
+      <div>
+        <div class="title-sm mb-2" style="color:var(--white);">攻略ポイント</div>
+        <ul class="check-list">
+          <li>サムネイルの品質が売上に直結</li>
+          <li>タイトル・キーワードのSEO対策</li>
+          <li>新着ランキングを狙ってリリース</li>
+          <li>レビュー獲得で信頼性向上</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+  <div class="stat-box mt-3" style="max-width:300px;">
+    <div class="stat-value" style="color:var(--blue);">集客力No.1</div>
+    <div class="stat-label">最も売上が立ちやすいプラットフォーム</div>
+  </div>
+</div>
+</div>
+
+<!-- SLIDE 25: DLsite -->
+<div class="slide" data-slide="25">
+<div class="slide-inner">
+  <div class="section-label">Part 3 — DLsite</div>
+  <h2 class="title-lg holo-text">DLsite</h2>
+  <div class="glass-sm mt-3" style="border-left:3px solid var(--violet);">
+    <div class="grid-2" style="gap:24px;">
+      <div>
+        <div class="title-sm mb-2" style="color:var(--white);">プラットフォーム特徴</div>
+        <ul class="check-list">
+          <li>同人コンテンツに特化した専門サイト</li>
+          <li>ランキング効果が非常に大きい</li>
+          <li>コアなファン層が多い</li>
+          <li>クリエイター向けの支援が充実</li>
+        </ul>
+      </div>
+      <div>
+        <div class="title-sm mb-2" style="color:var(--white);">攻略ポイント</div>
+        <ul class="check-list">
+          <li>ランキング入りで爆発的な売上</li>
+          <li>割引セールのタイミングを活用</li>
+          <li>シリーズ作品でファンを育てる</li>
+          <li>サークルページの充実が鍵</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+  <div class="stat-box mt-3" style="max-width:300px;">
+    <div class="stat-value" style="color:#a78bfa;">ランキング効果大</div>
+    <div class="stat-label">同人に強い専門プラットフォーム</div>
+  </div>
+</div>
+</div>
+
+<!-- SLIDE 26: BOOTH -->
+<div class="slide" data-slide="26">
+<div class="slide-inner">
+  <div class="section-label">Part 3 — BOOTH</div>
+  <h2 class="title-lg holo-text">BOOTH</h2>
+  <div class="glass-sm mt-3" style="border-left:3px solid var(--cyan);">
+    <div class="grid-2" style="gap:24px;">
+      <div>
+        <div class="title-sm mb-2" style="color:var(--white);">プラットフォーム特徴</div>
+        <ul class="check-list">
+          <li>初心者向け — 出品がとても簡単</li>
+          <li>手数料が低めで利益率が高い</li>
+          <li>pixivとの連携で集客</li>
+          <li>デジタル・物販どちらもOK</li>
+        </ul>
+      </div>
+      <div>
+        <div class="title-sm mb-2" style="color:var(--white);">攻略ポイント</div>
+        <ul class="check-list">
+          <li>pixivで作品公開→BOOTHへ誘導</li>
+          <li>無料サンプルで購入者を増やす</li>
+          <li>ショップデザインにこだわる</li>
+          <li>SNSとの連携で認知拡大</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+  <div class="stat-box mt-3" style="max-width:300px;">
+    <div class="stat-value" style="color:var(--cyan);">初心者最適</div>
+    <div class="stat-label">手数料低め・出品簡単</div>
+  </div>
+</div>
+</div>
+
+<!-- SLIDE 27: Patreon -->
+<div class="slide" data-slide="27">
+<div class="slide-inner">
+  <div class="section-label">Part 3 — Patreon</div>
+  <h2 class="title-lg holo-text">Patreon</h2>
+  <div class="glass-sm mt-3" style="border-left:3px solid #f472b6;">
+    <div class="grid-2" style="gap:24px;">
+      <div>
+        <div class="title-sm mb-2" style="color:var(--white);">プラットフォーム特徴</div>
+        <ul class="check-list">
+          <li>月額課金型 — 安定収入の柱</li>
+          <li>海外ユーザーへのリーチが可能</li>
+          <li>クリエイターに有利な仕組み</li>
+          <li>複数の料金プランを設定可能</li>
+        </ul>
+      </div>
+      <div>
+        <div class="title-sm mb-2" style="color:var(--white);">攻略ポイント</div>
+        <ul class="check-list">
+          <li>月額 1,000〜5,000円の価格設計</li>
+          <li>無料と有料の差別化を明確に</li>
+          <li>定期的な更新で離脱を防ぐ</li>
+          <li>限定コンテンツの質を維持</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+  <div class="stat-box mt-3" style="max-width:300px;">
+    <div class="stat-value" style="color:#f472b6;">安定収入</div>
+    <div class="stat-label">海外ユーザー × 月額課金</div>
+  </div>
+</div>
+</div>
+
+<!-- SLIDE 28: ヤフオク -->
+<div class="slide" data-slide="28">
+<div class="slide-inner">
+  <div class="section-label">Part 3 — ヤフオク</div>
+  <h2 class="title-lg holo-text">ヤフオク（物販）</h2>
+  <div class="glass-sm mt-3" style="border-left:3px solid #fbbf24;">
+    <div class="grid-2" style="gap:24px;">
+      <div>
+        <div class="title-sm mb-2" style="color:var(--white);">プラットフォーム特徴</div>
+        <ul class="check-list">
+          <li>物販（印刷物）での販売に強い</li>
+          <li>月15〜30万円の実績あり</li>
+          <li>ポスター（A3〜B2）が主力商品</li>
+          <li>オークション形式で価格上昇も</li>
+        </ul>
+      </div>
+      <div>
+        <div class="title-sm mb-2" style="color:var(--white);">攻略ポイント</div>
+        <ul class="check-list">
+          <li>高品質な印刷で満足度を上げる</li>
+          <li>出品タイトルとカテゴリの最適化</li>
+          <li>梱包・発送の品質も評価に影響</li>
+          <li>リピーター向けのまとめ出品</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+  <div class="stat-box mt-3" style="max-width:300px;">
+    <div class="stat-value" style="color:#fbbf24;">月15〜30万円</div>
+    <div class="stat-label">物販でのリアルな実績</div>
+  </div>
+</div>
+</div>
+
+<!-- SLIDE 29: Platform Comparison Table -->
+<div class="slide" data-slide="29">
+<div class="slide-inner">
+  <div class="section-label">Part 3 — 比較表</div>
+  <h2 class="title-lg holo-text">プラットフォーム比較</h2>
+  <div class="glass-sm mt-3" style="overflow-x:auto;">
+    <table class="data-table">
+      <thead>
+        <tr><th>プラットフォーム</th><th>強み</th><th>向いている人</th><th>収益安定度</th></tr>
+      </thead>
+      <tbody>
+        <tr><td style="color:var(--blue);">FANZA</td><td>集客力が圧倒的</td><td>最大売上を狙いたい人</td><td>⭐⭐⭐⭐</td></tr>
+        <tr><td style="color:#a78bfa;">DLsite</td><td>ランキング効果大</td><td>同人ジャンルに強い人</td><td>⭐⭐⭐⭐</td></tr>
+        <tr><td style="color:var(--cyan);">BOOTH</td><td>出品簡単・手数料低い</td><td>初心者・まず始めたい人</td><td>⭐⭐⭐</td></tr>
+        <tr><td style="color:#f472b6;">Patreon</td><td>月額課金で安定</td><td>海外展開したい人</td><td>⭐⭐⭐⭐⭐</td></tr>
+        <tr><td style="color:#fbbf24;">ヤフオク</td><td>物販で差別化</td><td>印刷物を売りたい人</td><td>⭐⭐⭐</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <p class="body-text mt-3 text-center">結論: <strong style="color:var(--cyan);">複数プラットフォームの併用が最強</strong>。1つに絞らず、特性に合わせて使い分けましょう。</p>
+</div>
+</div>
+
+<!-- ============================================ -->
+<!-- PART 4: REVENUE PATTERNS (30-36) -->
+<!-- ============================================ -->
+
+<!-- SLIDE 30: Part 4 Section Title -->
+<div class="slide" data-slide="30">
+<div class="slide-inner text-center">
+  <span class="badge badge-green" style="font-size:0.9rem;padding:8px 24px;">Part 4</span>
+  <h2 class="title-xl holo-text mt-3">収益パターンと<br>戦略</h2>
+  <p class="body-text mt-3" style="max-width:500px;margin:0 auto;">画像だけ・動画プラス・マルチ展開<br>3つの収益パターンを徹底比較</p>
+  <hr class="glow-line" style="max-width:200px;margin:28px auto;">
+</div>
+</div>
+
+<!-- SLIDE 31: Pattern 1 画像 -->
+<div class="slide" data-slide="31">
+<div class="slide-inner">
+  <div class="section-label">Part 4 — Pattern ①</div>
+  <h2 class="title-lg holo-text">パターン①：画像メイン</h2>
+  <div class="glass mt-3" style="border-left:3px solid var(--cyan);">
+    <div class="flex" style="align-items:center;gap:20px;flex-wrap:wrap;">
+      <div class="stat-box" style="flex:1;min-width:180px;">
+        <div class="stat-value" style="color:var(--cyan);">月10〜30万円</div>
+        <div class="stat-label">目標収益レンジ</div>
+      </div>
+      <div style="flex:2;min-width:250px;">
+        <ul class="check-list">
+          <li>CG集をFANZA・DLsiteで販売</li>
+          <li>月2〜4作品をコンスタントにリリース</li>
+          <li>BOOTHでも同時出品して間口を広げる</li>
+          <li>シリーズ化でリピーターを獲得</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+  <div class="grid-3 mt-3">
+    <div class="stat-box">
+      <div class="stat-value" style="color:var(--text);">低</div>
+      <div class="stat-label">参入難易度</div>
+    </div>
+    <div class="stat-box">
+      <div class="stat-value" style="color:var(--text);">短い</div>
+      <div class="stat-label">制作サイクル</div>
+    </div>
+    <div class="stat-box">
+      <div class="stat-value" style="color:var(--text);">中</div>
+      <div class="stat-label">スケーラビリティ</div>
+    </div>
+  </div>
+</div>
+</div>
+
+<!-- SLIDE 32: Pattern 2 動画 -->
+<div class="slide" data-slide="32">
+<div class="slide-inner">
+  <div class="section-label">Part 4 — Pattern ②</div>
+  <h2 class="title-lg holo-text">パターン②：画像＋動画</h2>
+  <div class="glass mt-3" style="border-left:3px solid var(--blue);">
+    <div class="flex" style="align-items:center;gap:20px;flex-wrap:wrap;">
+      <div class="stat-box" style="flex:1;min-width:180px;">
+        <div class="stat-value" style="color:var(--blue);">月20〜50万円</div>
+        <div class="stat-label">目標収益レンジ</div>
+      </div>
+      <div style="flex:2;min-width:250px;">
+        <ul class="check-list">
+          <li>画像ベースに動画作品を追加</li>
+          <li>短編〜中編動画で単価アップ</li>
+          <li>動画の競合はまだ少ない</li>
+          <li>画像スキルの延長で制作可能</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+  <div class="grid-3 mt-3">
+    <div class="stat-box">
+      <div class="stat-value" style="color:var(--text);">中</div>
+      <div class="stat-label">参入難易度</div>
+    </div>
+    <div class="stat-box">
+      <div class="stat-value" style="color:var(--text);">中程度</div>
+      <div class="stat-label">制作サイクル</div>
+    </div>
+    <div class="stat-box">
+      <div class="stat-value" style="color:var(--text);">高</div>
+      <div class="stat-label">スケーラビリティ</div>
+    </div>
+  </div>
+</div>
+</div>
+
+<!-- SLIDE 33: Pattern 3 マルチ -->
+<div class="slide" data-slide="33">
+<div class="slide-inner">
+  <div class="section-label">Part 4 — Pattern ③</div>
+  <h2 class="title-lg holo-text">パターン③：マルチ展開</h2>
+  <div class="glass mt-3" style="border-left:3px solid var(--violet);">
+    <div class="flex" style="align-items:center;gap:20px;flex-wrap:wrap;">
+      <div class="stat-box" style="flex:1;min-width:180px;">
+        <div class="stat-value" style="color:#a78bfa;">月50〜300万円</div>
+        <div class="stat-label">目標収益レンジ</div>
+      </div>
+      <div style="flex:2;min-width:250px;">
+        <ul class="check-list">
+          <li>画像＋動画＋物販＋月額の全展開</li>
+          <li>複数プラットフォームをフル活用</li>
+          <li>オリジナルキャラでブランド化</li>
+          <li>ファンコミュニティの構築</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+  <div class="grid-3 mt-3">
+    <div class="stat-box">
+      <div class="stat-value" style="color:var(--text);">高</div>
+      <div class="stat-label">参入難易度</div>
+    </div>
+    <div class="stat-box">
+      <div class="stat-value" style="color:var(--text);">長い</div>
+      <div class="stat-label">構築期間</div>
+    </div>
+    <div class="stat-box">
+      <div class="stat-value" style="color:var(--text);">最大</div>
+      <div class="stat-label">スケーラビリティ</div>
+    </div>
+  </div>
+</div>
+</div>
+
+<!-- SLIDE 34: Image vs Image+Video -->
+<div class="slide" data-slide="34">
+<div class="slide-inner">
+  <div class="section-label">Part 4 — 比較</div>
+  <h2 class="title-lg holo-text">画像のみ vs 画像＋動画</h2>
+  <div class="vs-container mt-3">
+    <div class="glass-sm">
+      <div class="title-sm mb-2 text-center" style="color:var(--cyan);">画像のみ</div>
+      <ul class="check-list">
+        <li>参入が簡単</li>
+        <li>制作スピードが速い</li>
+        <li>競合が多い</li>
+        <li>単価に上限あり</li>
+        <li>月10〜30万円が目安</li>
+      </ul>
+    </div>
+    <div class="vs-divider">VS</div>
+    <div class="glass-sm">
+      <div class="title-sm mb-2 text-center" style="color:var(--blue);">画像＋動画</div>
+      <ul class="check-list">
+        <li>制作に追加スキルが必要</li>
+        <li>制作時間は増える</li>
+        <li>競合が少ない</li>
+        <li>高単価設定が可能</li>
+        <li>月20〜50万円が目安</li>
+      </ul>
+    </div>
+  </div>
+  <p class="body-text mt-3 text-center">動画を加えるだけで<strong style="color:var(--blue)">収益のポテンシャルが大幅アップ</strong>。</p>
+</div>
+</div>
+
+<!-- SLIDE 35: Multiplier Effect -->
+<div class="slide" data-slide="35">
+<div class="slide-inner">
+  <div class="section-label">Part 4 — 乗数効果</div>
+  <h2 class="title-lg holo-text">掛け算の収益効果</h2>
+  <p class="body-text mt-2">商品形態×プラットフォーム×販売チャネルの掛け合わせで、同じ労力から生まれる収益が倍増します。</p>
+  <div class="glass-sm mt-3 text-center">
+    <div class="arrow-flow" style="font-size:1.1rem;">
+      <span class="title-sm" style="color:var(--cyan);">商品形態<br><small style="color:var(--sub);">3種類</small></span>
+      <span class="arr" style="font-size:1.5rem;">×</span>
+      <span class="title-sm" style="color:var(--blue);">プラットフォーム<br><small style="color:var(--sub);">4箇所</small></span>
+      <span class="arr" style="font-size:1.5rem;">×</span>
+      <span class="title-sm" style="color:var(--violet);">課金モデル<br><small style="color:var(--sub);">2種類</small></span>
+      <span class="arr" style="font-size:1.5rem;">=</span>
+      <span class="title-sm" style="color:#f472b6;">24通り<br><small style="color:var(--sub);">の収益源</small></span>
+    </div>
+  </div>
+  <div class="grid-2 mt-3">
+    <div class="glass-sm text-center">
+      <div class="stat-value" style="color:var(--cyan);">1つの素材</div>
+      <div class="stat-label">制作コスト</div>
+    </div>
+    <div class="glass-sm text-center">
+      <div class="stat-value" style="color:#34d399;">最大24倍</div>
+      <div class="stat-label">収益機会</div>
+    </div>
+  </div>
+</div>
+</div>
+
+<!-- SLIDE 36: Revenue Model Comparison -->
+<div class="slide" data-slide="36">
+<div class="slide-inner">
+  <div class="section-label">Part 4 — モデル比較</div>
+  <h2 class="title-lg holo-text">収益モデル比較まとめ</h2>
+  <div class="glass-sm mt-3" style="overflow-x:auto;">
+    <table class="data-table">
+      <thead>
+        <tr><th>モデル</th><th>月収目安</th><th>難易度</th><th>安定性</th><th>スケール性</th></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td style="color:var(--cyan);">①画像メイン</td>
+          <td>10〜30万円</td>
+          <td>★☆☆</td>
+          <td>★★☆</td>
+          <td>★★☆</td>
+        </tr>
+        <tr>
+          <td style="color:var(--blue);">②画像＋動画</td>
+          <td>20〜50万円</td>
+          <td>★★☆</td>
+          <td>★★★</td>
+          <td>★★★</td>
+        </tr>
+        <tr>
+          <td style="color:#a78bfa;">③マルチ展開</td>
+          <td>50〜300万円</td>
+          <td>★★★</td>
+          <td>★★★</td>
+          <td>★★★</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="glass-sm mt-3" style="border-left:3px solid #34d399;">
+    <p class="body-text"><strong style="color:#34d399;">おすすめの流れ:</strong> まず①で基盤を作り → ②で動画を追加 → ③で全展開。段階的にステップアップしていきましょう。</p>
+  </div>
+</div>
+</div>
+
+<!-- ============================================ -->
+<!-- PART 5: SKILLS (37-42) -->
+<!-- ============================================ -->
+
+<!-- SLIDE 37: Part 5 Section Title -->
+<div class="slide" data-slide="37">
+<div class="slide-inner text-center">
+  <span class="badge badge-blue" style="font-size:0.9rem;padding:8px 24px;">Part 5</span>
+  <h2 class="title-xl holo-text mt-3">必要スキルと<br>ツール</h2>
+  <p class="body-text mt-3" style="max-width:500px;margin:0 auto;">画像生成・動画制作・効率化<br>収益を最大化するための技術とツールセット</p>
+  <hr class="glow-line" style="max-width:200px;margin:28px auto;">
+</div>
+</div>
+
+<!-- SLIDE 38: AI Image Generation -->
+<div class="slide" data-slide="38">
+<div class="slide-inner">
+  <div class="section-label">Part 5 — 画像生成</div>
+  <h2 class="title-lg holo-text">AI画像生成の基本</h2>
+  <p class="body-text mt-2">すべての商品の出発点となるスキル。まずはここを確実に押さえましょう。</p>
+  <div class="grid-2 mt-3">
+    <div class="glass-sm">
+      <div class="title-sm mb-2" style="color:var(--white);">🎯 必須スキル</div>
+      <ul class="check-list">
+        <li>プロンプト設計（画像を言語で指示）</li>
+        <li>ネガティブプロンプトの活用</li>
+        <li>モデル選定と使い分け</li>
+        <li>解像度・アスペクト比の設定</li>
+      </ul>
+    </div>
+    <div class="glass-sm">
+      <div class="title-sm mb-2" style="color:var(--white);">🔧 応用スキル</div>
+      <ul class="check-list">
+        <li>LoRAでオリジナルスタイル学習</li>
+        <li>ControlNetでポーズ・構図制御</li>
+        <li>img2imgで既存画像をベースに</li>
+        <li>高解像度アップスケール</li>
+      </ul>
+    </div>
+  </div>
+  <p class="body-text mt-3" style="color:var(--cyan);">基本スキルだけでもCG集は十分に制作可能。応用スキルは制作を重ねながら段階的に習得していきましょう。</p>
+</div>
+</div>
+
+<!-- SLIDE 39: Tool Comparison Table -->
+<div class="slide" data-slide="39">
+<div class="slide-inner">
+  <div class="section-label">Part 5 — ツール比較</div>
+  <h2 class="title-lg holo-text">AI画像生成ツール比較</h2>
+  <div class="glass-sm mt-3" style="overflow-x:auto;">
+    <table class="data-table">
+      <thead>
+        <tr><th>ツール</th><th>費用</th><th>画質</th><th>カスタマイズ性</th><th>特徴</th></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td style="color:var(--cyan);font-weight:700;">Stable Diffusion</td>
+          <td>無料</td>
+          <td>⭐⭐⭐⭐⭐</td>
+          <td>⭐⭐⭐⭐⭐</td>
+          <td>オープンソース、LoRA対応、最も自由度が高い</td>
+        </tr>
+        <tr>
+          <td style="color:var(--blue);font-weight:700;">Midjourney</td>
+          <td>月$10〜</td>
+          <td>⭐⭐⭐⭐⭐</td>
+          <td>⭐⭐</td>
+          <td>美しいアート品質、手軽だがカスタマイズに制限</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="grid-2 mt-3">
+    <div class="glass-sm" style="border-left:3px solid var(--cyan);">
+      <div class="title-sm" style="color:var(--cyan);">SD がおすすめな人</div>
+      <p class="body-text mt-1">細かくコントロールしたい人、LoRAでオリジナルキャラを作りたい人、コストを抑えたい人</p>
+    </div>
+    <div class="glass-sm" style="border-left:3px solid var(--blue);">
+      <div class="title-sm" style="color:var(--blue);">MJ がおすすめな人</div>
+      <p class="body-text mt-1">素早くハイクオリティな画像が欲しい人、技術的な設定が苦手な人</p>
+    </div>
+  </div>
+</div>
+</div>
+
+<!-- SLIDE 40: AI Video Production -->
+<div class="slide" data-slide="40">
+<div class="slide-inner">
+  <div class="section-label">Part 5 — 動画制作</div>
+  <h2 class="title-lg holo-text">AI動画制作</h2>
+  <p class="body-text mt-2">AI画像を動かし、BGMと効果音を加えて動画作品に仕上げるスキルです。</p>
+  <div class="grid-2 mt-3">
+    <div class="glass-sm">
+      <div class="title-sm mb-2" style="color:var(--white);">🎬 制作フロー</div>
+      <ul class="check-list">
+        <li>AI画像を生成（ベース素材）</li>
+        <li>動画生成AIでアニメーション化</li>
+        <li>BGM・SE・ナレーションを追加</li>
+        <li>編集ソフトで仕上げ・書き出し</li>
+      </ul>
+    </div>
+    <div class="glass-sm">
+      <div class="title-sm mb-2" style="color:var(--white);">🛠️ 主要ツール</div>
+      <ul class="check-list">
+        <li>動画生成AI（静止画→動画変換）</li>
+        <li>FFmpeg（動画処理の定番）</li>
+        <li>DaVinci Resolve（無料編集ソフト）</li>
+        <li>AI音声生成（ナレーション）</li>
+      </ul>
+    </div>
+  </div>
+  <div class="glass-sm mt-3" style="border-left:3px solid var(--blue);">
+    <p class="body-text">動画制作は<strong style="color:var(--blue)">画像の延長線上のスキル</strong>。画像生成に慣れたら、次のステップとして自然に取り組めます。</p>
+  </div>
+</div>
+</div>
+
+<!-- SLIDE 41: Video Differentiation -->
+<div class="slide" data-slide="41">
+<div class="slide-inner">
+  <div class="section-label">Part 5 — 差別化</div>
+  <h2 class="title-lg holo-text">動画で差別化する方法</h2>
+  <p class="body-text mt-2">動画はまだ参入者が少ないからこそ、品質で差をつけやすい分野です。</p>
+  <div class="grid-2 mt-3">
+    <div class="glass-sm">
+      <div class="title-sm mb-2" style="color:var(--cyan);">品質の差別化</div>
+      <ul class="check-list">
+        <li>なめらかなアニメーション</li>
+        <li>トランジション（画面切替）の工夫</li>
+        <li>高品質なBGM選定</li>
+        <li>効果音のタイミング調整</li>
+      </ul>
+    </div>
+    <div class="glass-sm">
+      <div class="title-sm mb-2" style="color:var(--violet);">内容の差別化</div>
+      <ul class="check-list">
+        <li>ストーリー性のある展開</li>
+        <li>カメラワーク的な演出</li>
+        <li>シーンの緩急をつける</li>
+        <li>エンディングの余韻</li>
+      </ul>
+    </div>
+  </div>
+  <div class="glass-sm mt-3">
+    <p class="body-text">「ただ画像を動かしただけ」と「作品として仕上げた動画」では、<strong style="color:var(--cyan)">購入率に大きな差</strong>が出ます。丁寧な仕上げが売上に直結します。</p>
+  </div>
+</div>
+</div>
+
+<!-- SLIDE 42: AI Automation (BRIEF) -->
+<div class="slide" data-slide="42">
+<div class="slide-inner">
+  <div class="section-label">Part 5 — 効率化</div>
+  <h2 class="title-lg holo-text">AI自動化で効率アップ</h2>
+  <div class="glass mt-3" style="max-width:700px;margin:0 auto;">
+    <p class="body-text">AIエージェントを活用すれば、制作フローの一部を効率化できます。プログラミングの知識は不要です。</p>
+    <p class="body-text mt-2">まずは画像生成・動画制作のスキルを固めてから、慣れたら取り入れてみましょう。<strong style="color:var(--cyan);">時間短縮につながります。</strong></p>
+  </div>
+</div>
+</div>
+
+<!-- ============================================ -->
+<!-- PART 6: SELLING MINDSET (43-48) -->
+<!-- ============================================ -->
+
+<!-- SLIDE 43: Part 6 Section Title -->
+<div class="slide" data-slide="43">
+<div class="slide-inner text-center">
+  <span class="badge badge-violet" style="font-size:0.9rem;padding:8px 24px;">Part 6</span>
+  <h2 class="title-xl holo-text mt-3">売れる<br>マインドセット</h2>
+  <p class="body-text mt-3" style="max-width:500px;margin:0 auto;">技術だけでは売上は立たない<br>「売る人」の思考を身につける</p>
+  <hr class="glow-line" style="max-width:200px;margin:28px auto;">
+</div>
+</div>
+
+<!-- SLIDE 44: Creator vs Earner Gap -->
+<div class="slide" data-slide="44">
+<div class="slide-inner">
+  <div class="section-label">Part 6 — マインド</div>
+  <h2 class="title-lg holo-text">「作る人」と「稼ぐ人」の差</h2>
+  <div class="vs-container mt-3">
+    <div class="glass-sm">
+      <div class="title-sm mb-2 text-center" style="color:#f87171;">作る人の思考</div>
+      <ul class="check-list" style="--check-color:#f87171;">
+        <li>自分が好きな作品を作る</li>
+        <li>品質にこだわりすぎる</li>
+        <li>「良い作品なら売れる」と信じる</li>
+        <li>マーケティングは後回し</li>
+        <li>1作品に長時間かける</li>
+      </ul>
+    </div>
+    <div class="vs-divider">→</div>
+    <div class="glass-sm">
+      <div class="title-sm mb-2 text-center" style="color:#34d399;">稼ぐ人の思考</div>
+      <ul class="check-list">
+        <li>市場が求めるものを作る</li>
+        <li>「売れる品質」を見極める</li>
+        <li>販売戦略とセットで考える</li>
+        <li>サムネイル・タイトルに注力</li>
+        <li>量産と改善のサイクルを回す</li>
+      </ul>
+    </div>
+  </div>
+  <p class="body-text mt-3 text-center"><strong style="color:var(--cyan);">クリエイターではなく「商品を届ける人」</strong>としての視点が収益の鍵です。</p>
+</div>
+</div>
+
+<!-- SLIDE 45: 3 Reasons Products Don't Sell -->
+<div class="slide" data-slide="45">
+<div class="slide-inner">
+  <div class="section-label">Part 6 — 失敗要因</div>
+  <h2 class="title-lg holo-text">商品が売れない3つの理由</h2>
+  <div class="mt-3" style="display:grid;gap:16px;">
+    <div class="glass-sm" style="border-left:3px solid #f87171;">
+      <div class="flex" style="align-items:start;gap:16px;">
+        <div style="font-size:2rem;line-height:1;">①</div>
+        <div>
+          <div class="title-sm" style="color:var(--white);">サムネイルが弱い</div>
+          <p class="body-text mt-1">購入者はまずサムネイルで判断します。どんなに中身が良くても、クリックされなければ存在しないのと同じです。</p>
+        </div>
+      </div>
+    </div>
+    <div class="glass-sm" style="border-left:3px solid #fbbf24;">
+      <div class="flex" style="align-items:start;gap:16px;">
+        <div style="font-size:2rem;line-height:1;">②</div>
+        <div>
+          <div class="title-sm" style="color:var(--white);">ニーズを無視している</div>
+          <p class="body-text mt-1">自分が作りたいものと、市場が求めているものは違います。売れ筋のジャンル・テーマを調査してから制作しましょう。</p>
+        </div>
+      </div>
+    </div>
+    <div class="glass-sm" style="border-left:3px solid var(--violet);">
+      <div class="flex" style="align-items:start;gap:16px;">
+        <div style="font-size:2rem;line-height:1;">③</div>
+        <div>
+          <div class="title-sm" style="color:var(--white);">出品数が少なすぎる</div>
+          <p class="body-text mt-1">1〜2作品で諦める人が大半。最低でも10作品出品して初めてデータが取れます。量が質を生む段階があります。</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+</div>
+
+<!-- SLIDE 46: What Successful Sellers Do -->
+<div class="slide" data-slide="46">
+<div class="slide-inner">
+  <div class="section-label">Part 6 — 成功者の共通点</div>
+  <h2 class="title-lg holo-text">売れている人がやっていること</h2>
+  <div class="grid-2 mt-3">
+    <div class="glass-sm">
+      <div style="font-size:2rem;margin-bottom:8px;">🔍</div>
+      <div class="title-sm" style="color:var(--white)">市場リサーチ</div>
+      <p class="body-text mt-1">ランキング上位の作品を分析し、売れる要素（ジャンル・テーマ・価格・サムネイル）を把握してから制作</p>
+    </div>
+    <div class="glass-sm">
+      <div style="font-size:2rem;margin-bottom:8px;">🎨</div>
+      <div class="title-sm" style="color:var(--white)">サムネイル命</div>
+      <p class="body-text mt-1">制作時間の20〜30%をサムネイルに投資。「一目で欲しい」と思わせるビジュアルが売上を決める</p>
+    </div>
+    <div class="glass-sm">
+      <div style="font-size:2rem;margin-bottom:8px;">📊</div>
+      <div class="title-sm" style="color:var(--white)">データ分析</div>
+      <p class="body-text mt-1">売れた作品・売れなかった作品を比較分析し、次の制作に活かすPDCAサイクルを回す</p>
+    </div>
+    <div class="glass-sm">
+      <div style="font-size:2rem;margin-bottom:8px;">🔄</div>
+      <div class="title-sm" style="color:var(--white)">継続出品</div>
+      <p class="body-text mt-1">月2〜4作品を安定的にリリース。新着ランキングに乗り続けることで、認知と売上が積み上がる</p>
+    </div>
+  </div>
+</div>
+</div>
+
+<!-- SLIDE 47: Pricing Strategy -->
+<div class="slide" data-slide="47">
+<div class="slide-inner">
+  <div class="section-label">Part 6 — 価格戦略</div>
+  <h2 class="title-lg holo-text">価格設定の考え方</h2>
+  <div class="glass-sm mt-3" style="overflow-x:auto;">
+    <table class="data-table">
+      <thead>
+        <tr><th>商品タイプ</th><th>推奨価格帯</th><th>ポイント</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>CG集（30〜50枚）</td><td style="color:var(--cyan);">500〜3,000円</td><td>枚数・品質に応じて設定</td></tr>
+        <tr><td>短編動画（2〜5分）</td><td style="color:var(--blue);">約1,000円</td><td>動画は画像より高めに</td></tr>
+        <tr><td>中編動画（10〜20分）</td><td style="color:#a78bfa;">2,000円</td><td>内容の充実度で差別化</td></tr>
+        <tr><td>長編動画（30分〜）</td><td style="color:var(--violet);">2,980円</td><td>プレミアム感を演出</td></tr>
+        <tr><td>月額課金</td><td style="color:#34d399;">1,000〜5,000円/月</td><td>複数プランを用意</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="glass-sm mt-3">
+    <p class="body-text"><strong style="color:var(--cyan);">コツ:</strong> 最初は相場より少し安めで出品し、レビューと実績がついたら徐々に値上げ。安すぎると「品質が低い」と思われるので注意。</p>
+  </div>
+</div>
+</div>
+
+<!-- SLIDE 48: Fans = Assets -->
+<div class="slide" data-slide="48">
+<div class="slide-inner">
+  <div class="section-label">Part 6 — ファン戦略</div>
+  <h2 class="title-lg holo-text">ファン = 最大の資産</h2>
+  <p class="body-text mt-2">単発の売上よりも、ファンを育てることが長期的な収益の鍵です。</p>
+  <div class="grid-2 mt-3">
+    <div class="glass-sm text-center">
+      <div style="font-size:2.5rem;">👤</div>
+      <div class="stat-value mt-1" style="color:var(--cyan);">新規</div>
+      <p class="body-text mt-1">サムネイルと価格で惹きつけ、品質で満足させる</p>
+    </div>
+    <div class="glass-sm text-center">
+      <div style="font-size:2.5rem;">🔄</div>
+      <div class="stat-value mt-1" style="color:var(--blue);">リピーター</div>
+      <p class="body-text mt-1">シリーズ化・キャラ固定で「次も買いたい」を作る</p>
+    </div>
+    <div class="glass-sm text-center">
+      <div style="font-size:2.5rem;">💎</div>
+      <div class="stat-value mt-1" style="color:#a78bfa;">コアファン</div>
+      <p class="body-text mt-1">月額課金で継続的に支援してくれる最重要層</p>
+    </div>
+    <div class="glass-sm text-center">
+      <div style="font-size:2.5rem;">📣</div>
+      <div class="stat-value mt-1" style="color:#34d399;">伝道者</div>
+      <p class="body-text mt-1">口コミで広めてくれる。最強のマーケティング</p>
+    </div>
+  </div>
+  <p class="body-text mt-3 text-center"><strong style="color:var(--cyan)">ファン100人 × 月3,000円 = 月30万円の安定収入</strong></p>
+</div>
+</div>
+
+<!-- ============================================ -->
+<!-- CLOSING (49-50) -->
+<!-- ============================================ -->
+
+<!-- SLIDE 49: Revenue Roadmap -->
+<div class="slide" data-slide="49">
+<div class="slide-inner">
+  <div class="section-label">Roadmap</div>
+  <h2 class="title-lg holo-text">収益ロードマップ</h2>
+  <div class="mt-3" style="display:grid;gap:20px;">
+    <div class="phase-card phase-1">
+      <div class="flex" style="align-items:start;gap:16px;flex-wrap:wrap;">
+        <div style="min-width:140px;">
+          <div class="badge badge-cyan mb-2">Phase 1</div>
+          <div class="stat-value" style="color:var(--cyan);font-size:1.3rem;">1〜3ヶ月目</div>
+          <div class="stat-value mt-1" style="color:var(--white);font-size:1.6rem;">月3〜10万円</div>
+        </div>
+        <div style="flex:1;min-width:250px;">
+          <ul class="check-list">
+            <li>AI画像生成の基本スキルを習得</li>
+            <li>CG集をFANZA・DLsite・BOOTHに出品</li>
+            <li>まずは10作品出して市場の反応を見る</li>
+            <li>売れ筋ジャンルのリサーチと分析</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+    <div class="phase-card phase-2">
+      <div class="flex" style="align-items:start;gap:16px;flex-wrap:wrap;">
+        <div style="min-width:140px;">
+          <div class="badge badge-blue mb-2">Phase 2</div>
+          <div class="stat-value" style="color:var(--blue);font-size:1.3rem;">3〜6ヶ月目</div>
+          <div class="stat-value mt-1" style="color:var(--white);font-size:1.6rem;">月10〜50万円</div>
+        </div>
+        <div style="flex:1;min-width:250px;">
+          <ul class="check-list">
+            <li>動画制作スキルを追加</li>
+            <li>短編・中編動画の販売を開始</li>
+            <li>オリジナルキャラクターの確立</li>
+            <li>Patreonで月額課金を開始</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+    <div class="phase-card phase-3">
+      <div class="flex" style="align-items:start;gap:16px;flex-wrap:wrap;">
+        <div style="min-width:140px;">
+          <div class="badge badge-violet mb-2">Phase 3</div>
+          <div class="stat-value" style="color:#a78bfa;font-size:1.3rem;">6ヶ月目〜</div>
+          <div class="stat-value mt-1" style="color:var(--white);font-size:1.6rem;">月50万円〜</div>
+        </div>
+        <div style="flex:1;min-width:250px;">
+          <ul class="check-list">
+            <li>マルチプラットフォーム全展開</li>
+            <li>物販（ポスター）も追加</li>
+            <li>ファンコミュニティの成長</li>
+            <li>収益の自動化と最大化</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+</div>
+
+<!-- SLIDE 50: CTA -->
+<div class="slide" data-slide="50">
+<div class="slide-inner text-center">
+  <div class="section-label">Let's Start</div>
+  <h2 class="title-xl holo-text mt-2">今日から始めよう</h2>
+  <p class="body-text mt-3" style="max-width:600px;margin:0 auto;font-size:1.1rem;">
+    AI技術は成熟し、プラットフォームは整い、市場は拡大中。<br>
+    あなたが行動を起こすのに、これ以上の準備は必要ありません。
+  </p>
+  <div class="glass mt-4" style="max-width:600px;margin:0 auto;">
+    <div class="grid-3">
+      <div class="stat-box">
+        <div class="stat-value" style="color:var(--cyan);">Step 1</div>
+        <div class="stat-label">AI画像生成を<br>始める</div>
+      </div>
+      <div class="stat-box">
+        <div class="stat-value" style="color:var(--blue);">Step 2</div>
+        <div class="stat-label">最初の商品を<br>出品する</div>
+      </div>
+      <div class="stat-box">
+        <div class="stat-value" style="color:var(--violet);">Step 3</div>
+        <div class="stat-label">改善しながら<br>拡大する</div>
+      </div>
+    </div>
+  </div>
+  <div class="mt-4">
+    <div class="cta-btn">まずは最初の1作品を作ろう</div>
+  </div>
+  <p class="small-text mt-3">AIマネタイズ完全ガイド — 全50スライド 完</p>
+</div>
+</div>
+
+</div><!-- /presentation -->
 
 <!-- Navigation -->
-<div class="nav-controls">
-  <button class="nav-btn" id="prevBtn" onclick="changeSlide(-1)">&#9664;</button>
-  <div class="nav-counter" id="navCounter">1 / 12</div>
-  <button class="nav-btn" id="nextBtn" onclick="changeSlide(1)">&#9654;</button>
-</div>
+<nav id="nav">
+  <button class="nav-btn" id="prev-btn" aria-label="前のスライド">◀</button>
+  <span id="slide-counter">1 / 50</span>
+  <button class="nav-btn" id="next-btn" aria-label="次のスライド">▶</button>
+</nav>
 
 <script>
-// === STARFIELD ===
-(function createStars() {
-  const field = document.getElementById('starfield');
-  const count = 200;
-  for (let i = 0; i < count; i++) {
-    const star = document.createElement('div');
-    star.className = 'star';
-    const size = Math.random() * 2 + 0.5;
-    star.style.width = size + 'px';
-    star.style.height = size + 'px';
-    star.style.left = Math.random() * 100 + '%';
-    star.style.top = Math.random() * 100 + '%';
-    star.style.opacity = Math.random() * 0.7 + 0.1;
-    star.style.animation = `twinkle ${Math.random() * 4 + 2}s ease-in-out ${Math.random() * 4}s infinite`;
-    field.appendChild(star);
+// ── Generate Starfield ──
+(function(){
+  const sf = document.getElementById('starfield');
+  const count = 220;
+  let html = '';
+  for(let i = 0; i < count; i++){
+    const x = Math.random()*100;
+    const y = Math.random()*100;
+    const size = 0.5 + Math.random()*2;
+    const dur = 2 + Math.random()*4;
+    const o1 = 0.1 + Math.random()*0.4;
+    const o2 = 0.5 + Math.random()*0.5;
+    const delay = Math.random()*dur;
+    html += '<div class="star" style="left:'+x+'%;top:'+y+'%;width:'+size+'px;height:'+size+'px;--dur:'+dur+'s;--o1:'+o1+';--o2:'+o2+';animation-delay:-'+delay+'s"></div>';
   }
-
-  // Add keyframes for twinkling
-  const style = document.createElement('style');
-  style.textContent = `
-    @keyframes twinkle {
-      0%, 100% { opacity: var(--tw-start, 0.2); }
-      50% { opacity: var(--tw-peak, 0.9); }
-    }
-  `;
-  document.head.appendChild(style);
-
-  // Assign random twinkle values
-  document.querySelectorAll('.star').forEach(s => {
-    const start = Math.random() * 0.3 + 0.1;
-    const peak = Math.random() * 0.5 + 0.5;
-    s.style.setProperty('--tw-start', start);
-    s.style.setProperty('--tw-peak', peak);
-  });
+  sf.innerHTML = html;
 })();
 
-// === SLIDE NAVIGATION ===
-let currentSlide = 0;
-const slides = document.querySelectorAll('.slide');
-const totalSlides = slides.length;
-const progressBar = document.getElementById('progressBar');
-const navCounter = document.getElementById('navCounter');
+// ── Slide Engine ──
+(function(){
+  const slides = document.querySelectorAll('.slide');
+  const total = slides.length;
+  let current = 1;
 
-function updateProgress() {
-  const pct = ((currentSlide + 1) / totalSlides) * 100;
-  progressBar.style.width = pct + '%';
-  navCounter.textContent = (currentSlide + 1) + ' / ' + totalSlides;
-}
+  const counter = document.getElementById('slide-counter');
+  const progress = document.getElementById('progress-bar');
+  const prevBtn = document.getElementById('prev-btn');
+  const nextBtn = document.getElementById('next-btn');
 
-function changeSlide(direction) {
-  const newIndex = currentSlide + direction;
-  if (newIndex < 0 || newIndex >= totalSlides) return;
+  function goTo(n){
+    if(n < 1 || n > total || n === current) return;
+    const oldSlide = document.querySelector('.slide.active');
+    const newSlide = document.querySelector('[data-slide="'+n+'"]');
+    if(!oldSlide || !newSlide) return;
 
-  slides[currentSlide].classList.remove('active');
-  slides[currentSlide].classList.add(direction > 0 ? 'prev' : '');
+    // Determine direction
+    const goingForward = n > current;
+    oldSlide.classList.remove('active');
+    oldSlide.classList.add(goingForward ? 'prev' : '');
+    oldSlide.style.transform = goingForward ? 'translateX(-40px)' : 'translateX(40px)';
+    oldSlide.style.opacity = '0';
+    setTimeout(()=>{
+      oldSlide.classList.remove('prev');
+      oldSlide.style.transform = '';
+      oldSlide.style.visibility = 'hidden';
+    }, 600);
 
-  currentSlide = newIndex;
+    newSlide.style.visibility = 'visible';
+    newSlide.style.transform = goingForward ? 'translateX(40px)' : 'translateX(-40px)';
+    newSlide.style.opacity = '0';
+    // Trigger reflow
+    void newSlide.offsetWidth;
+    newSlide.classList.add('active');
+    newSlide.style.transform = 'translateX(0)';
+    newSlide.style.opacity = '1';
 
-  // Reset all slides
-  slides.forEach((s, i) => {
-    s.classList.remove('active', 'prev');
-    if (i < currentSlide) s.classList.add('prev');
+    current = n;
+    counter.textContent = current + ' / ' + total;
+    progress.style.width = (current/total*100) + '%';
+  }
+
+  function next(){ goTo(current+1); }
+  function prev(){ goTo(current-1); }
+
+  prevBtn.addEventListener('click', prev);
+  nextBtn.addEventListener('click', next);
+
+  // Keyboard
+  document.addEventListener('keydown', function(e){
+    if(e.key === 'ArrowRight' || e.key === ' '){
+      e.preventDefault(); next();
+    } else if(e.key === 'ArrowLeft'){
+      e.preventDefault(); prev();
+    }
   });
 
-  slides[currentSlide].classList.add('active');
-  updateProgress();
-}
+  // Touch swipe
+  let touchStartX = 0, touchStartY = 0;
+  document.addEventListener('touchstart', function(e){
+    touchStartX = e.changedTouches[0].screenX;
+    touchStartY = e.changedTouches[0].screenY;
+  }, {passive:true});
+  document.addEventListener('touchend', function(e){
+    const dx = e.changedTouches[0].screenX - touchStartX;
+    const dy = e.changedTouches[0].screenY - touchStartY;
+    if(Math.abs(dx) > Math.abs(dy) && Math.abs(dx) > 50){
+      if(dx < 0) next(); else prev();
+    }
+  }, {passive:true});
 
-function goToSlide(index) {
-  if (index < 0 || index >= totalSlides || index === currentSlide) return;
-  const dir = index > currentSlide ? 1 : -1;
-  slides[currentSlide].classList.remove('active');
-  if (dir > 0) slides[currentSlide].classList.add('prev');
-  currentSlide = index;
-  slides.forEach((s, i) => {
-    s.classList.remove('active', 'prev');
-    if (i < currentSlide) s.classList.add('prev');
-  });
-  slides[currentSlide].classList.add('active');
-  updateProgress();
-}
-
-// Keyboard navigation
-document.addEventListener('keydown', (e) => {
-  if (e.key === 'ArrowRight' || e.key === 'ArrowDown' || e.key === ' ') {
-    e.preventDefault();
-    changeSlide(1);
-  } else if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') {
-    e.preventDefault();
-    changeSlide(-1);
-  } else if (e.key === 'Home') {
-    e.preventDefault();
-    goToSlide(0);
-  } else if (e.key === 'End') {
-    e.preventDefault();
-    goToSlide(totalSlides - 1);
-  }
-});
-
-// Touch support
-let touchStartX = 0;
-let touchStartY = 0;
-document.addEventListener('touchstart', (e) => {
-  touchStartX = e.changedTouches[0].screenX;
-  touchStartY = e.changedTouches[0].screenY;
-}, { passive: true });
-
-document.addEventListener('touchend', (e) => {
-  const dx = e.changedTouches[0].screenX - touchStartX;
-  const dy = e.changedTouches[0].screenY - touchStartY;
-  if (Math.abs(dx) > Math.abs(dy) && Math.abs(dx) > 50) {
-    changeSlide(dx < 0 ? 1 : -1);
-  }
-}, { passive: true });
-
-// Initialize
-updateProgress();
+  // Init
+  counter.textContent = '1 / ' + total;
+  progress.style.width = (1/total*100) + '%';
+})();
 </script>
 </body>
 </html>
