@@ -10,23 +10,20 @@
 
 :root {
   --bg-deep: #080f0a;
-  --bg-card: #0c1a10;
-  --bg-card-alt: #0e1f14;
-  --emerald-dark: #047857;
-  --emerald: #059669;
-  --emerald-light: #10b981;
-  --emerald-bright: #34d399;
-  --gold-dark: #b8860b;
-  --gold: #d4a017;
-  --gold-light: #fbbf24;
-  --gold-bright: #fde68a;
+  --bg-card: rgba(16, 32, 20, 0.6);
+  --emerald-dark: #059669;
+  --emerald: #10b981;
+  --emerald-light: #34d399;
+  --gold-dark: #d4a017;
+  --gold: #fbbf24;
+  --gold-light: #fde68a;
   --text-primary: #f0fdf4;
-  --text-secondary: #a7c4b5;
-  --text-muted: #5a7a68;
+  --text-secondary: #a7c4b8;
+  --text-muted: #5a7a6a;
   --border-emerald: rgba(16, 185, 129, 0.2);
-  --border-gold: rgba(212, 160, 23, 0.2);
-  --glow-emerald: rgba(16, 185, 129, 0.15);
-  --glow-gold: rgba(251, 191, 36, 0.12);
+  --border-gold: rgba(251, 191, 36, 0.15);
+  --glow-emerald: rgba(16, 185, 129, 0.08);
+  --glow-gold: rgba(251, 191, 36, 0.06);
 }
 
 body {
@@ -36,12 +33,34 @@ body {
   overflow: hidden;
   height: 100vh;
   width: 100vw;
+  user-select: none;
+  -webkit-user-select: none;
 }
 
-.presentation {
+/* Geometric background pattern */
+.geo-pattern {
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  pointer-events: none;
+  z-index: 0;
+  opacity: 0.03;
+  background-image:
+    linear-gradient(30deg, var(--emerald) 12%, transparent 12.5%, transparent 87%, var(--emerald) 87.5%, var(--emerald)),
+    linear-gradient(150deg, var(--emerald) 12%, transparent 12.5%, transparent 87%, var(--emerald) 87.5%, var(--emerald)),
+    linear-gradient(30deg, var(--emerald) 12%, transparent 12.5%, transparent 87%, var(--emerald) 87.5%, var(--emerald)),
+    linear-gradient(150deg, var(--emerald) 12%, transparent 12.5%, transparent 87%, var(--emerald) 87.5%, var(--emerald)),
+    linear-gradient(60deg, var(--gold) 25%, transparent 25.5%, transparent 75%, var(--gold) 75%, var(--gold)),
+    linear-gradient(60deg, var(--gold) 25%, transparent 25.5%, transparent 75%, var(--gold) 75%, var(--gold));
+  background-size: 80px 140px;
+  background-position: 0 0, 0 0, 40px 70px, 40px 70px, 0 0, 40px 70px;
+}
+
+/* Slide container */
+.slides-wrapper {
+  position: relative;
   width: 100vw;
   height: 100vh;
-  position: relative;
+  z-index: 1;
 }
 
 .slide {
@@ -49,2160 +68,2014 @@ body {
   top: 0; left: 0;
   width: 100%;
   height: 100%;
-  display: none;
-  flex-direction: column;
-  justify-content: center;
+  display: flex;
   align-items: center;
+  justify-content: center;
   padding: 60px 80px;
-  background: var(--bg-deep);
-  overflow-y: auto;
+  opacity: 0;
+  transform: translateX(60px);
+  transition: opacity 0.5s ease, transform 0.5s ease;
+  pointer-events: none;
 }
 
 .slide.active {
-  display: flex;
+  opacity: 1;
+  transform: translateX(0);
+  pointer-events: auto;
 }
 
-/* Background decorations */
-.slide::before {
-  content: '';
-  position: absolute;
-  top: -200px; right: -200px;
-  width: 600px; height: 600px;
-  background: radial-gradient(circle, rgba(5, 150, 105, 0.08) 0%, transparent 70%);
-  pointer-events: none;
-  z-index: 0;
+.slide.exit-left {
+  opacity: 0;
+  transform: translateX(-60px);
 }
 
-.slide::after {
-  content: '';
-  position: absolute;
-  bottom: -150px; left: -150px;
-  width: 500px; height: 500px;
-  background: radial-gradient(circle, rgba(212, 160, 23, 0.05) 0%, transparent 70%);
-  pointer-events: none;
-  z-index: 0;
-}
-
-.slide > * {
-  position: relative;
-  z-index: 1;
-}
-
-/* Geometric decoration */
-.geo-line {
-  position: absolute;
-  background: linear-gradient(90deg, transparent, var(--border-gold), transparent);
-  height: 1px;
-  width: 300px;
-  z-index: 0;
-}
-
-.geo-diamond {
-  position: absolute;
-  width: 12px; height: 12px;
-  border: 1px solid var(--gold);
-  transform: rotate(45deg);
-  opacity: 0.3;
-  z-index: 0;
+.slide-inner {
+  width: 100%;
+  max-width: 1100px;
+  max-height: 100%;
 }
 
 /* Typography */
-.slide-title {
-  font-size: 2.6rem;
-  font-weight: 700;
-  letter-spacing: -0.02em;
-  line-height: 1.3;
-  margin-bottom: 12px;
-  background: linear-gradient(135deg, var(--emerald-light), var(--gold-light));
+.title-gradient {
+  background: linear-gradient(135deg, var(--emerald-light), var(--gold));
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
 }
 
-.slide-subtitle {
-  font-size: 1.15rem;
-  color: var(--text-secondary);
-  font-weight: 300;
-  margin-bottom: 40px;
-  letter-spacing: 0.02em;
-}
-
-.section-label {
-  display: inline-block;
-  font-size: 0.7rem;
-  font-weight: 600;
-  letter-spacing: 0.15em;
-  text-transform: uppercase;
-  color: var(--gold);
-  border: 1px solid var(--border-gold);
-  padding: 4px 16px;
-  border-radius: 2px;
-  margin-bottom: 20px;
-  background: rgba(212, 160, 23, 0.05);
-}
-
-.gold-text {
-  color: var(--gold-light);
-  font-weight: 700;
-}
-
-.emerald-text {
-  color: var(--emerald-light);
-  font-weight: 600;
-}
-
-.gradient-number {
-  background: linear-gradient(135deg, var(--emerald-light), var(--gold-light));
+.title-emerald {
+  background: linear-gradient(135deg, var(--emerald-light), var(--emerald));
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
-  font-weight: 900;
 }
+
+.title-gold {
+  background: linear-gradient(135deg, var(--gold), var(--gold-dark));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+h1 { font-size: clamp(2rem, 4vw, 3.2rem); font-weight: 900; line-height: 1.3; letter-spacing: -0.02em; }
+h2 { font-size: clamp(1.6rem, 3vw, 2.4rem); font-weight: 700; line-height: 1.35; }
+h3 { font-size: clamp(1.1rem, 1.8vw, 1.5rem); font-weight: 600; line-height: 1.4; }
+p, li { font-size: clamp(0.85rem, 1.3vw, 1.05rem); line-height: 1.7; color: var(--text-secondary); }
 
 /* Cards */
 .card {
-  background: linear-gradient(145deg, rgba(12, 26, 16, 0.95), rgba(14, 31, 20, 0.9));
+  background: var(--bg-card);
   border: 1px solid var(--border-emerald);
-  border-radius: 12px;
+  border-radius: 16px;
   padding: 28px;
+  backdrop-filter: blur(20px);
   position: relative;
   overflow: hidden;
-  transition: all 0.3s ease;
 }
 
 .card::before {
   content: '';
   position: absolute;
-  top: 0; left: 0;
-  width: 100%; height: 2px;
-  background: linear-gradient(90deg, var(--emerald), var(--gold));
-  opacity: 0.6;
+  top: 0; left: 0; right: 0;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--emerald), var(--gold), transparent);
+  opacity: 0.5;
 }
 
 .card-gold {
   border-color: var(--border-gold);
+  box-shadow: 0 0 30px var(--glow-gold);
 }
 
 .card-gold::before {
-  background: linear-gradient(90deg, var(--gold), var(--emerald));
+  background: linear-gradient(90deg, transparent, var(--gold), var(--emerald), transparent);
 }
 
-.card-glow {
-  box-shadow: 0 0 30px var(--glow-emerald), inset 0 0 30px rgba(5, 150, 105, 0.03);
+.card-emerald {
+  border-color: var(--border-emerald);
+  box-shadow: 0 0 30px var(--glow-emerald);
 }
 
-.card-glow-gold {
-  box-shadow: 0 0 30px var(--glow-gold), inset 0 0 30px rgba(212, 160, 23, 0.03);
+/* Diamond decoration */
+.diamond {
+  display: inline-block;
+  width: 10px;
+  height: 10px;
+  background: linear-gradient(135deg, var(--emerald), var(--gold));
+  transform: rotate(45deg);
+  margin-right: 10px;
+  flex-shrink: 0;
 }
 
-/* Grid layouts */
-.grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; width: 100%; }
-.grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 20px; width: 100%; }
-.grid-4 { display: grid; grid-template-columns: 1fr 1fr 1fr 1fr; gap: 18px; width: 100%; }
-
-/* Tables */
-.table-luxury {
-  width: 100%;
-  border-collapse: separate;
-  border-spacing: 0;
-  border-radius: 10px;
-  overflow: hidden;
-  font-size: 0.85rem;
+.diamond-sm {
+  width: 6px;
+  height: 6px;
 }
 
-.table-luxury thead th {
-  background: linear-gradient(135deg, var(--emerald-dark), var(--emerald));
-  color: #fff;
-  padding: 14px 16px;
-  font-weight: 600;
-  text-align: left;
-  letter-spacing: 0.02em;
-  border-bottom: 2px solid var(--gold);
+/* Section title slides */
+.section-slide {
+  text-align: center;
 }
 
-.table-luxury tbody td {
-  padding: 12px 16px;
-  background: var(--bg-card);
-  border-bottom: 1px solid rgba(16, 185, 129, 0.08);
-  color: var(--text-secondary);
-}
-
-.table-luxury tbody tr:nth-child(even) td {
-  background: var(--bg-card-alt);
-}
-
-.table-luxury tbody tr:last-child td {
-  border-bottom: none;
-}
-
-.table-luxury .highlight-cell {
-  color: var(--gold-light);
-  font-weight: 600;
-}
-
-/* Revenue bars */
-.revenue-bar-container {
+.section-number {
+  font-size: clamp(3rem, 6vw, 5rem);
+  font-weight: 900;
+  background: linear-gradient(135deg, var(--emerald-light), var(--gold));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  line-height: 1;
   margin-bottom: 16px;
 }
 
-.revenue-label {
-  display: flex;
-  justify-content: space-between;
-  margin-bottom: 6px;
+.section-label {
   font-size: 0.85rem;
+  font-weight: 500;
+  color: var(--emerald);
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  margin-bottom: 8px;
 }
 
-.revenue-bar {
-  height: 28px;
-  background: rgba(255,255,255,0.03);
-  border-radius: 6px;
-  overflow: hidden;
-  border: 1px solid rgba(16, 185, 129, 0.1);
-}
-
-.revenue-fill {
-  height: 100%;
+.section-divider {
+  width: 80px;
+  height: 2px;
   background: linear-gradient(90deg, var(--emerald), var(--gold));
-  border-radius: 6px;
+  margin: 24px auto;
+  border-radius: 2px;
+}
+
+/* Lists */
+ul { list-style: none; }
+
+.list-diamond li {
   display: flex;
-  align-items: center;
-  padding-left: 12px;
-  font-size: 0.75rem;
-  font-weight: 600;
-  color: var(--bg-deep);
-  transition: width 1s ease;
+  align-items: flex-start;
+  gap: 12px;
+  margin-bottom: 14px;
 }
 
-/* Timeline */
-.timeline {
-  position: relative;
-  padding-left: 40px;
-}
-
-.timeline::before {
+.list-diamond li::before {
   content: '';
-  position: absolute;
-  left: 14px; top: 0;
-  width: 2px; height: 100%;
-  background: linear-gradient(180deg, var(--emerald), var(--gold));
-  opacity: 0.4;
-}
-
-.timeline-item {
-  position: relative;
-  margin-bottom: 28px;
-}
-
-.timeline-item::before {
-  content: '';
-  position: absolute;
-  left: -32px; top: 6px;
-  width: 10px; height: 10px;
-  background: var(--emerald-light);
-  border-radius: 50%;
-  box-shadow: 0 0 12px var(--glow-emerald);
-}
-
-.timeline-item:last-child::before {
-  background: var(--gold);
-  box-shadow: 0 0 12px var(--glow-gold);
-}
-
-/* Step indicators */
-.step-circle {
-  width: 40px; height: 40px;
-  border-radius: 50%;
-  border: 2px solid var(--emerald-light);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-weight: 700;
-  font-size: 1rem;
-  color: var(--emerald-light);
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  background: linear-gradient(135deg, var(--emerald), var(--gold));
+  transform: rotate(45deg);
   flex-shrink: 0;
-  background: rgba(16, 185, 129, 0.08);
+  margin-top: 8px;
 }
 
-.step-circle-gold {
-  border-color: var(--gold);
-  color: var(--gold);
-  background: rgba(212, 160, 23, 0.08);
+/* Grid layouts */
+.grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+.grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 18px; }
+.grid-4 { display: grid; grid-template-columns: 1fr 1fr 1fr 1fr; gap: 16px; }
+
+/* Stat highlight */
+.stat-value {
+  font-size: clamp(1.8rem, 3.5vw, 2.8rem);
+  font-weight: 900;
+  line-height: 1.1;
 }
 
-/* Badges */
+.stat-label {
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  margin-top: 4px;
+}
+
+/* Badge */
 .badge {
   display: inline-block;
-  padding: 3px 10px;
-  border-radius: 4px;
-  font-size: 0.7rem;
+  padding: 3px 12px;
+  border-radius: 20px;
+  font-size: 0.75rem;
   font-weight: 600;
 }
 
 .badge-emerald {
-  background: rgba(16, 185, 129, 0.12);
+  background: rgba(16, 185, 129, 0.15);
   color: var(--emerald-light);
-  border: 1px solid rgba(16, 185, 129, 0.25);
+  border: 1px solid rgba(16, 185, 129, 0.3);
 }
 
 .badge-gold {
-  background: rgba(212, 160, 23, 0.12);
-  color: var(--gold-light);
-  border: 1px solid rgba(212, 160, 23, 0.25);
-}
-
-/* Separator line */
-.divider {
-  width: 60px;
-  height: 2px;
-  background: linear-gradient(90deg, var(--emerald), var(--gold));
-  margin: 16px 0;
-  border-radius: 1px;
-}
-
-.divider-wide {
-  width: 100%;
-  height: 1px;
-  background: linear-gradient(90deg, transparent, var(--border-emerald), var(--border-gold), transparent);
-  margin: 20px 0;
-}
-
-/* Lists */
-.luxury-list {
-  list-style: none;
-}
-
-.luxury-list li {
-  position: relative;
-  padding-left: 24px;
-  margin-bottom: 10px;
-  font-size: 0.92rem;
-  color: var(--text-secondary);
-  line-height: 1.6;
-}
-
-.luxury-list li::before {
-  content: '◆';
-  position: absolute;
-  left: 0;
-  color: var(--emerald-light);
-  font-size: 0.6rem;
-  top: 5px;
-}
-
-.luxury-list-gold li::before {
+  background: rgba(251, 191, 36, 0.12);
   color: var(--gold);
+  border: 1px solid rgba(251, 191, 36, 0.25);
 }
 
-/* Check list */
-.check-list li::before {
-  content: '✓';
-  color: var(--emerald-light);
-  font-size: 0.85rem;
-  font-weight: 700;
-  top: 1px;
-}
+/* Star rating */
+.stars { color: var(--gold); font-size: 0.85rem; letter-spacing: 2px; }
 
-/* Formula display */
-.formula-box {
-  background: linear-gradient(135deg, rgba(5, 150, 105, 0.08), rgba(212, 160, 23, 0.08));
-  border: 1px solid rgba(16, 185, 129, 0.2);
-  border-radius: 12px;
-  padding: 30px 40px;
-  text-align: center;
-  font-size: 1.3rem;
-  font-weight: 600;
-  letter-spacing: 0.04em;
-}
-
-/* VS box */
-.vs-box {
+/* Table-like rows */
+.row-item {
   display: flex;
   align-items: center;
-  gap: 24px;
-  width: 100%;
+  justify-content: space-between;
+  padding: 14px 20px;
+  border-bottom: 1px solid rgba(16, 185, 129, 0.08);
 }
 
-.vs-divider {
-  font-size: 1.5rem;
+.row-item:last-child { border-bottom: none; }
+
+/* Progress bar */
+.bar-track {
+  height: 8px;
+  background: rgba(255,255,255,0.05);
+  border-radius: 4px;
+  overflow: hidden;
+  margin-top: 8px;
+}
+
+.bar-fill {
+  height: 100%;
+  border-radius: 4px;
+  background: linear-gradient(90deg, var(--emerald), var(--gold));
+}
+
+/* Phase timeline */
+.phase-line {
+  display: flex;
+  align-items: stretch;
+  gap: 16px;
+  margin-top: 20px;
+}
+
+.phase-item {
+  flex: 1;
+  position: relative;
+  padding: 24px 20px;
+  border-radius: 14px;
+  background: var(--bg-card);
+  border: 1px solid var(--border-emerald);
+}
+
+.phase-item::after {
+  content: '▸';
+  position: absolute;
+  right: -14px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--emerald);
+  font-size: 1.2rem;
+}
+
+.phase-item:last-child::after { display: none; }
+
+/* VS divider */
+.vs-badge {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--emerald), var(--gold));
+  color: var(--bg-deep);
   font-weight: 900;
-  color: var(--gold);
+  font-size: 0.8rem;
   flex-shrink: 0;
+  align-self: center;
 }
 
 /* Navigation */
 .nav-bar {
   position: fixed;
-  bottom: 0; left: 0;
-  width: 100%;
-  height: 64px;
-  background: linear-gradient(180deg, transparent, rgba(8, 15, 10, 0.95));
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 56px;
+  background: rgba(8, 15, 10, 0.95);
+  backdrop-filter: blur(20px);
+  border-top: 1px solid var(--border-emerald);
   display: flex;
   align-items: center;
   justify-content: center;
   gap: 24px;
   z-index: 100;
-  padding: 0 40px;
 }
 
 .nav-btn {
-  width: 44px; height: 44px;
+  width: 42px;
+  height: 42px;
+  border-radius: 10px;
   border: 1px solid var(--border-emerald);
-  background: rgba(12, 26, 16, 0.9);
+  background: rgba(16, 185, 129, 0.08);
   color: var(--emerald-light);
-  border-radius: 8px;
+  font-size: 1.1rem;
   cursor: pointer;
-  font-size: 1rem;
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: all 0.3s ease;
-  backdrop-filter: blur(10px);
+  transition: all 0.2s;
 }
 
 .nav-btn:hover {
-  background: rgba(16, 185, 129, 0.12);
-  border-color: var(--emerald-light);
-  box-shadow: 0 0 16px var(--glow-emerald);
+  background: rgba(16, 185, 129, 0.18);
+  border-color: var(--emerald);
+  box-shadow: 0 0 16px rgba(16, 185, 129, 0.15);
 }
 
-.slide-counter {
-  font-size: 0.8rem;
-  color: var(--text-muted);
+.nav-counter {
+  font-size: 0.85rem;
+  color: var(--text-secondary);
   font-weight: 500;
-  min-width: 80px;
+  min-width: 70px;
   text-align: center;
-  letter-spacing: 0.1em;
+  font-variant-numeric: tabular-nums;
 }
 
-.progress-container {
-  flex: 1;
-  max-width: 400px;
-  height: 3px;
-  background: rgba(255,255,255,0.06);
-  border-radius: 2px;
-  overflow: hidden;
+.progress-track {
+  position: fixed;
+  bottom: 56px;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: rgba(255,255,255,0.04);
+  z-index: 100;
 }
 
 .progress-fill {
   height: 100%;
   background: linear-gradient(90deg, var(--emerald), var(--gold));
-  border-radius: 2px;
   transition: width 0.4s ease;
-  box-shadow: 0 0 8px var(--glow-emerald);
+  border-radius: 0 1px 1px 0;
 }
 
-/* Scroll handling for overflow slides */
-.slide-content {
-  width: 100%;
-  max-width: 1100px;
-  max-height: calc(100vh - 120px);
-  overflow-y: auto;
-  scrollbar-width: thin;
-  scrollbar-color: var(--emerald-dark) transparent;
-}
-
-.slide-content::-webkit-scrollbar {
-  width: 4px;
-}
-
-.slide-content::-webkit-scrollbar-track {
-  background: transparent;
-}
-
-.slide-content::-webkit-scrollbar-thumb {
-  background: var(--emerald-dark);
-  border-radius: 2px;
-}
-
-/* Specific slide styles */
-.title-slide {
-  text-align: center;
-}
-
-.title-main {
-  font-size: 3.8rem;
-  font-weight: 900;
-  letter-spacing: -0.03em;
-  line-height: 1.2;
-  background: linear-gradient(135deg, var(--emerald-bright), var(--gold-light), var(--emerald-light));
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-  margin-bottom: 16px;
-}
-
-.title-sub {
-  font-size: 1.3rem;
-  color: var(--text-secondary);
-  font-weight: 300;
-  letter-spacing: 0.08em;
-  margin-bottom: 40px;
-}
-
-.title-decorative-line {
-  width: 120px;
-  height: 2px;
-  background: linear-gradient(90deg, var(--emerald), var(--gold));
-  margin: 0 auto 30px;
-}
-
-/* Big number */
-.big-number {
-  font-size: 3.5rem;
-  font-weight: 900;
-  background: linear-gradient(135deg, var(--emerald-light), var(--gold-light));
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-  line-height: 1;
-}
-
-.big-number-sm {
-  font-size: 2.2rem;
-}
-
-/* Icon circles */
-.icon-circle {
-  width: 48px; height: 48px;
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 1.3rem;
-  flex-shrink: 0;
-}
-
-.icon-emerald {
-  background: rgba(16, 185, 129, 0.1);
-  border: 1px solid rgba(16, 185, 129, 0.25);
-}
-
-.icon-gold {
-  background: rgba(212, 160, 23, 0.1);
-  border: 1px solid rgba(212, 160, 23, 0.25);
-}
-
-/* Compact text for dense slides */
-.compact { font-size: 0.82rem; line-height: 1.55; }
-.compact-sm { font-size: 0.75rem; line-height: 1.5; }
-
-/* Highlight box */
-.highlight-box {
-  background: linear-gradient(135deg, rgba(5, 150, 105, 0.1), rgba(212, 160, 23, 0.08));
-  border-left: 3px solid var(--gold);
-  padding: 16px 20px;
-  border-radius: 0 8px 8px 0;
-  margin-top: 16px;
-}
-
-/* Flex utilities */
-.flex-center { display: flex; align-items: center; justify-content: center; }
-.flex-col { display: flex; flex-direction: column; }
-.gap-8 { gap: 8px; }
-.gap-12 { gap: 12px; }
-.gap-16 { gap: 16px; }
-.gap-20 { gap: 20px; }
-.gap-24 { gap: 24px; }
-.w-full { width: 100%; }
-.text-center { text-align: center; }
+/* Emphasis */
+.text-emerald { color: var(--emerald-light); }
+.text-gold { color: var(--gold); }
+.text-muted { color: var(--text-muted); }
+.fw-700 { font-weight: 700; }
+.fw-600 { font-weight: 600; }
 .mb-8 { margin-bottom: 8px; }
 .mb-12 { margin-bottom: 12px; }
 .mb-16 { margin-bottom: 16px; }
 .mb-20 { margin-bottom: 20px; }
 .mb-24 { margin-bottom: 24px; }
 .mb-32 { margin-bottom: 32px; }
+.mt-12 { margin-top: 12px; }
 .mt-16 { margin-top: 16px; }
+.mt-20 { margin-top: 20px; }
 .mt-24 { margin-top: 24px; }
-
-/* Animations */
-@keyframes shimmer {
-  0% { background-position: -200% center; }
-  100% { background-position: 200% center; }
-}
-
-.shimmer-text {
-  background: linear-gradient(90deg, var(--emerald-light), var(--gold-light), var(--emerald-light));
-  background-size: 200% auto;
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-  animation: shimmer 4s linear infinite;
-}
-
-@keyframes pulse-glow {
-  0%, 100% { box-shadow: 0 0 20px var(--glow-emerald); }
-  50% { box-shadow: 0 0 40px var(--glow-emerald), 0 0 20px var(--glow-gold); }
-}
-
-.pulse-glow {
-  animation: pulse-glow 3s ease-in-out infinite;
-}
+.gap-12 { gap: 12px; }
+.gap-16 { gap: 16px; }
+.text-center { text-align: center; }
+.flex { display: flex; }
+.flex-col { flex-direction: column; }
+.items-center { align-items: center; }
+.justify-between { justify-content: space-between; }
+.justify-center { justify-content: center; }
 
 /* CTA slide */
-.cta-big {
-  font-size: 2.8rem;
-  font-weight: 900;
+.cta-border {
+  border: 2px solid transparent;
+  background-image: linear-gradient(var(--bg-card), var(--bg-card)), linear-gradient(135deg, var(--emerald), var(--gold));
+  background-origin: border-box;
+  background-clip: padding-box, border-box;
+  border-radius: 20px;
+  padding: 48px 40px;
   text-align: center;
-  line-height: 1.4;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .slide { padding: 40px 24px; }
+  .grid-2, .grid-3, .grid-4 { grid-template-columns: 1fr; }
+  .phase-line { flex-direction: column; }
+  .phase-item::after { display: none; }
+  .card { padding: 20px; }
+  h1 { font-size: 1.8rem; }
+  h2 { font-size: 1.5rem; }
+}
+
+@media (max-width: 480px) {
+  .slide { padding: 30px 16px; }
+  .nav-bar { gap: 16px; }
 }
 </style>
 </head>
 <body>
 
-<div class="presentation" id="presentation">
+<div class="geo-pattern"></div>
 
-  <!-- Slide 1: Title -->
-  <div class="slide active" id="slide-1">
-    <div class="slide-content text-center flex-col flex-center" style="justify-content:center;align-items:center;min-height:70vh;">
-      <div class="geo-diamond" style="top:80px;right:120px;"></div>
-      <div class="geo-diamond" style="bottom:100px;left:100px;width:8px;height:8px;"></div>
-      <div class="geo-line" style="top:60px;left:50%;transform:translateX(-50%);"></div>
-      <div class="section-label" style="margin-bottom:32px;">DEEP DIVE EDITION — 2026</div>
-      <div class="title-main">AIマネタイズ</div>
-      <div class="title-decorative-line"></div>
-      <div class="title-sub">収益化の完全設計図</div>
-      <div style="display:flex;gap:32px;margin-top:20px;">
-        <div style="text-align:center;">
-          <div style="font-size:0.7rem;color:var(--text-muted);letter-spacing:0.1em;margin-bottom:4px;">MARKET</div>
-          <div style="font-size:1rem;color:var(--emerald-light);">急成長中</div>
-        </div>
-        <div style="width:1px;background:var(--border-gold);"></div>
-        <div style="text-align:center;">
-          <div style="font-size:0.7rem;color:var(--text-muted);letter-spacing:0.1em;margin-bottom:4px;">POTENTIAL</div>
-          <div style="font-size:1rem;color:var(--gold-light);">月100万円+</div>
-        </div>
-        <div style="width:1px;background:var(--border-gold);"></div>
-        <div style="text-align:center;">
-          <div style="font-size:0.7rem;color:var(--text-muted);letter-spacing:0.1em;margin-bottom:4px;">BARRIER</div>
-          <div style="font-size:1rem;color:var(--emerald-light);">史上最低</div>
-        </div>
-      </div>
+<div class="slides-wrapper" id="slidesWrapper">
+
+<!-- ============================================================ -->
+<!-- SLIDE 1: Title -->
+<!-- ============================================================ -->
+<div class="slide active" data-slide="1">
+  <div class="slide-inner text-center">
+    <div style="margin-bottom: 24px;">
+      <span class="diamond"></span><span class="diamond"></span><span class="diamond"></span>
     </div>
+    <p class="section-label mb-16">COMPLETE BLUEPRINT FOR AI MONETIZATION</p>
+    <h1 class="title-gradient" style="font-size: clamp(2.4rem, 5vw, 3.8rem); margin-bottom: 20px;">AIマネタイズ</h1>
+    <h2 style="font-weight: 400; color: var(--text-secondary); font-size: clamp(1.1rem, 2vw, 1.6rem); margin-bottom: 40px;">収益化の完全設計図</h2>
+    <div class="section-divider" style="margin: 32px auto;"></div>
+    <p style="color: var(--text-muted); font-size: 0.9rem;">AI × クリエイティブ × ビジネスの最前線</p>
   </div>
-
-  <!-- Slide 2: Executive Summary -->
-  <div class="slide" id="slide-2">
-    <div class="slide-content">
-      <div class="section-label">EXECUTIVE SUMMARY</div>
-      <div class="slide-title">なぜ今、AIマネタイズなのか</div>
-      <div class="slide-subtitle">3つの確信 — この市場は「本物」</div>
-      <div class="grid-3" style="margin-bottom:32px;">
-        <div class="card card-glow" style="text-align:center;padding:36px 24px;">
-          <div style="font-size:2.4rem;margin-bottom:8px;">💰</div>
-          <div class="big-number-sm gradient-number" style="font-size:1.8rem;margin-bottom:8px;">月100万円</div>
-          <div style="font-size:0.85rem;color:var(--text-secondary);margin-bottom:12px;">到達者が続出する市場</div>
-          <div class="divider" style="margin:12px auto;"></div>
-          <div class="compact" style="color:var(--text-muted);">実際に月100万円以上を稼ぐ個人クリエイターが複数存在。特別な才能は不要。</div>
-        </div>
-        <div class="card card-gold card-glow-gold" style="text-align:center;padding:36px 24px;">
-          <div style="font-size:2.4rem;margin-bottom:8px;">🚀</div>
-          <div class="big-number-sm gradient-number" style="font-size:1.8rem;margin-bottom:8px;">参入障壁ゼロ</div>
-          <div style="font-size:0.85rem;color:var(--text-secondary);margin-bottom:12px;">技術革新で誰でも始められる</div>
-          <div class="divider" style="margin:12px auto;"></div>
-          <div class="compact" style="color:var(--text-muted);">無料ツール・オープンソース・AIエージェント。プログラミング不要で高品質制作が可能。</div>
-        </div>
-        <div class="card card-glow" style="text-align:center;padding:36px 24px;">
-          <div style="font-size:2.4rem;margin-bottom:8px;">⏰</div>
-          <div class="big-number-sm gradient-number" style="font-size:1.8rem;margin-bottom:8px;">今が最大のチャンス</div>
-          <div style="font-size:0.85rem;color:var(--text-secondary);margin-bottom:12px;">先行者利益を取れる最後の窓</div>
-          <div class="divider" style="margin:12px auto;"></div>
-          <div class="compact" style="color:var(--text-muted);">需要は爆発的に増加中だが、供給がまだ追いついていない。この差が利益になる。</div>
-        </div>
-      </div>
-      <div class="highlight-box" style="text-align:center;">
-        <span class="gold-text">この資料では、具体的な数字・手法・ロードマップまで全て公開します</span>
-      </div>
-    </div>
-  </div>
-
-  <!-- Slide 3: Market Analysis -->
-  <div class="slide" id="slide-3">
-    <div class="slide-content">
-      <div class="section-label">MARKET ANALYSIS</div>
-      <div class="slide-title">収益レベル別 — 市場の全体像</div>
-      <div class="slide-subtitle">あなたはどのレベルを目指しますか？</div>
-      <div style="display:flex;flex-direction:column;gap:20px;">
-        <div class="card" style="display:flex;align-items:center;gap:24px;">
-          <div style="min-width:100px;text-align:center;">
-            <div class="badge badge-emerald" style="margin-bottom:6px;">BEGINNER</div>
-            <div class="big-number-sm gradient-number" style="font-size:1.4rem;">月1-5万</div>
-          </div>
-          <div style="width:1px;height:60px;background:var(--border-emerald);"></div>
-          <div style="flex:1;">
-            <div style="font-weight:600;margin-bottom:4px;">初心者 — 週末作業でスタート</div>
-            <div class="compact" style="color:var(--text-secondary);">週末だけの作業で月1-5万円。CG集やポスターを月2-3作品出品。BOOTH・DLsiteで販売開始。最初の「売れた」体験を得るフェーズ。</div>
-          </div>
-          <div style="min-width:120px;">
-            <div class="revenue-bar" style="height:20px;"><div class="revenue-fill" style="width:15%;font-size:0.65rem;">15%</div></div>
-          </div>
-        </div>
-        <div class="card card-gold" style="display:flex;align-items:center;gap:24px;">
-          <div style="min-width:100px;text-align:center;">
-            <div class="badge badge-gold" style="margin-bottom:6px;">INTERMEDIATE</div>
-            <div class="big-number-sm gradient-number" style="font-size:1.4rem;">月10-30万</div>
-          </div>
-          <div style="width:1px;height:60px;background:var(--border-gold);"></div>
-          <div style="flex:1;">
-            <div style="font-weight:600;margin-bottom:4px;">中級者 — 1日2-3時間の本気取り組み</div>
-            <div class="compact" style="color:var(--text-secondary);">毎日2-3時間の作業で月10-30万円。ジャンル特化で差別化。FANZAにも進出。ファンが付き始め、新作が即売れる状態へ。</div>
-          </div>
-          <div style="min-width:120px;">
-            <div class="revenue-bar" style="height:20px;"><div class="revenue-fill" style="width:40%;font-size:0.65rem;">40%</div></div>
-          </div>
-        </div>
-        <div class="card card-glow" style="display:flex;align-items:center;gap:24px;">
-          <div style="min-width:100px;text-align:center;">
-            <div class="badge badge-emerald" style="margin-bottom:6px;">ADVANCED</div>
-            <div class="big-number-sm gradient-number" style="font-size:1.4rem;">月50-100万</div>
-          </div>
-          <div style="width:1px;height:60px;background:var(--border-emerald);"></div>
-          <div style="flex:1;">
-            <div style="font-weight:600;margin-bottom:4px;">上級者 — 自動化を活用した効率経営</div>
-            <div class="compact" style="color:var(--text-secondary);">自動化ツール・バッチ処理で生産性を最大化。複数プラットフォーム展開。動画コンテンツで高単価。月額課金でストック収入。</div>
-          </div>
-          <div style="min-width:120px;">
-            <div class="revenue-bar" style="height:20px;"><div class="revenue-fill" style="width:70%;font-size:0.65rem;">70%</div></div>
-          </div>
-        </div>
-        <div class="card card-gold card-glow-gold" style="display:flex;align-items:center;gap:24px;">
-          <div style="min-width:100px;text-align:center;">
-            <div class="badge badge-gold" style="margin-bottom:6px;">TOP TIER</div>
-            <div class="big-number-sm gradient-number" style="font-size:1.4rem;">月200-300万</div>
-          </div>
-          <div style="width:1px;height:60px;background:var(--border-gold);"></div>
-          <div style="flex:1;">
-            <div style="font-weight:600;margin-bottom:4px;">トップ層 — 全方位マルチ展開</div>
-            <div class="compact" style="color:var(--text-secondary);">画像・動画・月額・グッズ・受注を組み合わせた総合ビジネス。オリキャラのブランド化。自動化で労働時間は1日3-4時間。</div>
-          </div>
-          <div style="min-width:120px;">
-            <div class="revenue-bar" style="height:20px;"><div class="revenue-fill" style="width:100%;font-size:0.65rem;">100%</div></div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <!-- Slide 4: Why Now - Technology -->
-  <div class="slide" id="slide-4">
-    <div class="slide-content">
-      <div class="section-label">WHY NOW — TECHNOLOGY</div>
-      <div class="slide-title">技術の成熟 — Stable Diffusionの進化</div>
-      <div class="slide-subtitle">無料 × オープンソース × カスタマイズ自由 × ローカル実行</div>
-      <div class="grid-2" style="margin-bottom:24px;">
-        <div>
-          <div style="font-weight:600;margin-bottom:16px;color:var(--emerald-light);">進化の歴史</div>
-          <div class="timeline">
-            <div class="timeline-item">
-              <div style="font-weight:600;color:var(--text-primary);">SD 1.5 <span class="badge badge-emerald">始まり</span></div>
-              <div class="compact" style="color:var(--text-secondary);margin-top:4px;">AI画像生成の民主化。512x512がメイン。プロンプト次第で様々な画像が生成可能に。</div>
-            </div>
-            <div class="timeline-item">
-              <div style="font-weight:600;color:var(--text-primary);">SDXL <span class="badge badge-emerald">高解像度</span></div>
-              <div class="compact" style="color:var(--text-secondary);margin-top:4px;">1024x1024の高解像度に対応。ディテールが大幅向上。構図の安定性も改善。</div>
-            </div>
-            <div class="timeline-item">
-              <div style="font-weight:600;color:var(--text-primary);">Illustrious <span class="badge badge-gold">アニメ特化</span></div>
-              <div class="compact" style="color:var(--text-secondary);margin-top:4px;">アニメ・イラスト特化モデル。キャラクターの表現力が飛躍的に向上。日本市場に最適。</div>
-            </div>
-            <div class="timeline-item">
-              <div style="font-weight:600;color:var(--text-primary);">Pony Diffusion <span class="badge badge-gold">キャラ安定</span></div>
-              <div class="compact" style="color:var(--text-secondary);margin-top:4px;">キャラクターの一貫性が高い。オリキャラ運用に最適。LoRAとの相性も抜群。</div>
-            </div>
-          </div>
-        </div>
-        <div>
-          <div style="font-weight:600;margin-bottom:16px;color:var(--gold);">4つの圧倒的メリット</div>
-          <div class="card mb-16" style="display:flex;gap:12px;align-items:flex-start;padding:20px;">
-            <div class="icon-circle icon-emerald">🆓</div>
-            <div>
-              <div style="font-weight:600;font-size:0.9rem;">完全無料</div>
-              <div class="compact" style="color:var(--text-secondary);">ソフト代ゼロ。GPU電気代のみ。月額課金なし。</div>
-            </div>
-          </div>
-          <div class="card mb-16" style="display:flex;gap:12px;align-items:flex-start;padding:20px;">
-            <div class="icon-circle icon-gold">🔧</div>
-            <div>
-              <div style="font-weight:600;font-size:0.9rem;">カスタマイズ無限</div>
-              <div class="compact" style="color:var(--text-secondary);">LoRA・ControlNet・ワークフローを自由に組み合わせ。</div>
-            </div>
-          </div>
-          <div class="card mb-16" style="display:flex;gap:12px;align-items:flex-start;padding:20px;">
-            <div class="icon-circle icon-emerald">🔒</div>
-            <div>
-              <div style="font-weight:600;font-size:0.9rem;">プライバシー安全</div>
-              <div class="compact" style="color:var(--text-secondary);">ローカル実行でデータ外部送信なし。安心して制作。</div>
-            </div>
-          </div>
-          <div class="card" style="display:flex;gap:12px;align-items:flex-start;padding:20px;">
-            <div class="icon-circle icon-gold">⚡</div>
-            <div>
-              <div style="font-weight:600;font-size:0.9rem;">生成速度</div>
-              <div class="compact" style="color:var(--text-secondary);">1枚数秒〜数十秒。量産体制がすぐに構築できる。</div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <!-- Slide 5: Why Now - Market & Platform -->
-  <div class="slide" id="slide-5">
-    <div class="slide-content">
-      <div class="section-label">WHY NOW — MARKET</div>
-      <div class="slide-title">市場とプラットフォーム — 需要 vs 供給</div>
-      <div class="slide-subtitle">需要は爆発中、供給はまだ足りない = チャンス</div>
-      <div class="grid-2" style="margin-bottom:24px;">
-        <div class="card card-glow" style="text-align:center;padding:32px;">
-          <div style="font-size:2rem;margin-bottom:8px;">📈</div>
-          <div style="font-size:1.3rem;font-weight:700;color:var(--emerald-light);margin-bottom:8px;">需要：急増中</div>
-          <ul class="luxury-list" style="text-align:left;">
-            <li>デジタルコンテンツ市場は年10-20%成長</li>
-            <li>AI作品への抵抗感が急速に低下中</li>
-            <li>動画コンテンツの需要は特に爆発的</li>
-            <li>「AIだから安い」→「AIだから高品質」へ変化</li>
-          </ul>
-        </div>
-        <div class="card card-gold card-glow-gold" style="text-align:center;padding:32px;">
-          <div style="font-size:2rem;margin-bottom:8px;">📉</div>
-          <div style="font-size:1.3rem;font-weight:700;color:var(--gold-light);margin-bottom:8px;">供給：圧倒的に不足</div>
-          <ul class="luxury-list luxury-list-gold" style="text-align:left;">
-            <li>「やり方がわからない」で99%が脱落</li>
-            <li>動画を作れる人はさらに少ない</li>
-            <li>質の高い作品は常に足りていない</li>
-            <li>マルチ展開できる人はほぼゼロ</li>
-          </ul>
-        </div>
-      </div>
-      <div style="font-weight:600;margin-bottom:12px;color:var(--gold);">主要プラットフォーム一覧</div>
-      <div class="grid-3" style="gap:12px;">
-        <div class="card" style="padding:16px;text-align:center;">
-          <div style="font-weight:700;color:var(--emerald-light);font-size:1.1rem;margin-bottom:4px;">FANZA</div>
-          <div class="compact" style="color:var(--gold-light);margin-bottom:6px;">最大市場・集客力No.1</div>
-          <div class="compact-sm" style="color:var(--text-muted);">日本最大の成人向けプラットフォーム。圧倒的なユーザー数。</div>
-        </div>
-        <div class="card" style="padding:16px;text-align:center;">
-          <div style="font-weight:700;color:var(--emerald-light);font-size:1.1rem;margin-bottom:4px;">DLsite</div>
-          <div class="compact" style="color:var(--gold-light);margin-bottom:6px;">同人・CG強い</div>
-          <div class="compact-sm" style="color:var(--text-muted);">同人文化の中心。CG集のランキング効果が強力。</div>
-        </div>
-        <div class="card" style="padding:16px;text-align:center;">
-          <div style="font-weight:700;color:var(--emerald-light);font-size:1.1rem;margin-bottom:4px;">BOOTH</div>
-          <div class="compact" style="color:var(--gold-light);margin-bottom:6px;">初心者最適</div>
-          <div class="compact-sm" style="color:var(--text-muted);">出品簡単。手数料安い。ジャンル自由度が高い。</div>
-        </div>
-        <div class="card card-gold" style="padding:16px;text-align:center;">
-          <div style="font-weight:700;color:var(--gold-light);font-size:1.1rem;margin-bottom:4px;">Patreon</div>
-          <div class="compact" style="color:var(--emerald-light);margin-bottom:6px;">月額課金</div>
-          <div class="compact-sm" style="color:var(--text-muted);">海外ファンからの安定収入。ドル建て。</div>
-        </div>
-        <div class="card card-gold" style="padding:16px;text-align:center;">
-          <div style="font-weight:700;color:var(--gold-light);font-size:1.1rem;margin-bottom:4px;">Fantia</div>
-          <div class="compact" style="color:var(--emerald-light);margin-bottom:6px;">国内月額制</div>
-          <div class="compact-sm" style="color:var(--text-muted);">日本向け月額プラン。ファンクラブ運営。</div>
-        </div>
-        <div class="card card-gold" style="padding:16px;text-align:center;">
-          <div style="font-weight:700;color:var(--gold-light);font-size:1.1rem;margin-bottom:4px;">ヤフオク</div>
-          <div class="compact" style="color:var(--emerald-light);margin-bottom:6px;">物販チャネル</div>
-          <div class="compact-sm" style="color:var(--text-muted);">ポスター・グッズ販売。月15-30万の実績者あり。</div>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <!-- Slide 6: Product Portfolio - Images -->
-  <div class="slide" id="slide-6">
-    <div class="slide-content">
-      <div class="section-label">PRODUCT PORTFOLIO — IMAGES</div>
-      <div class="slide-title">画像コンテンツ — 収益の基盤</div>
-      <div class="slide-subtitle">CG集・ポスター・AI漫画・オリキャラ展開</div>
-      <div class="grid-2" style="gap:20px;">
-        <div class="card card-glow" style="padding:24px;">
-          <div style="display:flex;align-items:center;gap:12px;margin-bottom:16px;">
-            <div class="icon-circle icon-emerald">🖼️</div>
-            <div>
-              <div style="font-weight:700;font-size:1.05rem;">CG集</div>
-              <div class="badge badge-emerald">定番・安定収入</div>
-            </div>
-          </div>
-          <div class="divider"></div>
-          <ul class="luxury-list compact">
-            <li>30〜50枚セット / 500〜3,000円</li>
-            <li>テーマ・ストーリー性で差別化</li>
-            <li>制作時間：慣れれば1セット3-5時間</li>
-            <li>月3-5セット出品で安定収入</li>
-          </ul>
-          <div class="highlight-box compact" style="margin-top:12px;">
-            <span class="gold-text">ポイント：</span>表紙とサムネイルが売上の8割を決める
-          </div>
-        </div>
-        <div class="card card-gold card-glow-gold" style="padding:24px;">
-          <div style="display:flex;align-items:center;gap:12px;margin-bottom:16px;">
-            <div class="icon-circle icon-gold">🎨</div>
-            <div>
-              <div style="font-weight:700;font-size:1.05rem;">ポスター販売</div>
-              <div class="badge badge-gold">高利益率</div>
-            </div>
-          </div>
-          <div class="divider"></div>
-          <ul class="luxury-list luxury-list-gold compact">
-            <li>A3〜B2サイズ / 500〜数千円</li>
-            <li>印刷品質の高解像度が必須</li>
-            <li>ヤフオクでの販売実績が豊富</li>
-            <li>リピーターが付きやすい商材</li>
-          </ul>
-          <div class="highlight-box compact" style="margin-top:12px;">
-            <span class="gold-text">ポイント：</span>部屋に飾りたくなる構図と色彩が重要
-          </div>
-        </div>
-        <div class="card card-glow" style="padding:24px;">
-          <div style="display:flex;align-items:center;gap:12px;margin-bottom:16px;">
-            <div class="icon-circle icon-emerald">📖</div>
-            <div>
-              <div style="font-weight:700;font-size:1.05rem;">AI漫画</div>
-              <div class="badge badge-emerald">成長市場</div>
-            </div>
-          </div>
-          <div class="divider"></div>
-          <ul class="luxury-list compact">
-            <li>30〜50ページ / 週1-2作品ペース</li>
-            <li>ストーリー性で他と差別化</li>
-            <li>FANZA・DLsiteで高需要</li>
-            <li>シリーズ化でファンがつく</li>
-          </ul>
-          <div class="highlight-box compact" style="margin-top:12px;">
-            <span class="gold-text">ポイント：</span>セリフ・コマ割りでAI臭を消す
-          </div>
-        </div>
-        <div class="card card-gold card-glow-gold" style="padding:24px;">
-          <div style="display:flex;align-items:center;gap:12px;margin-bottom:16px;">
-            <div class="icon-circle icon-gold">⭐</div>
-            <div>
-              <div style="font-weight:700;font-size:1.05rem;">オリキャラ展開</div>
-              <div class="badge badge-gold">ブランド化</div>
-            </div>
-          </div>
-          <div class="divider"></div>
-          <ul class="luxury-list luxury-list-gold compact">
-            <li>独自キャラクターを作り込む</li>
-            <li>ファン限定コンテンツで囲い込み</li>
-            <li>グッズ・動画への横展開が可能</li>
-            <li>IPとしての資産価値が生まれる</li>
-          </ul>
-          <div class="highlight-box compact" style="margin-top:12px;">
-            <span class="gold-text">ポイント：</span>LoRAで一貫性を保つのが成功の鍵
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <!-- Slide 7: Product Portfolio - Video -->
-  <div class="slide" id="slide-7">
-    <div class="slide-content">
-      <div class="section-label">PRODUCT PORTFOLIO — VIDEO</div>
-      <div class="slide-title">動画コンテンツ — 高単価の本命</div>
-      <div class="slide-subtitle">ComfyUI + EasyWan22 のワークフローで実現</div>
-      <div class="grid-2" style="gap:20px;margin-bottom:20px;">
-        <div>
-          <div style="font-weight:600;margin-bottom:12px;color:var(--emerald-light);">商品ラインナップ</div>
-          <div class="card mb-12" style="display:flex;gap:16px;align-items:center;padding:18px;">
-            <div style="min-width:80px;text-align:center;">
-              <div class="compact" style="color:var(--text-muted);">短編</div>
-              <div style="font-weight:700;color:var(--emerald-light);">2-5分</div>
-              <div class="compact-sm" style="color:var(--gold-light);">約1,000円</div>
-            </div>
-            <div style="width:1px;height:40px;background:var(--border-emerald);"></div>
-            <div class="compact" style="color:var(--text-secondary);">入門に最適。テスト販売から始める。制作時間2-3時間。</div>
-          </div>
-          <div class="card mb-12" style="display:flex;gap:16px;align-items:center;padding:18px;">
-            <div style="min-width:80px;text-align:center;">
-              <div class="compact" style="color:var(--text-muted);">中編</div>
-              <div style="font-weight:700;color:var(--emerald-light);">10-20分</div>
-              <div class="compact-sm" style="color:var(--gold-light);">約2,000円</div>
-            </div>
-            <div style="width:1px;height:40px;background:var(--border-emerald);"></div>
-            <div class="compact" style="color:var(--text-secondary);">ストーリー性を持たせられる。メイン商品になる尺。</div>
-          </div>
-          <div class="card mb-12 card-gold" style="display:flex;gap:16px;align-items:center;padding:18px;">
-            <div style="min-width:80px;text-align:center;">
-              <div class="compact" style="color:var(--text-muted);">長編</div>
-              <div style="font-weight:700;color:var(--gold-light);">30分〜</div>
-              <div class="compact-sm" style="color:var(--gold-light);">2,980円</div>
-            </div>
-            <div style="width:1px;height:40px;background:var(--border-gold);"></div>
-            <div class="compact" style="color:var(--text-secondary);">プレミアム商品。ボイス付きで高単価。リピーターが付く。</div>
-          </div>
-          <div class="card" style="display:flex;gap:16px;align-items:center;padding:18px;">
-            <div style="min-width:80px;text-align:center;">
-              <div class="compact" style="color:var(--text-muted);">シリーズ</div>
-              <div style="font-weight:700;color:var(--emerald-light);">連作</div>
-              <div class="compact-sm" style="color:var(--gold-light);">継続収入</div>
-            </div>
-            <div style="width:1px;height:40px;background:var(--border-emerald);"></div>
-            <div class="compact" style="color:var(--text-secondary);">シリーズ展開でファン囲い込み。前作購入者が次作も買う。</div>
-          </div>
-        </div>
-        <div>
-          <div style="font-weight:600;margin-bottom:12px;color:var(--gold);">ComfyUI + EasyWan22 フロー</div>
-          <div class="card card-gold" style="padding:20px;">
-            <div style="display:flex;gap:12px;align-items:flex-start;margin-bottom:16px;">
-              <div class="step-circle">1</div>
-              <div><div style="font-weight:600;font-size:0.9rem;">動画向き静止画を生成</div><div class="compact-sm" style="color:var(--text-secondary);">構図・ポーズ・表情を最適化した元画像を作成</div></div>
-            </div>
-            <div style="display:flex;gap:12px;align-items:flex-start;margin-bottom:16px;">
-              <div class="step-circle">2</div>
-              <div><div style="font-weight:600;font-size:0.9rem;">ComfyUI環境構築</div><div class="compact-sm" style="color:var(--text-secondary);">EasyWan22ワークフローをインストール・設定</div></div>
-            </div>
-            <div style="display:flex;gap:12px;align-items:flex-start;margin-bottom:16px;">
-              <div class="step-circle">3</div>
-              <div><div style="font-weight:600;font-size:0.9rem;">I2V（Image to Video）実行</div><div class="compact-sm" style="color:var(--text-secondary);">静止画から動画を生成。動きの方向・速度を制御</div></div>
-            </div>
-            <div style="display:flex;gap:12px;align-items:flex-start;margin-bottom:16px;">
-              <div class="step-circle-gold" style="border-color:var(--gold);color:var(--gold);">4</div>
-              <div><div style="font-weight:600;font-size:0.9rem;">EndImage / PostProcess / LoRA</div><div class="compact-sm" style="color:var(--text-secondary);">終了フレーム指定・後処理・品質向上の調整</div></div>
-            </div>
-            <div style="display:flex;gap:12px;align-items:flex-start;">
-              <div class="step-circle-gold" style="border-color:var(--gold);color:var(--gold);">5</div>
-              <div><div style="font-weight:600;font-size:0.9rem;">尺・解像度の最終調整</div><div class="compact-sm" style="color:var(--text-secondary);">FFmpegで結合・トランジション・音声追加</div></div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <!-- Slide 8: Product Portfolio - Other -->
-  <div class="slide" id="slide-8">
-    <div class="slide-content">
-      <div class="section-label">PRODUCT PORTFOLIO — OTHER</div>
-      <div class="slide-title">その他の収益源 — 多角化で安定</div>
-      <div class="slide-subtitle">グッズ・受注制作・月額制・素材販売</div>
-      <div class="grid-3" style="gap:18px;margin-bottom:24px;">
-        <div class="card" style="padding:22px;">
-          <div style="font-size:1.6rem;margin-bottom:8px;">🎁</div>
-          <div style="font-weight:700;margin-bottom:4px;">グッズ販売</div>
-          <div class="divider"></div>
-          <ul class="luxury-list compact-sm">
-            <li>アクリルスタンド・キーホルダー</li>
-            <li>クリアファイル・ステッカー</li>
-            <li>受注生産でリスクゼロ</li>
-            <li>BOOTHのBOOTH Factoryで簡単制作</li>
-          </ul>
-        </div>
-        <div class="card card-gold" style="padding:22px;">
-          <div style="font-size:1.6rem;margin-bottom:8px;">🎯</div>
-          <div style="font-weight:700;margin-bottom:4px;">受注制作</div>
-          <div class="divider"></div>
-          <ul class="luxury-list luxury-list-gold compact-sm">
-            <li>個人からのカスタムオーダー</li>
-            <li>1件5,000〜50,000円</li>
-            <li>SNSでの実績公開が営業になる</li>
-            <li>リピーター率が非常に高い</li>
-          </ul>
-        </div>
-        <div class="card" style="padding:22px;">
-          <div style="font-size:1.6rem;margin-bottom:8px;">💳</div>
-          <div style="font-weight:700;margin-bottom:4px;">月額制ファンサイト</div>
-          <div class="divider"></div>
-          <ul class="luxury-list compact-sm">
-            <li>Fantia / Patreonで運営</li>
-            <li>月500〜3,000円/人</li>
-            <li>100人で月5-30万円の安定収入</li>
-            <li>限定コンテンツで囲い込み</li>
-          </ul>
-        </div>
-        <div class="card card-gold" style="padding:22px;">
-          <div style="font-size:1.6rem;margin-bottom:8px;">📱</div>
-          <div style="font-weight:700;margin-bottom:4px;">SNS用素材</div>
-          <div class="divider"></div>
-          <ul class="luxury-list luxury-list-gold compact-sm">
-            <li>アイコン・ヘッダー画像</li>
-            <li>配信用素材セット</li>
-            <li>VTuber向け素材</li>
-            <li>企業向けもあり得る</li>
-          </ul>
-        </div>
-        <div class="card" style="padding:22px;">
-          <div style="font-size:1.6rem;margin-bottom:8px;">📺</div>
-          <div style="font-weight:700;margin-bottom:4px;">広告クリエイティブ</div>
-          <div class="divider"></div>
-          <ul class="luxury-list compact-sm">
-            <li>SNS広告用画像・動画</li>
-            <li>バナー・サムネイル制作</li>
-            <li>企業案件は高単価</li>
-            <li>ポートフォリオがあれば受注可能</li>
-          </ul>
-        </div>
-        <div class="card card-gold card-glow-gold" style="padding:22px;text-align:center;display:flex;flex-direction:column;justify-content:center;">
-          <div style="font-size:1.6rem;margin-bottom:8px;">💡</div>
-          <div style="font-weight:700;color:var(--gold-light);margin-bottom:8px;">ポイント</div>
-          <div class="compact" style="color:var(--text-secondary);">1つの「画像素材」から複数の商品を作れる。<span class="gold-text">同じ労力で収益を何倍にも</span>できるのがAIの強み。</div>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <!-- Slide 9: AI Image Generation Mastery -->
-  <div class="slide" id="slide-9">
-    <div class="slide-content">
-      <div class="section-label">SKILL MASTERY — IMAGE</div>
-      <div class="slide-title">AI画像生成 — ツール完全比較</div>
-      <div class="slide-subtitle">Stable Diffusion系からクラウドサービスまで</div>
-      <table class="table-luxury" style="margin-bottom:20px;">
-        <thead>
-          <tr>
-            <th>ツール</th>
-            <th>料金</th>
-            <th>品質</th>
-            <th>カスタマイズ</th>
-            <th>商用利用</th>
-            <th>推奨度</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            <td style="font-weight:600;color:var(--emerald-light);">Illustrious</td>
-            <td class="highlight-cell">無料</td>
-            <td>★★★★★</td>
-            <td>★★★★★</td>
-            <td>✓ 自由</td>
-            <td><span class="badge badge-gold">最推奨</span></td>
-          </tr>
-          <tr>
-            <td style="font-weight:600;color:var(--emerald-light);">Pony Diffusion</td>
-            <td class="highlight-cell">無料</td>
-            <td>★★★★☆</td>
-            <td>★★★★★</td>
-            <td>✓ 自由</td>
-            <td><span class="badge badge-emerald">推奨</span></td>
-          </tr>
-          <tr>
-            <td style="font-weight:600;color:var(--text-secondary);">SDXL</td>
-            <td class="highlight-cell">無料</td>
-            <td>★★★★☆</td>
-            <td>★★★★☆</td>
-            <td>✓ 自由</td>
-            <td><span class="badge badge-emerald">推奨</span></td>
-          </tr>
-          <tr>
-            <td style="font-weight:600;color:var(--text-secondary);">Midjourney</td>
-            <td>月$10-60</td>
-            <td>★★★★★</td>
-            <td>★★☆☆☆</td>
-            <td>有料プランのみ</td>
-            <td><span class="badge badge-emerald">参考</span></td>
-          </tr>
-          <tr>
-            <td style="font-weight:600;color:var(--text-secondary);">DALL-E 3</td>
-            <td>従量制</td>
-            <td>★★★★☆</td>
-            <td>★☆☆☆☆</td>
-            <td>✓ 利用可</td>
-            <td><span class="badge badge-emerald">参考</span></td>
-          </tr>
-        </tbody>
-      </table>
-      <div class="grid-2" style="gap:20px;">
-        <div class="card card-glow" style="padding:20px;">
-          <div style="font-weight:700;margin-bottom:8px;color:var(--emerald-light);">Civitai活用術</div>
-          <div class="divider"></div>
-          <ul class="luxury-list compact-sm">
-            <li>LoRAモデルの宝庫 — 無料でダウンロード</li>
-            <li>キャラ一貫性を保つLoRAを探す・学習する</li>
-            <li>スタイル系LoRAで独自の画風を確立</li>
-            <li>ワークフローも共有されている</li>
-          </ul>
-        </div>
-        <div class="card card-gold card-glow-gold" style="padding:20px;">
-          <div style="font-weight:700;margin-bottom:8px;color:var(--gold);">推奨の組み合わせ</div>
-          <div class="divider"></div>
-          <div class="compact" style="color:var(--text-secondary);margin-bottom:8px;">
-            <span class="gold-text">アニメ系：</span>Illustrious + Civitai LoRA<br>
-            <span class="gold-text">キャラ安定：</span>Pony + カスタムLoRA<br>
-            <span class="gold-text">高解像度：</span>SDXL + ControlNet<br>
-            <span class="gold-text">テスト用：</span>Midjourney（アイデア出し）
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <!-- Slide 10: AI Video Production Mastery -->
-  <div class="slide" id="slide-10">
-    <div class="slide-content">
-      <div class="section-label">SKILL MASTERY — VIDEO</div>
-      <div class="slide-title">AI動画制作 — ComfyUI + EasyWan22</div>
-      <div class="slide-subtitle">5ステップで高品質AI動画を量産する</div>
-      <div class="grid-2" style="gap:20px;margin-bottom:20px;">
-        <div>
-          <div class="card card-glow" style="padding:20px;margin-bottom:16px;">
-            <div style="display:flex;gap:12px;align-items:center;margin-bottom:12px;">
-              <div class="step-circle">1</div>
-              <div style="font-weight:700;font-size:0.95rem;">動画向き静止画を生成</div>
-            </div>
-            <div class="compact" style="color:var(--text-secondary);padding-left:52px;">
-              動きを想定した構図設計。動かしやすいポーズ・アングルを選ぶ。手や指は特に注意。背景はシンプルに。
-            </div>
-          </div>
-          <div class="card" style="padding:20px;margin-bottom:16px;">
-            <div style="display:flex;gap:12px;align-items:center;margin-bottom:12px;">
-              <div class="step-circle">2</div>
-              <div style="font-weight:700;font-size:0.95rem;">ComfyUI環境構築</div>
-            </div>
-            <div class="compact" style="color:var(--text-secondary);padding-left:52px;">
-              EasyWan22ノードのインストール。モデルのダウンロード。VRAM 8GB以上推奨。
-            </div>
-          </div>
-          <div class="card" style="padding:20px;margin-bottom:16px;">
-            <div style="display:flex;gap:12px;align-items:center;margin-bottom:12px;">
-              <div class="step-circle">3</div>
-              <div style="font-weight:700;font-size:0.95rem;">I2V ワークフロー実行</div>
-            </div>
-            <div class="compact" style="color:var(--text-secondary);padding-left:52px;">
-              静止画をInputにセット。プロンプトで動きの方向・種類を指定。生成実行。
-            </div>
-          </div>
-        </div>
-        <div>
-          <div class="card card-gold" style="padding:20px;margin-bottom:16px;">
-            <div style="display:flex;gap:12px;align-items:center;margin-bottom:12px;">
-              <div class="step-circle-gold">4</div>
-              <div style="font-weight:700;font-size:0.95rem;">EndImage / PostProcess / LoRA</div>
-            </div>
-            <div class="compact" style="color:var(--text-secondary);padding-left:52px;">
-              終了フレームを指定して動きを制御。後処理で品質アップ。LoRAでスタイル統一。
-            </div>
-          </div>
-          <div class="card card-gold" style="padding:20px;margin-bottom:16px;">
-            <div style="display:flex;gap:12px;align-items:center;margin-bottom:12px;">
-              <div class="step-circle-gold">5</div>
-              <div style="font-weight:700;font-size:0.95rem;">尺・解像度の最終調整</div>
-            </div>
-            <div class="compact" style="color:var(--text-secondary);padding-left:52px;">
-              FFmpegで複数クリップを結合。トランジション追加。音声・BGM合成。最終エンコード。
-            </div>
-          </div>
-          <div class="card card-glow-gold" style="padding:20px;border-color:var(--border-gold);">
-            <div style="font-weight:700;margin-bottom:8px;color:var(--gold);">破綻を減らすコツ</div>
-            <ul class="luxury-list luxury-list-gold compact-sm">
-              <li>動きは小さく・ゆっくりが基本</li>
-              <li>手・指はフレーム外に出す構図</li>
-              <li>カメラワークでごまかす技術</li>
-              <li>1クリップ3-5秒で切り替え</li>
-              <li>LoRAの強度は0.3-0.7が安定</li>
-            </ul>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <!-- Slide 11: AI Automation Mastery -->
-  <div class="slide" id="slide-11">
-    <div class="slide-content">
-      <div class="section-label">SKILL MASTERY — AUTOMATION</div>
-      <div class="slide-title">AI自動化 — 時間を味方にする</div>
-      <div class="slide-subtitle">AIエージェント活用 / プログラミング不要 / 小さくコツコツ改善</div>
-      <div class="grid-2" style="gap:24px;margin-bottom:24px;">
-        <div>
-          <div class="card card-glow" style="padding:24px;margin-bottom:16px;">
-            <div style="font-size:1.8rem;margin-bottom:8px;text-align:center;">🤖</div>
-            <div style="font-weight:700;text-align:center;font-size:1.1rem;margin-bottom:12px;">AIエージェント活用</div>
-            <div class="divider" style="margin:0 auto 12px;"></div>
-            <div class="compact" style="color:var(--text-secondary);margin-bottom:12px;">
-              AIとチャットするだけでツールが作れる時代。プログラミングの知識は不要。やりたいことを日本語で説明すればOK。
-            </div>
-            <div class="highlight-box compact-sm">
-              <span class="gold-text">例：</span>「CG集の表紙を100パターン自動生成して」→ AIが実行スクリプトを作成
-            </div>
-          </div>
-          <div class="card card-gold" style="padding:24px;">
-            <div style="font-weight:700;margin-bottom:12px;color:var(--gold);">自動化でできること</div>
-            <ul class="luxury-list luxury-list-gold compact">
-              <li>画像の自動バッチ生成（100枚一括）</li>
-              <li>SNS自動投稿（X/Instagram連携）</li>
-              <li>売上データ自動集計・分析</li>
-              <li>サムネイル自動作成</li>
-              <li>出品作業の半自動化</li>
-            </ul>
-          </div>
-        </div>
-        <div>
-          <div class="card" style="padding:24px;margin-bottom:16px;">
-            <div style="font-weight:700;margin-bottom:16px;color:var(--emerald-light);">自動化導入のステップ</div>
-            <div style="display:flex;gap:12px;align-items:flex-start;margin-bottom:16px;">
-              <div class="step-circle" style="width:32px;height:32px;font-size:0.8rem;min-width:32px;">1</div>
-              <div>
-                <div style="font-weight:600;font-size:0.85rem;">手作業を全部書き出す</div>
-                <div class="compact-sm" style="color:var(--text-muted);">「何に時間を使っているか」を可視化</div>
-              </div>
-            </div>
-            <div style="display:flex;gap:12px;align-items:flex-start;margin-bottom:16px;">
-              <div class="step-circle" style="width:32px;height:32px;font-size:0.8rem;min-width:32px;">2</div>
-              <div>
-                <div style="font-weight:600;font-size:0.85rem;">繰り返し作業を見つける</div>
-                <div class="compact-sm" style="color:var(--text-muted);">毎回同じことをしていたら自動化候補</div>
-              </div>
-            </div>
-            <div style="display:flex;gap:12px;align-items:flex-start;margin-bottom:16px;">
-              <div class="step-circle" style="width:32px;height:32px;font-size:0.8rem;min-width:32px;">3</div>
-              <div>
-                <div style="font-weight:600;font-size:0.85rem;">AIに相談して自動化</div>
-                <div class="compact-sm" style="color:var(--text-muted);">「これを自動でやりたい」と伝えるだけ</div>
-              </div>
-            </div>
-            <div style="display:flex;gap:12px;align-items:flex-start;">
-              <div class="step-circle-gold" style="width:32px;height:32px;font-size:0.8rem;min-width:32px;">4</div>
-              <div>
-                <div style="font-weight:600;font-size:0.85rem;">小さく試して改善する</div>
-                <div class="compact-sm" style="color:var(--text-muted);">完璧を求めず、コツコツ改善を繰り返す</div>
-              </div>
-            </div>
-          </div>
-          <div class="highlight-box" style="text-align:center;">
-            <div class="gold-text" style="font-size:1rem;margin-bottom:4px;">自動化の本質</div>
-            <div class="compact" style="color:var(--text-secondary);">「1時間の作業を5分にする」<br>浮いた55分で新しい作品を作る = <span class="emerald-text">収益が加速</span></div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <!-- Slide 12: Platform Strategy -->
-  <div class="slide" id="slide-12">
-    <div class="slide-content">
-      <div class="section-label">PLATFORM STRATEGY</div>
-      <div class="slide-title">プラットフォーム詳細戦略</div>
-      <div class="slide-subtitle">各プラットフォームの特性を理解して最適配置</div>
-      <table class="table-luxury" style="font-size:0.8rem;">
-        <thead>
-          <tr>
-            <th style="width:12%;">プラットフォーム</th>
-            <th style="width:15%;">特徴</th>
-            <th style="width:15%;">強み</th>
-            <th style="width:15%;">推奨商品</th>
-            <th style="width:13%;">手数料</th>
-            <th style="width:18%;">攻略ポイント</th>
-            <th style="width:12%;">推奨</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            <td style="font-weight:700;color:var(--emerald-light);">FANZA</td>
-            <td>日本最大の成人向け</td>
-            <td class="highlight-cell">集客力が圧倒的</td>
-            <td>動画・CG集・漫画</td>
-            <td>約40-50%</td>
-            <td>サムネイル命。トレンドジャンル狙い</td>
-            <td><span class="badge badge-gold">必須</span></td>
-          </tr>
-          <tr>
-            <td style="font-weight:700;color:var(--emerald-light);">DLsite</td>
-            <td>同人文化の中心</td>
-            <td class="highlight-cell">ランキング効果大</td>
-            <td>CG集・漫画・音声</td>
-            <td>約35-40%</td>
-            <td>新作ランキング狙いで一気に売る</td>
-            <td><span class="badge badge-gold">必須</span></td>
-          </tr>
-          <tr>
-            <td style="font-weight:700;color:var(--emerald-light);">BOOTH</td>
-            <td>出品がとにかく簡単</td>
-            <td class="highlight-cell">手数料最安</td>
-            <td>CG集・グッズ・素材</td>
-            <td>約5.6%+決済</td>
-            <td>初心者はここから。X連携で集客</td>
-            <td><span class="badge badge-emerald">推奨</span></td>
-          </tr>
-          <tr>
-            <td style="font-weight:700;color:var(--gold-light);">Patreon</td>
-            <td>海外月額課金</td>
-            <td class="highlight-cell">ドル建て安定収入</td>
-            <td>月額限定コンテンツ</td>
-            <td>約5-12%</td>
-            <td>英語タグ。海外ファン開拓</td>
-            <td><span class="badge badge-emerald">推奨</span></td>
-          </tr>
-          <tr>
-            <td style="font-weight:700;color:var(--gold-light);">Fantia</td>
-            <td>国内月額制</td>
-            <td class="highlight-cell">日本人向け</td>
-            <td>月額限定コンテンツ</td>
-            <td>約10%</td>
-            <td>ファンクラブ形式。限定感を演出</td>
-            <td><span class="badge badge-emerald">推奨</span></td>
-          </tr>
-          <tr>
-            <td style="font-weight:700;color:var(--gold-light);">ヤフオク</td>
-            <td>物販プラットフォーム</td>
-            <td class="highlight-cell">ポスター実績あり</td>
-            <td>ポスター・物理グッズ</td>
-            <td>約10%</td>
-            <td>高画質印刷。月15-30万実績者も</td>
-            <td><span class="badge badge-emerald">穴場</span></td>
-          </tr>
-        </tbody>
-      </table>
-      <div class="highlight-box mt-16" style="text-align:center;">
-        <span class="gold-text">初心者の最適ルート：</span> BOOTH（練習）→ DLsite（本格参入）→ FANZA（メイン）→ Patreon/Fantia（ストック収入）
-      </div>
-    </div>
-  </div>
-
-  <!-- Slide 13: 3 Revenue Models -->
-  <div class="slide" id="slide-13">
-    <div class="slide-content">
-      <div class="section-label">REVENUE MODELS</div>
-      <div class="slide-title">3つの収益モデル — 詳細設計</div>
-      <div class="slide-subtitle">あなたに合ったパターンを選ぶ</div>
-      <div class="grid-3" style="gap:18px;">
-        <div class="card card-glow" style="padding:22px;">
-          <div style="text-align:center;margin-bottom:12px;">
-            <div class="badge badge-emerald" style="margin-bottom:8px;">PATTERN 1</div>
-            <div style="font-weight:700;font-size:1.1rem;margin-bottom:4px;">画像メイン</div>
-            <div class="big-number-sm gradient-number" style="font-size:1.6rem;">月10-30万円</div>
-          </div>
-          <div class="divider" style="margin:12px auto;"></div>
-          <div class="compact" style="margin-bottom:12px;">
-            <div style="color:var(--emerald-light);font-weight:600;margin-bottom:4px;">主な販売先</div>
-            <div style="color:var(--text-secondary);">BOOTH・DLsite</div>
-          </div>
-          <div class="compact" style="margin-bottom:12px;">
-            <div style="color:var(--emerald-light);font-weight:600;margin-bottom:4px;">商品構成</div>
-            <div style="color:var(--text-secondary);">CG集（月3-5作品）<br>ポスター（月10-20枚）</div>
-          </div>
-          <div class="compact" style="margin-bottom:12px;">
-            <div style="color:var(--emerald-light);font-weight:600;margin-bottom:4px;">作業時間</div>
-            <div style="color:var(--text-secondary);">1日2-3時間</div>
-          </div>
-          <div class="compact">
-            <div style="color:var(--emerald-light);font-weight:600;margin-bottom:4px;">メリット</div>
-            <div style="color:var(--text-secondary);">参入しやすい・学習コスト低い</div>
-          </div>
-        </div>
-        <div class="card card-gold card-glow-gold" style="padding:22px;">
-          <div style="text-align:center;margin-bottom:12px;">
-            <div class="badge badge-gold" style="margin-bottom:8px;">PATTERN 2</div>
-            <div style="font-weight:700;font-size:1.1rem;margin-bottom:4px;">動画特化</div>
-            <div class="big-number-sm gradient-number" style="font-size:1.6rem;">月20-50万円</div>
-          </div>
-          <div class="divider" style="margin:12px auto;"></div>
-          <div class="compact" style="margin-bottom:12px;">
-            <div style="color:var(--gold);font-weight:600;margin-bottom:4px;">主な販売先</div>
-            <div style="color:var(--text-secondary);">FANZA・Patreon</div>
-          </div>
-          <div class="compact" style="margin-bottom:12px;">
-            <div style="color:var(--gold);font-weight:600;margin-bottom:4px;">商品構成</div>
-            <div style="color:var(--text-secondary);">動画（月2-4本）<br>シリーズ展開</div>
-          </div>
-          <div class="compact" style="margin-bottom:12px;">
-            <div style="color:var(--gold);font-weight:600;margin-bottom:4px;">作業時間</div>
-            <div style="color:var(--text-secondary);">1日3-4時間</div>
-          </div>
-          <div class="compact">
-            <div style="color:var(--gold);font-weight:600;margin-bottom:4px;">メリット</div>
-            <div style="color:var(--text-secondary);">競合少ない・高単価・伸びしろ大</div>
-          </div>
-        </div>
-        <div class="card card-glow pulse-glow" style="padding:22px;border-color:rgba(16,185,129,0.35);">
-          <div style="text-align:center;margin-bottom:12px;">
-            <div class="badge badge-gold" style="margin-bottom:8px;">PATTERN 3 — BEST</div>
-            <div style="font-weight:700;font-size:1.1rem;margin-bottom:4px;">マルチ展開</div>
-            <div class="big-number-sm gradient-number" style="font-size:1.6rem;">月50-300万円</div>
-          </div>
-          <div class="divider" style="margin:12px auto;"></div>
-          <div class="compact" style="margin-bottom:12px;">
-            <div style="color:var(--gold);font-weight:600;margin-bottom:4px;">主な販売先</div>
-            <div style="color:var(--text-secondary);">全プラットフォーム</div>
-          </div>
-          <div class="compact" style="margin-bottom:12px;">
-            <div style="color:var(--gold);font-weight:600;margin-bottom:4px;">商品構成</div>
-            <div style="color:var(--text-secondary);">画像+動画+月額+グッズ<br>オリキャラIP育成</div>
-          </div>
-          <div class="compact" style="margin-bottom:12px;">
-            <div style="color:var(--gold);font-weight:600;margin-bottom:4px;">作業時間</div>
-            <div style="color:var(--text-secondary);">1日3-4時間（自動化済み）</div>
-          </div>
-          <div class="compact">
-            <div style="color:var(--gold);font-weight:600;margin-bottom:4px;">メリット</div>
-            <div style="color:var(--text-secondary);">最大収益・安定性抜群・資産化</div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <!-- Slide 14: The Multiplier Formula -->
-  <div class="slide" id="slide-14">
-    <div class="slide-content text-center">
-      <div class="section-label">THE MULTIPLIER FORMULA</div>
-      <div class="slide-title">掛け算の法則 — 収益が桁違いになる仕組み</div>
-      <div class="slide-subtitle">単体では限界がある。掛け合わせると爆発する。</div>
-      <div class="formula-box" style="margin-bottom:32px;font-size:1.1rem;">
-        <div style="display:flex;align-items:center;justify-content:center;gap:16px;flex-wrap:wrap;">
-          <div style="text-align:center;">
-            <div style="font-size:2rem;margin-bottom:4px;">🖼️</div>
-            <div style="color:var(--emerald-light);font-weight:700;">画像</div>
-            <div class="compact-sm" style="color:var(--text-muted);">ファン獲得</div>
-          </div>
-          <div style="font-size:2rem;color:var(--gold);">×</div>
-          <div style="text-align:center;">
-            <div style="font-size:2rem;margin-bottom:4px;">🎬</div>
-            <div style="color:var(--emerald-light);font-weight:700;">動画</div>
-            <div class="compact-sm" style="color:var(--text-muted);">高単価</div>
-          </div>
-          <div style="font-size:2rem;color:var(--gold);">×</div>
-          <div style="text-align:center;">
-            <div style="font-size:2rem;margin-bottom:4px;">🤖</div>
-            <div style="color:var(--emerald-light);font-weight:700;">自動化</div>
-            <div class="compact-sm" style="color:var(--text-muted);">時間創出</div>
-          </div>
-          <div style="font-size:2rem;color:var(--gold);">×</div>
-          <div style="text-align:center;">
-            <div style="font-size:2rem;margin-bottom:4px;">📱</div>
-            <div style="color:var(--emerald-light);font-weight:700;">SNS</div>
-            <div class="compact-sm" style="color:var(--text-muted);">加速装置</div>
-          </div>
-          <div style="font-size:2rem;color:var(--gold);">=</div>
-          <div style="text-align:center;">
-            <div style="font-size:2rem;margin-bottom:4px;">💰</div>
-            <div class="shimmer-text" style="font-weight:900;font-size:1.3rem;">桁違いの収益</div>
-          </div>
-        </div>
-      </div>
-      <div class="grid-4" style="gap:16px;">
-        <div class="card" style="padding:18px;text-align:center;">
-          <div style="color:var(--emerald-light);font-weight:600;margin-bottom:6px;">画像だけ</div>
-          <div class="big-number-sm gradient-number" style="font-size:1.2rem;">月5万</div>
-          <div class="compact-sm" style="color:var(--text-muted);margin-top:4px;">CG集を細々と</div>
-        </div>
-        <div class="card" style="padding:18px;text-align:center;">
-          <div style="color:var(--emerald-light);font-weight:600;margin-bottom:6px;">画像×動画</div>
-          <div class="big-number-sm gradient-number" style="font-size:1.2rem;">月20万</div>
-          <div class="compact-sm" style="color:var(--text-muted);margin-top:4px;">高単価商品追加</div>
-        </div>
-        <div class="card card-gold" style="padding:18px;text-align:center;">
-          <div style="color:var(--gold);font-weight:600;margin-bottom:6px;">+自動化</div>
-          <div class="big-number-sm gradient-number" style="font-size:1.2rem;">月50万</div>
-          <div class="compact-sm" style="color:var(--text-muted);margin-top:4px;">量産体制確立</div>
-        </div>
-        <div class="card card-gold card-glow-gold" style="padding:18px;text-align:center;">
-          <div style="color:var(--gold);font-weight:600;margin-bottom:6px;">+SNS加速</div>
-          <div class="big-number-sm gradient-number" style="font-size:1.2rem;">月100万+</div>
-          <div class="compact-sm" style="color:var(--text-muted);margin-top:4px;">ファン×全展開</div>
-        </div>
-      </div>
-      <div class="highlight-box mt-24" style="text-align:center;">
-        <span class="gold-text">1つのスキルを追加するたびに、既存の収益も倍増する。これが掛け算の力。</span>
-      </div>
-    </div>
-  </div>
-
-  <!-- Slide 15: Sales Psychology -->
-  <div class="slide" id="slide-15">
-    <div class="slide-content">
-      <div class="section-label">SALES PSYCHOLOGY</div>
-      <div class="slide-title">売れる心理学 — なぜ売れないのか？</div>
-      <div class="slide-subtitle">技術力は十分なのに売れない人の共通点</div>
-      <div class="grid-2" style="gap:24px;margin-bottom:24px;">
-        <div>
-          <div style="font-weight:700;margin-bottom:16px;color:var(--gold);">売れない3大原因</div>
-          <div class="card" style="padding:20px;margin-bottom:12px;border-color:rgba(239,68,68,0.2);">
-            <div style="display:flex;gap:12px;align-items:flex-start;">
-              <div style="font-size:1.3rem;">❌</div>
-              <div>
-                <div style="font-weight:700;font-size:0.95rem;color:#f87171;margin-bottom:4px;">ターゲット不在</div>
-                <div class="compact" style="color:var(--text-secondary);">「誰に売るか」を考えていない。万人向け=誰にも刺さらない。ジャンル・ターゲットを絞るほど売れる。</div>
-              </div>
-            </div>
-          </div>
-          <div class="card" style="padding:20px;margin-bottom:12px;border-color:rgba(239,68,68,0.2);">
-            <div style="display:flex;gap:12px;align-items:flex-start;">
-              <div style="font-size:1.3rem;">❌</div>
-              <div>
-                <div style="font-weight:700;font-size:0.95rem;color:#f87171;margin-bottom:4px;">売場のルール無視</div>
-                <div class="compact" style="color:var(--text-secondary);">各プラットフォームには独自のルール・文化がある。FANZAとBOOTHでは売り方が全く違う。</div>
-              </div>
-            </div>
-          </div>
-          <div class="card" style="padding:20px;border-color:rgba(239,68,68,0.2);">
-            <div style="display:flex;gap:12px;align-items:flex-start;">
-              <div style="font-size:1.3rem;">❌</div>
-              <div>
-                <div style="font-weight:700;font-size:0.95rem;color:#f87171;margin-bottom:4px;">作って満足</div>
-                <div class="compact" style="color:var(--text-secondary);">「出品すれば売れる」と思っている。マーケティング＝0の状態。出品後の改善が必須。</div>
-              </div>
-            </div>
-          </div>
-        </div>
-        <div>
-          <div style="font-weight:700;margin-bottom:16px;color:var(--emerald-light);">売れるようになる4つの鍵</div>
-          <div class="card card-glow" style="padding:20px;margin-bottom:12px;">
-            <div style="display:flex;gap:12px;align-items:flex-start;">
-              <div class="step-circle" style="width:36px;height:36px;font-size:0.85rem;min-width:36px;">1</div>
-              <div>
-                <div style="font-weight:700;font-size:0.95rem;color:var(--emerald-light);margin-bottom:4px;">サムネイルが最初の1秒</div>
-                <div class="compact" style="color:var(--text-secondary);">クリックされるかの90%はサムネイルで決まる。本文より100倍重要。</div>
-              </div>
-            </div>
-          </div>
-          <div class="card" style="padding:20px;margin-bottom:12px;">
-            <div style="display:flex;gap:12px;align-items:flex-start;">
-              <div class="step-circle" style="width:36px;height:36px;font-size:0.85rem;min-width:36px;">2</div>
-              <div>
-                <div style="font-weight:700;font-size:0.95rem;color:var(--emerald-light);margin-bottom:4px;">タイトル・説明文のSEO</div>
-                <div class="compact" style="color:var(--text-secondary);">検索されるキーワードを含める。ジャンル名+特徴+数量を明記。</div>
-              </div>
-            </div>
-          </div>
-          <div class="card" style="padding:20px;margin-bottom:12px;">
-            <div style="display:flex;gap:12px;align-items:flex-start;">
-              <div class="step-circle" style="width:36px;height:36px;font-size:0.85rem;min-width:36px;">3</div>
-              <div>
-                <div style="font-weight:700;font-size:0.95rem;color:var(--emerald-light);margin-bottom:4px;">ジャンル選定は需要ベース</div>
-                <div class="compact" style="color:var(--text-secondary);">作りたいもの≠売れるもの。ランキングを毎日チェックして需要を把握。</div>
-              </div>
-            </div>
-          </div>
-          <div class="card card-gold" style="padding:20px;">
-            <div style="display:flex;gap:12px;align-items:flex-start;">
-              <div class="step-circle-gold" style="width:36px;height:36px;font-size:0.85rem;min-width:36px;">4</div>
-              <div>
-                <div style="font-weight:700;font-size:0.95rem;color:var(--gold);margin-bottom:4px;">データで改善し続ける</div>
-                <div class="compact" style="color:var(--text-secondary);">売上・PV・CTRを追跡。何が効いたか分析して次に活かす。</div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <!-- Slide 16: Pricing Strategy -->
-  <div class="slide" id="slide-16">
-    <div class="slide-content">
-      <div class="section-label">PRICING STRATEGY</div>
-      <div class="slide-title">価格戦略 — 安すぎも高すぎもダメ</div>
-      <div class="slide-subtitle">相場リサーチ + 戦略的ずらし = 最適価格</div>
-      <div class="grid-3" style="gap:20px;margin-bottom:24px;">
-        <div class="card" style="padding:24px;text-align:center;border-color:rgba(239,68,68,0.2);">
-          <div style="font-size:2rem;margin-bottom:8px;">⬇️</div>
-          <div style="font-weight:700;color:#f87171;font-size:1.1rem;margin-bottom:8px;">安すぎ</div>
-          <div class="divider" style="margin:8px auto;background:rgba(239,68,68,0.3);"></div>
-          <ul class="luxury-list compact-sm" style="text-align:left;">
-            <li style="color:var(--text-muted);">利益が薄い</li>
-            <li style="color:var(--text-muted);">数で勝負 = 疲弊する</li>
-            <li style="color:var(--text-muted);">「安い=低品質」と思われる</li>
-            <li style="color:var(--text-muted);">値上げしにくくなる</li>
-          </ul>
-        </div>
-        <div class="card card-gold card-glow-gold" style="padding:24px;text-align:center;">
-          <div style="font-size:2rem;margin-bottom:8px;">✅</div>
-          <div style="font-weight:700;font-size:1.1rem;margin-bottom:8px;"><span class="shimmer-text">正解の価格帯</span></div>
-          <div class="divider" style="margin:8px auto;"></div>
-          <ul class="luxury-list luxury-list-gold compact-sm" style="text-align:left;">
-            <li style="color:var(--text-secondary);">相場をリサーチ</li>
-            <li style="color:var(--text-secondary);">少しだけ安く or 高く「ずらす」</li>
-            <li style="color:var(--text-secondary);">付加価値で差別化</li>
-            <li style="color:var(--text-secondary);">レビューが付きやすい価格</li>
-          </ul>
-        </div>
-        <div class="card" style="padding:24px;text-align:center;border-color:rgba(239,68,68,0.2);">
-          <div style="font-size:2rem;margin-bottom:8px;">⬆️</div>
-          <div style="font-weight:700;color:#f87171;font-size:1.1rem;margin-bottom:8px;">高すぎ</div>
-          <div class="divider" style="margin:8px auto;background:rgba(239,68,68,0.3);"></div>
-          <ul class="luxury-list compact-sm" style="text-align:left;">
-            <li style="color:var(--text-muted);">手が出ない</li>
-            <li style="color:var(--text-muted);">レビューがつかない</li>
-            <li style="color:var(--text-muted);">最初の信頼が得られない</li>
-            <li style="color:var(--text-muted);">在庫リスク（物販）</li>
-          </ul>
-        </div>
-      </div>
-      <div style="font-weight:600;margin-bottom:12px;color:var(--gold);">プラットフォーム別 最適価格帯</div>
-      <table class="table-luxury" style="font-size:0.82rem;">
-        <thead>
-          <tr><th>商品</th><th>FANZA</th><th>DLsite</th><th>BOOTH</th><th>ヤフオク</th><th>Patreon/Fantia</th></tr>
-        </thead>
-        <tbody>
-          <tr><td>CG集</td><td class="highlight-cell">770-1,980円</td><td class="highlight-cell">550-1,650円</td><td>500-1,500円</td><td>—</td><td>—</td></tr>
-          <tr><td>動画（短編）</td><td class="highlight-cell">990-1,480円</td><td>770-1,100円</td><td>—</td><td>—</td><td>ティア特典</td></tr>
-          <tr><td>動画（長編）</td><td class="highlight-cell">1,980-2,980円</td><td>1,650-2,200円</td><td>—</td><td>—</td><td>上位ティア</td></tr>
-          <tr><td>ポスター</td><td>—</td><td>—</td><td>500-1,000円</td><td class="highlight-cell">500-3,000円</td><td>—</td></tr>
-          <tr><td>月額プラン</td><td>—</td><td>—</td><td>—</td><td>—</td><td class="highlight-cell">500-3,000円/月</td></tr>
-        </tbody>
-      </table>
-    </div>
-  </div>
-
-  <!-- Slide 17: Fan = Asset -->
-  <div class="slide" id="slide-17">
-    <div class="slide-content">
-      <div class="section-label">FAN ECONOMICS</div>
-      <div class="slide-title">ファン = 資産 — 最も重要な考え方</div>
-      <div class="slide-subtitle">1,000人のファンがいれば、生活できる</div>
-      <div class="vs-box" style="margin-bottom:28px;">
-        <div class="card" style="flex:1;padding:24px;text-align:center;border-color:rgba(239,68,68,0.15);">
-          <div style="font-size:1.5rem;margin-bottom:8px;">😰</div>
-          <div style="font-weight:700;color:#f87171;font-size:1rem;margin-bottom:12px;">単発販売のみ</div>
-          <div class="divider" style="margin:0 auto 12px;background:rgba(239,68,68,0.3);"></div>
-          <ul class="luxury-list compact-sm" style="text-align:left;">
-            <li style="color:var(--text-muted);">毎月ゼロからスタート</li>
-            <li style="color:var(--text-muted);">新作が売れなければ収入ゼロ</li>
-            <li style="color:var(--text-muted);">常に不安と焦り</li>
-            <li style="color:var(--text-muted);">プラットフォーム依存</li>
-          </ul>
-        </div>
-        <div class="vs-divider">VS</div>
-        <div class="card card-gold card-glow-gold" style="flex:1;padding:24px;text-align:center;">
-          <div style="font-size:1.5rem;margin-bottom:8px;">🎉</div>
-          <div style="font-weight:700;color:var(--gold-light);font-size:1rem;margin-bottom:12px;">ファンがいる状態</div>
-          <div class="divider" style="margin:0 auto 12px;"></div>
-          <ul class="luxury-list luxury-list-gold compact-sm" style="text-align:left;">
-            <li style="color:var(--text-secondary);">新作を出せば即購入される</li>
-            <li style="color:var(--text-secondary);">月額課金で安定ベース収入</li>
-            <li style="color:var(--text-secondary);">SNSで拡散してくれる</li>
-            <li style="color:var(--text-secondary);">フィードバックがもらえる</li>
-          </ul>
-        </div>
-      </div>
-      <div class="card card-glow" style="padding:24px;text-align:center;margin-bottom:20px;">
-        <div class="big-number-sm gradient-number" style="font-size:1.8rem;margin-bottom:8px;">1,000人のファン × 月1,000円 = 月100万円</div>
-        <div class="compact" style="color:var(--text-secondary);">Kevin Kellyの「1,000 True Fans」理論。1,000人の熱心なファンがいれば生計が成り立つ。</div>
-      </div>
-      <div style="font-weight:600;margin-bottom:12px;color:var(--gold);">ファン構築の具体的手順</div>
-      <div class="grid-4" style="gap:12px;">
-        <div class="card" style="padding:14px;text-align:center;">
-          <div class="step-circle" style="margin:0 auto 8px;width:32px;height:32px;font-size:0.8rem;">1</div>
-          <div class="compact" style="font-weight:600;">X/SNSで作品公開</div>
-          <div class="compact-sm" style="color:var(--text-muted);">毎日投稿で認知拡大</div>
-        </div>
-        <div class="card" style="padding:14px;text-align:center;">
-          <div class="step-circle" style="margin:0 auto 8px;width:32px;height:32px;font-size:0.8rem;">2</div>
-          <div class="compact" style="font-weight:600;">無料サンプル配布</div>
-          <div class="compact-sm" style="color:var(--text-muted);">品質を体験してもらう</div>
-        </div>
-        <div class="card" style="padding:14px;text-align:center;">
-          <div class="step-circle" style="margin:0 auto 8px;width:32px;height:32px;font-size:0.8rem;">3</div>
-          <div class="compact" style="font-weight:600;">有料作品で信頼構築</div>
-          <div class="compact-sm" style="color:var(--text-muted);">期待以上の品質を提供</div>
-        </div>
-        <div class="card card-gold" style="padding:14px;text-align:center;">
-          <div class="step-circle-gold" style="margin:0 auto 8px;width:32px;height:32px;font-size:0.8rem;">4</div>
-          <div class="compact" style="font-weight:600;">月額制で囲い込み</div>
-          <div class="compact-sm" style="color:var(--text-muted);">限定コンテンツで定着</div>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <!-- Slide 18: Revenue Roadmap -->
-  <div class="slide" id="slide-18">
-    <div class="slide-content">
-      <div class="section-label">REVENUE ROADMAP</div>
-      <div class="slide-title">収益ロードマップ — 6ヶ月計画</div>
-      <div class="slide-subtitle">現実的なステップで着実に成長する</div>
-      <div class="grid-3" style="gap:20px;margin-bottom:24px;">
-        <div class="card card-glow" style="padding:24px;">
-          <div style="text-align:center;margin-bottom:16px;">
-            <div class="badge badge-emerald" style="margin-bottom:8px;">PHASE 1</div>
-            <div style="font-weight:700;font-size:1.1rem;">Month 1-3</div>
-            <div class="big-number-sm gradient-number" style="font-size:1.4rem;margin-top:4px;">月3-10万円</div>
-          </div>
-          <div class="divider" style="margin:12px auto;"></div>
-          <div style="font-weight:600;font-size:0.85rem;color:var(--emerald-light);margin-bottom:8px;">目標</div>
-          <div class="compact" style="color:var(--text-secondary);margin-bottom:12px;">初出品して「売れる感覚」を掴む</div>
-          <div style="font-weight:600;font-size:0.85rem;color:var(--emerald-light);margin-bottom:8px;">アクション</div>
-          <ul class="luxury-list compact-sm">
-            <li>Stable Diffusionの基本を習得</li>
-            <li>CG集を3-5作品出品</li>
-            <li>BOOTH・DLsiteに登録</li>
-            <li>X（Twitter）で毎日投稿開始</li>
-            <li>売れ筋ジャンルをリサーチ</li>
-          </ul>
-          <div class="revenue-bar-container mt-16">
-            <div class="revenue-bar"><div class="revenue-fill" style="width:15%;">月3-10万</div></div>
-          </div>
-        </div>
-        <div class="card card-gold card-glow-gold" style="padding:24px;">
-          <div style="text-align:center;margin-bottom:16px;">
-            <div class="badge badge-gold" style="margin-bottom:8px;">PHASE 2</div>
-            <div style="font-weight:700;font-size:1.1rem;">Month 3-6</div>
-            <div class="big-number-sm gradient-number" style="font-size:1.4rem;margin-top:4px;">月10-50万円</div>
-          </div>
-          <div class="divider" style="margin:12px auto;"></div>
-          <div style="font-weight:600;font-size:0.85rem;color:var(--gold);margin-bottom:8px;">目標</div>
-          <div class="compact" style="color:var(--text-secondary);margin-bottom:12px;">改善+量産でファンを増やす</div>
-          <div style="font-weight:600;font-size:0.85rem;color:var(--gold);margin-bottom:8px;">アクション</div>
-          <ul class="luxury-list luxury-list-gold compact-sm">
-            <li>動画制作を開始（ComfyUI導入）</li>
-            <li>FANZAに参入</li>
-            <li>月5-8作品ペースに量産</li>
-            <li>LoRAでオリキャラ作成</li>
-            <li>ファン100人を目指す</li>
-          </ul>
-          <div class="revenue-bar-container mt-16">
-            <div class="revenue-bar"><div class="revenue-fill" style="width:45%;">月10-50万</div></div>
-          </div>
-        </div>
-        <div class="card card-glow pulse-glow" style="padding:24px;border-color:rgba(16,185,129,0.35);">
-          <div style="text-align:center;margin-bottom:16px;">
-            <div class="badge badge-gold" style="margin-bottom:8px;">PHASE 3</div>
-            <div style="font-weight:700;font-size:1.1rem;">Month 6+</div>
-            <div class="big-number-sm gradient-number" style="font-size:1.4rem;margin-top:4px;">月50万円〜</div>
-          </div>
-          <div class="divider" style="margin:12px auto;"></div>
-          <div style="font-weight:600;font-size:0.85rem;color:var(--gold);margin-bottom:8px;">目標</div>
-          <div class="compact" style="color:var(--text-secondary);margin-bottom:12px;">複合戦略+仕組み化で安定</div>
-          <div style="font-weight:600;font-size:0.85rem;color:var(--gold);margin-bottom:8px;">アクション</div>
-          <ul class="luxury-list luxury-list-gold compact-sm">
-            <li>全プラットフォーム展開</li>
-            <li>月額制ファンサイト開設</li>
-            <li>自動化ツール本格導入</li>
-            <li>オリキャラIP化</li>
-            <li>グッズ・受注制作も開始</li>
-          </ul>
-          <div class="revenue-bar-container mt-16">
-            <div class="revenue-bar"><div class="revenue-fill" style="width:85%;">月50万〜</div></div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <!-- Slide 19: Success Stories -->
-  <div class="slide" id="slide-19">
-    <div class="slide-content">
-      <div class="section-label">SUCCESS STORIES</div>
-      <div class="slide-title">実績ギャラリー — 実在する成功パターン</div>
-      <div class="slide-subtitle">実際に収益を出しているモデルケース</div>
-      <div class="grid-2" style="gap:20px;">
-        <div class="card card-glow" style="padding:24px;">
-          <div style="display:flex;align-items:center;gap:12px;margin-bottom:16px;">
-            <div class="icon-circle icon-emerald" style="font-size:1.1rem;">📖</div>
-            <div>
-              <div style="font-weight:700;font-size:1.05rem;">AI漫画クリエイター</div>
-              <div class="badge badge-emerald">FANZA・DLsite</div>
-            </div>
-          </div>
-          <div class="divider"></div>
-          <div class="big-number-sm gradient-number" style="font-size:1.5rem;margin:12px 0;">月15-30万円</div>
-          <ul class="luxury-list compact-sm">
-            <li>週1-2作品ペースで漫画を出品</li>
-            <li>特定ジャンルに特化してファン獲得</li>
-            <li>シリーズ展開で前作購入者がリピート</li>
-            <li>作業時間：1日3-4時間</li>
-          </ul>
-        </div>
-        <div class="card card-gold card-glow-gold" style="padding:24px;">
-          <div style="display:flex;align-items:center;gap:12px;margin-bottom:16px;">
-            <div class="icon-circle icon-gold" style="font-size:1.1rem;">🎬</div>
-            <div>
-              <div style="font-weight:700;font-size:1.05rem;">AI動画 × 月額制</div>
-              <div class="badge badge-gold">Patreon・Fantia</div>
-            </div>
-          </div>
-          <div class="divider"></div>
-          <div class="big-number-sm gradient-number" style="font-size:1.5rem;margin:12px 0;">月20-50万円</div>
-          <ul class="luxury-list luxury-list-gold compact-sm">
-            <li>月額500-3,000円の3ティア制</li>
-            <li>週2本の限定動画を配信</li>
-            <li>200-300人のファンで安定収益</li>
-            <li>作業時間：1日4-5時間</li>
-          </ul>
-        </div>
-        <div class="card card-glow" style="padding:24px;">
-          <div style="display:flex;align-items:center;gap:12px;margin-bottom:16px;">
-            <div class="icon-circle icon-emerald" style="font-size:1.1rem;">🎨</div>
-            <div>
-              <div style="font-weight:700;font-size:1.05rem;">ポスター販売特化</div>
-              <div class="badge badge-emerald">ヤフオク</div>
-            </div>
-          </div>
-          <div class="divider"></div>
-          <div class="big-number-sm gradient-number" style="font-size:1.5rem;margin:12px 0;">月15-30万円</div>
-          <ul class="luxury-list compact-sm">
-            <li>高画質ポスターをヤフオクで販売</li>
-            <li>月30-60枚の出品ペース</li>
-            <li>リピーターが売上の40%を占める</li>
-            <li>作業時間：1日1-2時間</li>
-          </ul>
-        </div>
-        <div class="card card-gold card-glow-gold" style="padding:24px;">
-          <div style="display:flex;align-items:center;gap:12px;margin-bottom:16px;">
-            <div class="icon-circle icon-gold" style="font-size:1.1rem;">⭐</div>
-            <div>
-              <div style="font-weight:700;font-size:1.05rem;">オリキャラブランド</div>
-              <div class="badge badge-gold">Patreon + マルチ展開</div>
-            </div>
-          </div>
-          <div class="divider"></div>
-          <div class="big-number-sm gradient-number" style="font-size:1.5rem;margin:12px 0;">月10-25万円</div>
-          <ul class="luxury-list luxury-list-gold compact-sm">
-            <li>オリジナルキャラクターをIP化</li>
-            <li>画像・動画・グッズを横展開</li>
-            <li>キャラファンが付いて安定成長</li>
-            <li>作業時間：1日2-3時間</li>
-          </ul>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <!-- Slide 20: Common Pitfalls -->
-  <div class="slide" id="slide-20">
-    <div class="slide-content">
-      <div class="section-label">COMMON PITFALLS</div>
-      <div class="slide-title">よくある失敗 — 先人の教訓を活かす</div>
-      <div class="slide-subtitle">回避すれば成功確率が大幅に上がる4つの罠</div>
-      <div class="grid-2" style="gap:20px;">
-        <div class="card" style="padding:24px;border-left:3px solid #f87171;">
-          <div style="display:flex;align-items:center;gap:12px;margin-bottom:12px;">
-            <div style="font-size:1.5rem;">🌀</div>
-            <div>
-              <div style="font-weight:700;color:#f87171;font-size:1rem;">ツールに振り回される</div>
-              <div class="badge" style="background:rgba(248,113,113,0.1);color:#f87171;border:1px solid rgba(248,113,113,0.25);">よくある度 ★★★★★</div>
-            </div>
-          </div>
-          <div class="divider" style="background:rgba(248,113,113,0.3);"></div>
-          <div class="compact" style="color:var(--text-muted);margin-bottom:12px;">
-            「もっと良いツールがあるかも」と次々乗り換え。結局どれも中途半端に。
-          </div>
-          <div style="display:flex;align-items:center;gap:8px;">
-            <span style="color:var(--emerald-light);font-weight:700;">→</span>
-            <span class="compact" style="color:var(--emerald-light);font-weight:600;">解決策：1つのツールを使いこなすまで浮気しない</span>
-          </div>
-        </div>
-        <div class="card" style="padding:24px;border-left:3px solid #f87171;">
-          <div style="display:flex;align-items:center;gap:12px;margin-bottom:12px;">
-            <div style="font-size:1.5rem;">🙈</div>
-            <div>
-              <div style="font-weight:700;color:#f87171;font-size:1rem;">マーケット無視</div>
-              <div class="badge" style="background:rgba(248,113,113,0.1);color:#f87171;border:1px solid rgba(248,113,113,0.25);">致命度 ★★★★★</div>
-            </div>
-          </div>
-          <div class="divider" style="background:rgba(248,113,113,0.3);"></div>
-          <div class="compact" style="color:var(--text-muted);margin-bottom:12px;">
-            自分の好みだけで作り続ける。売れ筋ジャンルを全くリサーチしない。
-          </div>
-          <div style="display:flex;align-items:center;gap:8px;">
-            <span style="color:var(--emerald-light);font-weight:700;">→</span>
-            <span class="compact" style="color:var(--emerald-light);font-weight:600;">解決策：毎日ランキングをチェック。需要ベースで企画する</span>
-          </div>
-        </div>
-        <div class="card" style="padding:24px;border-left:3px solid #f87171;">
-          <div style="display:flex;align-items:center;gap:12px;margin-bottom:12px;">
-            <div style="font-size:1.5rem;">📦</div>
-            <div>
-              <div style="font-weight:700;color:#f87171;font-size:1rem;">量だけ追求</div>
-              <div class="badge" style="background:rgba(248,113,113,0.1);color:#f87171;border:1px solid rgba(248,113,113,0.25);">よくある度 ★★★★☆</div>
-            </div>
-          </div>
-          <div class="divider" style="background:rgba(248,113,113,0.3);"></div>
-          <div class="compact" style="color:var(--text-muted);margin-bottom:12px;">
-            「とにかくたくさん出せば売れる」と低品質を量産。レビュー低下で信頼を失う。
-          </div>
-          <div style="display:flex;align-items:center;gap:8px;">
-            <span style="color:var(--emerald-light);font-weight:700;">→</span>
-            <span class="compact" style="color:var(--emerald-light);font-weight:600;">解決策：品質を厳選。「これは買いたい」と思えるか自問</span>
-          </div>
-        </div>
-        <div class="card" style="padding:24px;border-left:3px solid #f87171;">
-          <div style="display:flex;align-items:center;gap:12px;margin-bottom:12px;">
-            <div style="font-size:1.5rem;">🎰</div>
-            <div>
-              <div style="font-weight:700;color:#f87171;font-size:1rem;">「とりあえず出品」</div>
-              <div class="badge" style="background:rgba(248,113,113,0.1);color:#f87171;border:1px solid rgba(248,113,113,0.25);">致命度 ★★★★☆</div>
-            </div>
-          </div>
-          <div class="divider" style="background:rgba(248,113,113,0.3);"></div>
-          <div class="compact" style="color:var(--text-muted);margin-bottom:12px;">
-            サムネ・タイトル・説明文を適当に書いて出品。当然売れない。
-          </div>
-          <div style="display:flex;align-items:center;gap:8px;">
-            <span style="color:var(--emerald-light);font-weight:700;">→</span>
-            <span class="compact" style="color:var(--emerald-light);font-weight:600;">解決策：出品作業に制作と同じ時間をかける</span>
-          </div>
-        </div>
-      </div>
-      <div class="highlight-box mt-24" style="text-align:center;">
-        <span class="gold-text">これらの罠を知っているだけで、成功確率は2-3倍になる</span>
-      </div>
-    </div>
-  </div>
-
-  <!-- Slide 21: Final Summary -->
-  <div class="slide" id="slide-21">
-    <div class="slide-content">
-      <div class="section-label">FINAL SUMMARY</div>
-      <div class="slide-title">5ステップ スキルマップ</div>
-      <div class="slide-subtitle">これだけマスターすれば、AIマネタイズは成功する</div>
-      <div style="display:flex;gap:12px;align-items:stretch;margin-bottom:32px;width:100%;">
-        <div class="card card-glow" style="flex:1;padding:20px;text-align:center;display:flex;flex-direction:column;justify-content:center;">
-          <div class="step-circle" style="margin:0 auto 12px;">1</div>
-          <div style="font-weight:700;font-size:0.95rem;margin-bottom:4px;">AI画像生成</div>
-          <div class="compact-sm" style="color:var(--text-muted);">Stable Diffusion<br>Illustrious / Pony</div>
-        </div>
-        <div style="display:flex;align-items:center;color:var(--gold);font-size:1.5rem;">→</div>
-        <div class="card" style="flex:1;padding:20px;text-align:center;display:flex;flex-direction:column;justify-content:center;">
-          <div class="step-circle" style="margin:0 auto 12px;">2</div>
-          <div style="font-weight:700;font-size:0.95rem;margin-bottom:4px;">販売スキル</div>
-          <div class="compact-sm" style="color:var(--text-muted);">サムネイル・SEO<br>ジャンル選定</div>
-        </div>
-        <div style="display:flex;align-items:center;color:var(--gold);font-size:1.5rem;">→</div>
-        <div class="card card-gold" style="flex:1;padding:20px;text-align:center;display:flex;flex-direction:column;justify-content:center;">
-          <div class="step-circle-gold" style="margin:0 auto 12px;">3</div>
-          <div style="font-weight:700;font-size:0.95rem;margin-bottom:4px;">AI動画制作</div>
-          <div class="compact-sm" style="color:var(--text-muted);">ComfyUI<br>EasyWan22</div>
-        </div>
-        <div style="display:flex;align-items:center;color:var(--gold);font-size:1.5rem;">→</div>
-        <div class="card card-gold" style="flex:1;padding:20px;text-align:center;display:flex;flex-direction:column;justify-content:center;">
-          <div class="step-circle-gold" style="margin:0 auto 12px;">4</div>
-          <div style="font-weight:700;font-size:0.95rem;margin-bottom:4px;">自動化</div>
-          <div class="compact-sm" style="color:var(--text-muted);">AIエージェント<br>バッチ処理</div>
-        </div>
-        <div style="display:flex;align-items:center;color:var(--gold);font-size:1.5rem;">→</div>
-        <div class="card card-glow-gold" style="flex:1;padding:20px;text-align:center;display:flex;flex-direction:column;justify-content:center;border-color:var(--border-gold);">
-          <div class="step-circle-gold" style="margin:0 auto 12px;">5</div>
-          <div style="font-weight:700;font-size:0.95rem;margin-bottom:4px;">ブランド化</div>
-          <div class="compact-sm" style="color:var(--text-muted);">オリキャラIP<br>マルチ展開</div>
-        </div>
-      </div>
-      <div class="card card-gold card-glow-gold" style="padding:28px;text-align:center;">
-        <div style="font-size:1.3rem;font-weight:700;margin-bottom:16px;">
-          <span class="shimmer-text">今始めれば、先行者利益を取れる</span>
-        </div>
-        <div class="grid-3" style="gap:16px;">
-          <div>
-            <div style="color:var(--emerald-light);font-weight:600;margin-bottom:4px;">市場の状態</div>
-            <div class="compact" style="color:var(--text-secondary);">需要爆発中 × 供給不足<br>= 参入者に有利</div>
-          </div>
-          <div>
-            <div style="color:var(--gold);font-weight:600;margin-bottom:4px;">技術の状態</div>
-            <div class="compact" style="color:var(--text-secondary);">無料ツール充実<br>= 初期投資ほぼゼロ</div>
-          </div>
-          <div>
-            <div style="color:var(--emerald-light);font-weight:600;margin-bottom:4px;">競合の状態</div>
-            <div class="compact" style="color:var(--text-secondary);">まだ少ない<br>= ポジション取り放題</div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <!-- Slide 22: CTA -->
-  <div class="slide" id="slide-22">
-    <div class="slide-content text-center flex-col flex-center" style="justify-content:center;align-items:center;min-height:70vh;">
-      <div class="section-label" style="margin-bottom:40px;">CALL TO ACTION</div>
-      <div style="margin-bottom:40px;">
-        <div style="display:flex;gap:40px;align-items:center;justify-content:center;margin-bottom:32px;">
-          <div style="text-align:center;">
-            <div style="font-size:3rem;font-weight:900;color:var(--text-muted);opacity:0.4;">99%</div>
-            <div class="compact" style="color:var(--text-muted);">やらない人</div>
-          </div>
-          <div style="font-size:2rem;color:var(--gold);">vs</div>
-          <div style="text-align:center;">
-            <div class="big-number" style="font-size:3rem;">1%</div>
-            <div class="compact" style="color:var(--gold-light);">行動する人</div>
-          </div>
-        </div>
-      </div>
-      <div class="title-decorative-line" style="margin-bottom:32px;"></div>
-      <div class="cta-big" style="margin-bottom:32px;">
-        <span class="shimmer-text">AIマネタイズを、<br>今日から始めよう。</span>
-      </div>
-      <div style="max-width:600px;margin:0 auto;">
-        <div class="compact" style="color:var(--text-secondary);line-height:1.8;margin-bottom:24px;">
-          完璧な準備は必要ない。<br>
-          最初の一歩は、最初の1枚を生成すること。<br>
-          最初の出品をすること。<br>
-          <span class="gold-text">行動した人だけが、結果を手にする。</span>
-        </div>
-      </div>
-      <div class="card card-gold card-glow-gold pulse-glow" style="display:inline-block;padding:16px 40px;">
-        <div style="font-weight:700;color:var(--gold-light);font-size:1.1rem;letter-spacing:0.05em;">
-          収益化の完全設計図 — あなたの手の中に
-        </div>
-      </div>
-      <div style="margin-top:32px;">
-        <div class="geo-line" style="position:static;display:inline-block;width:200px;"></div>
-      </div>
-    </div>
-  </div>
-
 </div>
 
-<!-- Navigation -->
-<div class="nav-bar">
-  <button class="nav-btn" id="prevBtn" onclick="changeSlide(-1)">&#9664;</button>
-  <div class="progress-container">
-    <div class="progress-fill" id="progressFill"></div>
+<!-- ============================================================ -->
+<!-- SLIDE 2: Goals -->
+<!-- ============================================================ -->
+<div class="slide" data-slide="2">
+  <div class="slide-inner">
+    <h2 class="title-gradient mb-32">このスライドのゴール</h2>
+    <div class="grid-2">
+      <div class="card card-emerald">
+        <h3 class="text-emerald mb-12">🎯 理解すること</h3>
+        <ul class="list-diamond">
+          <li>AIコンテンツの収益化ルート全体像</li>
+          <li>各プラットフォームの特徴と使い分け</li>
+          <li>月収レベル別の現実的な目標設定</li>
+        </ul>
+      </div>
+      <div class="card card-gold">
+        <h3 class="text-gold mb-12">🚀 行動に移すこと</h3>
+        <ul class="list-diamond">
+          <li>自分に合った収益パターンの選択</li>
+          <li>具体的な3ステップのロードマップ</li>
+          <li>最短で結果を出すための優先順位</li>
+        </ul>
+      </div>
+    </div>
   </div>
-  <div class="slide-counter" id="slideCounter">1 / 22</div>
-  <button class="nav-btn" id="nextBtn" onclick="changeSlide(1)">&#9654;</button>
+</div>
+
+<!-- ============================================================ -->
+<!-- SLIDE 3: Agenda -->
+<!-- ============================================================ -->
+<div class="slide" data-slide="3">
+  <div class="slide-inner">
+    <h2 class="title-gradient mb-32">全体の構成</h2>
+    <div class="grid-3">
+      <div class="card" style="border-color: rgba(16,185,129,0.25);">
+        <span class="badge badge-emerald mb-8">Part 1</span>
+        <h3 class="text-emerald mb-8">なぜ今なのか</h3>
+        <p style="font-size: 0.85rem;">市場の成長性と収益機会</p>
+      </div>
+      <div class="card" style="border-color: rgba(16,185,129,0.2);">
+        <span class="badge badge-emerald mb-8">Part 2</span>
+        <h3 class="text-emerald mb-8">商品設計</h3>
+        <p style="font-size: 0.85rem;">売れるAIコンテンツの種類</p>
+      </div>
+      <div class="card" style="border-color: rgba(251,191,36,0.2);">
+        <span class="badge badge-gold mb-8">Part 3</span>
+        <h3 class="text-gold mb-8">販売先</h3>
+        <p style="font-size: 0.85rem;">プラットフォーム戦略</p>
+      </div>
+      <div class="card" style="border-color: rgba(251,191,36,0.2);">
+        <span class="badge badge-gold mb-8">Part 4</span>
+        <h3 class="text-gold mb-8">収益モデル</h3>
+        <p style="font-size: 0.85rem;">月収パターン別の設計</p>
+      </div>
+      <div class="card" style="border-color: rgba(16,185,129,0.15);">
+        <span class="badge badge-emerald mb-8">Part 5</span>
+        <h3 class="text-emerald mb-8">必要スキル</h3>
+        <p style="font-size: 0.85rem;">AI画像・動画ツール活用</p>
+      </div>
+      <div class="card" style="border-color: rgba(16,185,129,0.15);">
+        <span class="badge badge-emerald mb-8">Part 6</span>
+        <h3 class="text-emerald mb-8">マインドセット</h3>
+        <p style="font-size: 0.85rem;">成功者の思考法と戦略</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ============================================================ -->
+<!-- SLIDE 4: Market overview -->
+<!-- ============================================================ -->
+<div class="slide" data-slide="4">
+  <div class="slide-inner">
+    <h2 class="title-gradient mb-32">AI市場の現在地</h2>
+    <div class="grid-3 mb-24">
+      <div class="card card-emerald text-center">
+        <div class="stat-value title-emerald">1,800億円</div>
+        <div class="stat-label">国内AI市場規模（2025年）</div>
+      </div>
+      <div class="card card-gold text-center">
+        <div class="stat-value title-gold">年40%+</div>
+        <div class="stat-label">市場成長率</div>
+      </div>
+      <div class="card card-emerald text-center">
+        <div class="stat-value title-emerald">個人参入</div>
+        <div class="stat-label">ツールの民主化で急増</div>
+      </div>
+    </div>
+    <div class="card">
+      <p>生成AIの進化により、<span class="text-emerald fw-700">個人でもプロ品質のコンテンツ</span>が制作可能に。市場は拡大中で、参入者が増える前の<span class="text-gold fw-700">今がゴールデンタイム</span>。</p>
+    </div>
+  </div>
+</div>
+
+<!-- ============================================================ -->
+<!-- SLIDE 5: Part 1 Section -->
+<!-- ============================================================ -->
+<div class="slide" data-slide="5">
+  <div class="slide-inner section-slide">
+    <div class="section-label">PART 1</div>
+    <div class="section-number">01</div>
+    <div class="section-divider"></div>
+    <h2 class="title-gradient">なぜ今なのか</h2>
+    <p class="mt-16" style="color: var(--text-muted);">市場の成長性と収益チャンス</p>
+  </div>
+</div>
+
+<!-- ============================================================ -->
+<!-- SLIDE 6: Revenue tiers -->
+<!-- ============================================================ -->
+<div class="slide" data-slide="6">
+  <div class="slide-inner">
+    <h2 class="title-gradient mb-24">月収レベルの全体像</h2>
+    <div class="card mb-16">
+      <div class="row-item">
+        <div>
+          <span class="badge badge-emerald">初心者</span>
+          <span class="fw-600" style="margin-left: 12px;">まずは実績づくり</span>
+        </div>
+        <span class="text-emerald fw-700" style="font-size: 1.2rem;">月1〜5万円</span>
+      </div>
+      <div class="row-item">
+        <div>
+          <span class="badge badge-emerald">中級者</span>
+          <span class="fw-600" style="margin-left: 12px;">副業として安定</span>
+        </div>
+        <span class="text-emerald fw-700" style="font-size: 1.2rem;">月10〜30万円</span>
+      </div>
+      <div class="row-item">
+        <div>
+          <span class="badge badge-gold">上級者</span>
+          <span class="fw-600" style="margin-left: 12px;">本業レベル</span>
+        </div>
+        <span class="text-gold fw-700" style="font-size: 1.2rem;">月50〜100万円</span>
+      </div>
+      <div class="row-item">
+        <div>
+          <span class="badge badge-gold">トップ層</span>
+          <span class="fw-600" style="margin-left: 12px;">複数収益源の組み合わせ</span>
+        </div>
+        <span class="text-gold fw-700" style="font-size: 1.2rem;">月200〜300万円</span>
+      </div>
+    </div>
+    <p class="text-center" style="font-size: 0.85rem; color: var(--text-muted);">すべて実在するプレイヤーの実績をベースにした数値</p>
+  </div>
+</div>
+
+<!-- ============================================================ -->
+<!-- SLIDE 7: Tech maturity -->
+<!-- ============================================================ -->
+<div class="slide" data-slide="7">
+  <div class="slide-inner">
+    <h2 class="title-gradient mb-24">技術の成熟度</h2>
+    <div class="grid-2">
+      <div class="card card-emerald">
+        <h3 class="text-emerald mb-16">AI画像生成</h3>
+        <div class="mb-12">
+          <div class="flex justify-between mb-8">
+            <span style="font-size: 0.85rem;">品質</span>
+            <span class="text-emerald" style="font-size: 0.85rem;">95%</span>
+          </div>
+          <div class="bar-track"><div class="bar-fill" style="width: 95%;"></div></div>
+        </div>
+        <div class="mb-12">
+          <div class="flex justify-between mb-8">
+            <span style="font-size: 0.85rem;">操作性</span>
+            <span class="text-emerald" style="font-size: 0.85rem;">90%</span>
+          </div>
+          <div class="bar-track"><div class="bar-fill" style="width: 90%;"></div></div>
+        </div>
+        <div>
+          <div class="flex justify-between mb-8">
+            <span style="font-size: 0.85rem;">コスト効率</span>
+            <span class="text-emerald" style="font-size: 0.85rem;">85%</span>
+          </div>
+          <div class="bar-track"><div class="bar-fill" style="width: 85%;"></div></div>
+        </div>
+      </div>
+      <div class="card card-gold">
+        <h3 class="text-gold mb-16">AI動画生成</h3>
+        <div class="mb-12">
+          <div class="flex justify-between mb-8">
+            <span style="font-size: 0.85rem;">品質</span>
+            <span class="text-gold" style="font-size: 0.85rem;">80%</span>
+          </div>
+          <div class="bar-track"><div class="bar-fill" style="width: 80%;"></div></div>
+        </div>
+        <div class="mb-12">
+          <div class="flex justify-between mb-8">
+            <span style="font-size: 0.85rem;">操作性</span>
+            <span class="text-gold" style="font-size: 0.85rem;">70%</span>
+          </div>
+          <div class="bar-track"><div class="bar-fill" style="width: 70%;"></div></div>
+        </div>
+        <div>
+          <div class="flex justify-between mb-8">
+            <span style="font-size: 0.85rem;">コスト効率</span>
+            <span class="text-gold" style="font-size: 0.85rem;">65%</span>
+          </div>
+          <div class="bar-track"><div class="bar-fill" style="width: 65%;"></div></div>
+        </div>
+      </div>
+    </div>
+    <p class="mt-16 text-center" style="font-size: 0.85rem; color: var(--text-muted);">画像は実用レベル到達済み。動画は急速進化中で差別化のチャンス。</p>
+  </div>
+</div>
+
+<!-- ============================================================ -->
+<!-- SLIDE 8: Market expansion -->
+<!-- ============================================================ -->
+<div class="slide" data-slide="8">
+  <div class="slide-inner">
+    <h2 class="title-gradient mb-24">市場の拡大方向</h2>
+    <div class="grid-2">
+      <div class="card card-emerald">
+        <h3 class="text-emerald mb-16">成長している領域</h3>
+        <ul class="list-diamond">
+          <li>AI画像コンテンツの二次創作市場</li>
+          <li>AI動画による新ジャンルの開拓</li>
+          <li>海外向けサブスクリプション</li>
+          <li>物理グッズ（ポスター・アクリルなど）</li>
+        </ul>
+      </div>
+      <div class="card card-gold">
+        <h3 class="text-gold mb-16">参入障壁が低い理由</h3>
+        <ul class="list-diamond">
+          <li>ツールが無料〜低額で使える</li>
+          <li>プログラミング不要</li>
+          <li>1人で全工程を完結できる</li>
+          <li>在庫リスクゼロ（デジタル商品）</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ============================================================ -->
+<!-- SLIDE 9: Sales routes -->
+<!-- ============================================================ -->
+<div class="slide" data-slide="9">
+  <div class="slide-inner">
+    <h2 class="title-gradient mb-24">販売ルートの全体図</h2>
+    <div class="card mb-20">
+      <div class="grid-3" style="text-align: center;">
+        <div>
+          <div class="stat-value title-emerald" style="font-size: 1.6rem;">デジタル販売</div>
+          <p class="mt-12" style="font-size: 0.85rem;">CG集・漫画・動画<br>ダウンロード形式</p>
+        </div>
+        <div>
+          <div class="stat-value title-gold" style="font-size: 1.6rem;">月額課金</div>
+          <p class="mt-12" style="font-size: 0.85rem;">サブスクリプション<br>ファンコミュニティ</p>
+        </div>
+        <div>
+          <div class="stat-value title-emerald" style="font-size: 1.6rem;">物販</div>
+          <p class="mt-12" style="font-size: 0.85rem;">ポスター・グッズ<br>オークション出品</p>
+        </div>
+      </div>
+    </div>
+    <div class="card" style="background: rgba(16, 185, 129, 0.05);">
+      <p class="text-center"><span class="text-gold fw-700">組み合わせが最強。</span>複数ルートを持つことで収益が安定し、リスクも分散できる。</p>
+    </div>
+  </div>
+</div>
+
+<!-- ============================================================ -->
+<!-- SLIDE 10: AI evolution -->
+<!-- ============================================================ -->
+<div class="slide" data-slide="10">
+  <div class="slide-inner">
+    <h2 class="title-gradient mb-24">AI技術の進化タイムライン</h2>
+    <div class="card">
+      <div class="row-item">
+        <div>
+          <span class="text-emerald fw-600">2022年</span>
+          <span style="margin-left: 16px;">Stable Diffusion登場 — AI画像生成の民主化</span>
+        </div>
+      </div>
+      <div class="row-item">
+        <div>
+          <span class="text-emerald fw-600">2023年</span>
+          <span style="margin-left: 16px;">高品質モデル続々登場 — 商用レベルに到達</span>
+        </div>
+      </div>
+      <div class="row-item">
+        <div>
+          <span class="text-gold fw-600">2024年</span>
+          <span style="margin-left: 16px;">AI動画生成が実用化 — 新たな収益源</span>
+        </div>
+      </div>
+      <div class="row-item">
+        <div>
+          <span class="text-gold fw-600">2025年</span>
+          <span style="margin-left: 16px;">マルチモーダル統合 — 画像+動画+音声の一気通貫</span>
+        </div>
+      </div>
+    </div>
+    <p class="mt-16 text-center text-muted" style="font-size: 0.85rem;">技術は加速度的に進化中。<span class="text-emerald">早期参入の優位性</span>は今が最大。</p>
+  </div>
+</div>
+
+<!-- ============================================================ -->
+<!-- SLIDE 11: Before-After -->
+<!-- ============================================================ -->
+<div class="slide" data-slide="11">
+  <div class="slide-inner">
+    <h2 class="title-gradient mb-24">AI前 vs AI後</h2>
+    <div class="flex gap-16" style="align-items: stretch;">
+      <div class="card" style="flex: 1; border-color: rgba(255,255,255,0.08);">
+        <h3 style="color: var(--text-muted); margin-bottom: 16px;">Before（従来）</h3>
+        <ul class="list-diamond">
+          <li style="color: var(--text-muted);">イラスト習得に数年必要</li>
+          <li style="color: var(--text-muted);">動画制作に高額機材が必須</li>
+          <li style="color: var(--text-muted);">外注費で利益が圧迫</li>
+          <li style="color: var(--text-muted);">1作品に数週間〜数ヶ月</li>
+        </ul>
+      </div>
+      <div class="vs-badge">VS</div>
+      <div class="card card-emerald" style="flex: 1;">
+        <h3 class="text-emerald mb-16">After（AI活用）</h3>
+        <ul class="list-diamond">
+          <li>スキルゼロから即日スタート</li>
+          <li>PC1台で全工程完結</li>
+          <li>原価ほぼゼロの高利益率</li>
+          <li>1作品を数日で制作可能</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ============================================================ -->
+<!-- SLIDE 12: Part 1 Summary -->
+<!-- ============================================================ -->
+<div class="slide" data-slide="12">
+  <div class="slide-inner">
+    <h2 class="title-gradient mb-24">Part 1 まとめ</h2>
+    <div class="card card-gold" style="padding: 36px;">
+      <h3 class="text-gold mb-20">「なぜ今なのか」の答え</h3>
+      <ul class="list-diamond">
+        <li><span class="fw-600">市場が急拡大中</span> — 年40%以上の成長率</li>
+        <li><span class="fw-600">参入コストが激減</span> — 無料ツールで商用品質</li>
+        <li><span class="fw-600">先行者利益がある</span> — 市場が飽和する前に実績を作れる</li>
+        <li><span class="fw-600">技術の民主化</span> — 専門スキル不要で始められる</li>
+      </ul>
+      <div class="section-divider" style="margin: 24px 0;"></div>
+      <p class="text-center text-gold fw-600">「やるかやらないか」ではなく「いつ始めるか」の問題</p>
+    </div>
+  </div>
+</div>
+
+<!-- ============================================================ -->
+<!-- SLIDE 13: Part 2 Section -->
+<!-- ============================================================ -->
+<div class="slide" data-slide="13">
+  <div class="slide-inner section-slide">
+    <div class="section-label">PART 2</div>
+    <div class="section-number">02</div>
+    <div class="section-divider"></div>
+    <h2 class="title-gradient">商品設計</h2>
+    <p class="mt-16" style="color: var(--text-muted);">売れるAIコンテンツの種類と価格帯</p>
+  </div>
+</div>
+
+<!-- ============================================================ -->
+<!-- SLIDE 14: Categories -->
+<!-- ============================================================ -->
+<div class="slide" data-slide="14">
+  <div class="slide-inner">
+    <h2 class="title-gradient mb-24">AIコンテンツの商品カテゴリ</h2>
+    <div class="grid-3">
+      <div class="card card-emerald text-center">
+        <div style="font-size: 2rem; margin-bottom: 8px;">🖼️</div>
+        <h3 class="text-emerald mb-8">CG集</h3>
+        <p style="font-size: 0.8rem;">画像メイン商品</p>
+      </div>
+      <div class="card text-center" style="border-color: var(--border-emerald);">
+        <div style="font-size: 2rem; margin-bottom: 8px;">📖</div>
+        <h3 class="text-emerald mb-8">AI漫画</h3>
+        <p style="font-size: 0.8rem;">ストーリー付き</p>
+      </div>
+      <div class="card card-gold text-center">
+        <div style="font-size: 2rem; margin-bottom: 8px;">🎬</div>
+        <h3 class="text-gold mb-8">動画</h3>
+        <p style="font-size: 0.8rem;">短編〜長編</p>
+      </div>
+      <div class="card text-center" style="border-color: var(--border-gold);">
+        <div style="font-size: 2rem; margin-bottom: 8px;">🖨️</div>
+        <h3 class="text-gold mb-8">ポスター・グッズ</h3>
+        <p style="font-size: 0.8rem;">物理商品</p>
+      </div>
+      <div class="card text-center" style="border-color: var(--border-emerald);">
+        <div style="font-size: 2rem; margin-bottom: 8px;">👤</div>
+        <h3 class="text-emerald mb-8">オリキャラ</h3>
+        <p style="font-size: 0.8rem;">ブランド資産</p>
+      </div>
+      <div class="card text-center" style="border-color: var(--border-gold);">
+        <div style="font-size: 2rem; margin-bottom: 8px;">💎</div>
+        <h3 class="text-gold mb-8">月額サブスク</h3>
+        <p style="font-size: 0.8rem;">継続収益</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ============================================================ -->
+<!-- SLIDE 15: CG集 -->
+<!-- ============================================================ -->
+<div class="slide" data-slide="15">
+  <div class="slide-inner">
+    <h2 class="title-gradient mb-24">CG集 — 最も始めやすい商品</h2>
+    <div class="grid-2">
+      <div class="card card-emerald">
+        <h3 class="text-emerald mb-16">商品の基本</h3>
+        <ul class="list-diamond">
+          <li>枚数: <span class="text-emerald fw-700">30〜50枚</span>が標準</li>
+          <li>価格帯: <span class="text-emerald fw-700">500〜3,000円</span></li>
+          <li>制作期間: 3〜7日</li>
+          <li>テーマの一貫性が重要</li>
+        </ul>
+      </div>
+      <div class="card card-gold">
+        <h3 class="text-gold mb-16">成功のポイント</h3>
+        <ul class="list-diamond">
+          <li>表紙の<span class="text-gold fw-600">クオリティが売上を左右</span></li>
+          <li>ニッチなジャンル選定</li>
+          <li>シリーズ化で固定ファンを獲得</li>
+          <li>サムネイルに時間をかける</li>
+        </ul>
+      </div>
+    </div>
+    <div class="card mt-20" style="background: rgba(16,185,129,0.05);">
+      <p class="text-center"><span class="text-emerald fw-600">初心者はここからスタート。</span>まず1作品出してみることが最も重要。</p>
+    </div>
+  </div>
+</div>
+
+<!-- ============================================================ -->
+<!-- SLIDE 16: AI漫画 -->
+<!-- ============================================================ -->
+<div class="slide" data-slide="16">
+  <div class="slide-inner">
+    <h2 class="title-gradient mb-24">AI漫画 — ストーリーで差をつける</h2>
+    <div class="grid-2">
+      <div class="card card-emerald">
+        <h3 class="text-emerald mb-16">商品スペック</h3>
+        <ul class="list-diamond">
+          <li>ページ数: <span class="text-emerald fw-700">30〜50ページ</span></li>
+          <li>販売先: FANZA・DLsite</li>
+          <li>月収目安: <span class="text-emerald fw-700">月15〜30万円</span></li>
+          <li>価格: CG集より高く設定可能</li>
+        </ul>
+      </div>
+      <div class="card card-gold">
+        <h3 class="text-gold mb-16">制作のコツ</h3>
+        <ul class="list-diamond">
+          <li>AIで生成 → コマ割り・セリフ追加</li>
+          <li>一貫したキャラデザインが鍵</li>
+          <li>ストーリーで<span class="text-gold fw-600">感情を動かす</span></li>
+          <li>CG集より単価が高い傾向</li>
+        </ul>
+      </div>
+    </div>
+    <div class="card mt-20" style="background: rgba(251,191,36,0.04);">
+      <p class="text-center">漫画形式は<span class="text-gold fw-600">リピート率が高い</span>。ファンがシリーズの続きを待ってくれる。</p>
+    </div>
+  </div>
+</div>
+
+<!-- ============================================================ -->
+<!-- SLIDE 17: Short video -->
+<!-- ============================================================ -->
+<div class="slide" data-slide="17">
+  <div class="slide-inner">
+    <h2 class="title-gradient mb-24">短編動画 — 新しい収益カテゴリ</h2>
+    <div class="card card-emerald mb-20">
+      <div class="grid-3 text-center">
+        <div>
+          <div class="stat-value title-emerald">2〜5分</div>
+          <div class="stat-label">尺の目安</div>
+        </div>
+        <div>
+          <div class="stat-value title-gold">1,000円〜</div>
+          <div class="stat-label">販売価格</div>
+        </div>
+        <div>
+          <div class="stat-value title-emerald">3〜5日</div>
+          <div class="stat-label">制作期間</div>
+        </div>
+      </div>
+    </div>
+    <div class="card">
+      <h3 class="text-emerald mb-12">短編動画のメリット</h3>
+      <ul class="list-diamond">
+        <li>画像コンテンツとの<span class="text-emerald fw-600">差別化</span>が明確</li>
+        <li>制作コストが低く、数を出せる</li>
+        <li>動画市場はまだ競合が少ない</li>
+      </ul>
+    </div>
+  </div>
+</div>
+
+<!-- ============================================================ -->
+<!-- SLIDE 18: Medium-long video -->
+<!-- ============================================================ -->
+<div class="slide" data-slide="18">
+  <div class="slide-inner">
+    <h2 class="title-gradient mb-24">中編・長編動画 — 高単価の柱</h2>
+    <div class="grid-2 mb-20">
+      <div class="card card-emerald">
+        <h3 class="text-emerald mb-12">中編（10〜20分）</h3>
+        <div class="stat-value title-emerald mb-8">2,000円〜</div>
+        <ul class="list-diamond">
+          <li>ストーリー展開が可能</li>
+          <li>1〜2週間で制作</li>
+          <li>短編の2倍以上の単価</li>
+        </ul>
+      </div>
+      <div class="card card-gold">
+        <h3 class="text-gold mb-12">長編（30分〜）</h3>
+        <div class="stat-value title-gold mb-8">2,980円〜</div>
+        <ul class="list-diamond">
+          <li>プレミアム感が出せる</li>
+          <li>2〜4週間で制作</li>
+          <li>最も高い客単価</li>
+        </ul>
+      </div>
+    </div>
+    <div class="card" style="background: rgba(251,191,36,0.04);">
+      <p class="text-center">動画は<span class="text-gold fw-700">1本あたりの利益が大きい</span>。月2〜3本で十分な収益が見込める。</p>
+    </div>
+  </div>
+</div>
+
+<!-- ============================================================ -->
+<!-- SLIDE 19: Posters & goods -->
+<!-- ============================================================ -->
+<div class="slide" data-slide="19">
+  <div class="slide-inner">
+    <h2 class="title-gradient mb-24">ポスター・グッズ — 物販の可能性</h2>
+    <div class="grid-2">
+      <div class="card card-gold">
+        <h3 class="text-gold mb-16">ヤフオク出品モデル</h3>
+        <ul class="list-diamond">
+          <li>AI生成画像を高画質プリント</li>
+          <li>ポスター・タペストリーとして出品</li>
+          <li>月収目安: <span class="text-gold fw-700">月15〜30万円</span></li>
+          <li>印刷コストは1枚数百円程度</li>
+        </ul>
+      </div>
+      <div class="card card-emerald">
+        <h3 class="text-emerald mb-16">その他のグッズ展開</h3>
+        <ul class="list-diamond">
+          <li>アクリルスタンド</li>
+          <li>クリアファイル</li>
+          <li>缶バッジ・キーホルダー</li>
+          <li>オンデマンド印刷で在庫リスクなし</li>
+        </ul>
+      </div>
+    </div>
+    <div class="card mt-20" style="background: rgba(251,191,36,0.04);">
+      <p class="text-center">デジタル販売と<span class="text-gold fw-600">同じ画像を物販にも転用</span>できるのが強み。二重に稼げる。</p>
+    </div>
+  </div>
+</div>
+
+<!-- ============================================================ -->
+<!-- SLIDE 20: Original characters -->
+<!-- ============================================================ -->
+<div class="slide" data-slide="20">
+  <div class="slide-inner">
+    <h2 class="title-gradient mb-24">オリジナルキャラクター — 最強のブランド資産</h2>
+    <div class="card card-emerald mb-20">
+      <h3 class="text-emerald mb-16">なぜオリキャラが重要か</h3>
+      <ul class="list-diamond">
+        <li><span class="fw-600">ファンが「キャラ」についてくる</span> — 作品単位ではなくキャラ単位でリピート</li>
+        <li><span class="fw-600">版権リスクゼロ</span> — 完全オリジナルなので安全</li>
+        <li><span class="fw-600">全商品に展開可能</span> — CG集・漫画・動画・グッズすべてに使える</li>
+        <li><span class="fw-600">ブランド価値が蓄積</span> — 作れば作るほど資産になる</li>
+      </ul>
+    </div>
+    <div class="card" style="background: rgba(16,185,129,0.05);">
+      <p class="text-center">早い段階で<span class="text-emerald fw-700">自分だけのキャラクター</span>を確立しておくと、後の展開が圧倒的に楽になる。</p>
+    </div>
+  </div>
+</div>
+
+<!-- ============================================================ -->
+<!-- SLIDE 21: Subscription -->
+<!-- ============================================================ -->
+<div class="slide" data-slide="21">
+  <div class="slide-inner">
+    <h2 class="title-gradient mb-24">月額サブスクリプション — 安定収益の柱</h2>
+    <div class="card card-gold mb-20">
+      <div class="grid-3 text-center">
+        <div>
+          <div class="stat-value title-gold">1,000〜5,000円</div>
+          <div class="stat-label">月額プラン</div>
+        </div>
+        <div>
+          <div class="stat-value title-emerald">Patreon</div>
+          <div class="stat-label">主要プラットフォーム</div>
+        </div>
+        <div>
+          <div class="stat-value title-gold">毎月安定</div>
+          <div class="stat-label">収益の質</div>
+        </div>
+      </div>
+    </div>
+    <div class="card">
+      <h3 class="text-gold mb-12">サブスクのメリット</h3>
+      <ul class="list-diamond">
+        <li><span class="fw-600">売上が毎月積み上がる</span> — 新規+継続で右肩上がり</li>
+        <li>ファンとの<span class="text-gold fw-600">深い関係</span>が構築できる</li>
+        <li>限定コンテンツで特別感を演出</li>
+        <li>海外ファンも取り込みやすい</li>
+      </ul>
+    </div>
+  </div>
+</div>
+
+<!-- ============================================================ -->
+<!-- SLIDE 22: Multi-product strategy -->
+<!-- ============================================================ -->
+<div class="slide" data-slide="22">
+  <div class="slide-inner">
+    <h2 class="title-gradient mb-24">マルチ商品戦略 — 収益最大化の鍵</h2>
+    <div class="card card-gold" style="padding: 32px;">
+      <h3 class="text-gold mb-20">1つの世界観から複数商品を展開</h3>
+      <div class="grid-2 mb-20">
+        <div>
+          <p class="fw-600 mb-8">同じキャラクターで…</p>
+          <ul class="list-diamond">
+            <li>CG集を販売</li>
+            <li>漫画シリーズを展開</li>
+            <li>短編動画を制作</li>
+          </ul>
+        </div>
+        <div>
+          <p class="fw-600 mb-8">さらに…</p>
+          <ul class="list-diamond">
+            <li>ポスターをヤフオクで出品</li>
+            <li>サブスクで限定配信</li>
+            <li>グッズ化して物販</li>
+          </ul>
+        </div>
+      </div>
+      <div class="section-divider" style="margin: 20px auto;"></div>
+      <p class="text-center"><span class="text-gold fw-700">1つの制作物から5〜6種類の収益</span>を生み出せる。これが「掛け算」の力。</p>
+    </div>
+  </div>
+</div>
+
+<!-- ============================================================ -->
+<!-- SLIDE 23: Part 3 Section -->
+<!-- ============================================================ -->
+<div class="slide" data-slide="23">
+  <div class="slide-inner section-slide">
+    <div class="section-label">PART 3</div>
+    <div class="section-number">03</div>
+    <div class="section-divider"></div>
+    <h2 class="title-gradient">販売プラットフォーム</h2>
+    <p class="mt-16" style="color: var(--text-muted);">どこで売るかが利益を決める</p>
+  </div>
+</div>
+
+<!-- ============================================================ -->
+<!-- SLIDE 24: FANZA -->
+<!-- ============================================================ -->
+<div class="slide" data-slide="24">
+  <div class="slide-inner">
+    <h2 class="title-gradient mb-24">FANZA — 最大の市場規模</h2>
+    <div class="grid-2">
+      <div class="card card-emerald">
+        <h3 class="text-emerald mb-16">基本情報</h3>
+        <ul class="list-diamond">
+          <li>国内<span class="text-emerald fw-700">最大級</span>のデジタルコンテンツ市場</li>
+          <li>ユーザー数が圧倒的に多い</li>
+          <li>AI作品も多数流通</li>
+          <li>動画コンテンツも販売可能</li>
+        </ul>
+      </div>
+      <div class="card card-gold">
+        <h3 class="text-gold mb-16">攻略ポイント</h3>
+        <ul class="list-diamond">
+          <li>セール・キャンペーンの活用</li>
+          <li>ランキング掲載で一気に売上アップ</li>
+          <li>タグ設定の最適化が重要</li>
+          <li>新作の初動が勝負</li>
+        </ul>
+      </div>
+    </div>
+    <div class="card mt-20" style="background: rgba(16,185,129,0.05);">
+      <p class="text-center"><span class="text-emerald fw-700">売上を最大化するならまずFANZA。</span>市場の大きさが収益に直結する。</p>
+    </div>
+  </div>
+</div>
+
+<!-- ============================================================ -->
+<!-- SLIDE 25: DLsite -->
+<!-- ============================================================ -->
+<div class="slide" data-slide="25">
+  <div class="slide-inner">
+    <h2 class="title-gradient mb-24">DLsite — 同人コンテンツに強い</h2>
+    <div class="grid-2">
+      <div class="card card-emerald">
+        <h3 class="text-emerald mb-16">特徴</h3>
+        <ul class="list-diamond">
+          <li><span class="text-emerald fw-700">同人作品</span>に特化した市場</li>
+          <li>コアなファン層が集まる</li>
+          <li>音声作品も強いジャンル</li>
+          <li>レビュー文化が根付いている</li>
+        </ul>
+      </div>
+      <div class="card card-gold">
+        <h3 class="text-gold mb-16">使い方のコツ</h3>
+        <ul class="list-diamond">
+          <li>FANZAとの<span class="text-gold fw-600">同時販売</span>で機会損失を防ぐ</li>
+          <li>サークルページの充実</li>
+          <li>ニッチジャンルで上位を狙う</li>
+          <li>割引セールのタイミングを活用</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ============================================================ -->
+<!-- SLIDE 26: BOOTH -->
+<!-- ============================================================ -->
+<div class="slide" data-slide="26">
+  <div class="slide-inner">
+    <h2 class="title-gradient mb-24">BOOTH — 初心者にやさしい</h2>
+    <div class="grid-2">
+      <div class="card card-emerald">
+        <h3 class="text-emerald mb-16">メリット</h3>
+        <ul class="list-diamond">
+          <li><span class="text-emerald fw-700">登録・出品が簡単</span></li>
+          <li>手数料が比較的低い</li>
+          <li>pixivとの連携でアクセス獲得</li>
+          <li>デジタル＆物理商品の両方に対応</li>
+        </ul>
+      </div>
+      <div class="card card-gold">
+        <h3 class="text-gold mb-16">活用法</h3>
+        <ul class="list-diamond">
+          <li>最初の出品先として最適</li>
+          <li>無料サンプルで集客</li>
+          <li>他プラットフォームへの導線に</li>
+          <li>物販にも使える万能さ</li>
+        </ul>
+      </div>
+    </div>
+    <div class="card mt-20" style="background: rgba(16,185,129,0.05);">
+      <p class="text-center">まず<span class="text-emerald fw-600">BOOTHで実績を作り</span>、FANZAやDLsiteに広げるルートがおすすめ。</p>
+    </div>
+  </div>
+</div>
+
+<!-- ============================================================ -->
+<!-- SLIDE 27: Patreon -->
+<!-- ============================================================ -->
+<div class="slide" data-slide="27">
+  <div class="slide-inner">
+    <h2 class="title-gradient mb-24">Patreon — 海外×月額の収益源</h2>
+    <div class="card card-gold mb-20">
+      <div class="grid-3 text-center">
+        <div>
+          <div class="stat-value title-gold">海外</div>
+          <div class="stat-label">メインユーザー層</div>
+        </div>
+        <div>
+          <div class="stat-value title-emerald">月額制</div>
+          <div class="stat-label">課金モデル</div>
+        </div>
+        <div>
+          <div class="stat-value title-gold">安定</div>
+          <div class="stat-label">収益の質</div>
+        </div>
+      </div>
+    </div>
+    <div class="card">
+      <h3 class="text-gold mb-12">Patreonの強み</h3>
+      <ul class="list-diamond">
+        <li><span class="fw-600">月額1,000〜5,000円</span>のプランで安定収入</li>
+        <li>英語圏の巨大市場にアクセス</li>
+        <li>ファンとの直接コミュニケーション</li>
+        <li>限定コンテンツでプレミアム感を演出</li>
+      </ul>
+    </div>
+  </div>
+</div>
+
+<!-- ============================================================ -->
+<!-- SLIDE 28: ヤフオク -->
+<!-- ============================================================ -->
+<div class="slide" data-slide="28">
+  <div class="slide-inner">
+    <h2 class="title-gradient mb-24">ヤフオク — 物販で新しい収益</h2>
+    <div class="grid-2">
+      <div class="card card-gold">
+        <h3 class="text-gold mb-16">ビジネスモデル</h3>
+        <ul class="list-diamond">
+          <li>AI画像を<span class="text-gold fw-700">ポスターとして印刷・出品</span></li>
+          <li>オークション形式で価格が上がることも</li>
+          <li>月収目安: <span class="text-gold fw-700">月15〜30万円</span></li>
+          <li>印刷コストが安く利益率が高い</li>
+        </ul>
+      </div>
+      <div class="card card-emerald">
+        <h3 class="text-emerald mb-16">成功のコツ</h3>
+        <ul class="list-diamond">
+          <li>高画質出力（4K以上推奨）</li>
+          <li>タイトルとキーワード最適化</li>
+          <li>出品写真にこだわる</li>
+          <li>リピーター向けのまとめ出品</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ============================================================ -->
+<!-- SLIDE 29: Platform comparison -->
+<!-- ============================================================ -->
+<div class="slide" data-slide="29">
+  <div class="slide-inner">
+    <h2 class="title-gradient mb-24">プラットフォーム比較まとめ</h2>
+    <div class="card" style="padding: 0; overflow: hidden;">
+      <div class="row-item" style="background: rgba(16,185,129,0.06); font-weight: 600;">
+        <span style="flex: 1.2;">プラットフォーム</span>
+        <span style="flex: 1;">特徴</span>
+        <span style="flex: 1;">おすすめ度</span>
+      </div>
+      <div class="row-item">
+        <span style="flex: 1.2;" class="text-emerald fw-600">FANZA</span>
+        <span style="flex: 1; font-size: 0.85rem;">最大市場・集客力</span>
+        <span style="flex: 1;" class="stars">★★★★★</span>
+      </div>
+      <div class="row-item">
+        <span style="flex: 1.2;" class="text-emerald fw-600">DLsite</span>
+        <span style="flex: 1; font-size: 0.85rem;">同人に強い</span>
+        <span style="flex: 1;" class="stars">★★★★★</span>
+      </div>
+      <div class="row-item">
+        <span style="flex: 1.2;" class="text-emerald fw-600">BOOTH</span>
+        <span style="flex: 1; font-size: 0.85rem;">初心者向け・万能</span>
+        <span style="flex: 1;" class="stars">★★★★☆</span>
+      </div>
+      <div class="row-item">
+        <span style="flex: 1.2;" class="text-gold fw-600">Patreon</span>
+        <span style="flex: 1; font-size: 0.85rem;">海外月額</span>
+        <span style="flex: 1;" class="stars">★★★★☆</span>
+      </div>
+      <div class="row-item">
+        <span style="flex: 1.2;" class="text-gold fw-600">ヤフオク</span>
+        <span style="flex: 1; font-size: 0.85rem;">物販特化</span>
+        <span style="flex: 1;" class="stars">★★★★☆</span>
+      </div>
+    </div>
+    <p class="mt-16 text-center" style="font-size: 0.85rem; color: var(--text-muted);">FANZA＆DLsiteは必須。さらにPatreonかヤフオクを組み合わせると収益最大化。</p>
+  </div>
+</div>
+
+<!-- ============================================================ -->
+<!-- SLIDE 30: Part 4 Section -->
+<!-- ============================================================ -->
+<div class="slide" data-slide="30">
+  <div class="slide-inner section-slide">
+    <div class="section-label">PART 4</div>
+    <div class="section-number">04</div>
+    <div class="section-divider"></div>
+    <h2 class="title-gradient">収益パターン</h2>
+    <p class="mt-16" style="color: var(--text-muted);">現実的なシミュレーション</p>
+  </div>
+</div>
+
+<!-- ============================================================ -->
+<!-- SLIDE 31: Pattern① 画像中心 -->
+<!-- ============================================================ -->
+<div class="slide" data-slide="31">
+  <div class="slide-inner">
+    <h2 class="title-gradient mb-24">パターン① 画像メイン</h2>
+    <div class="card card-emerald mb-20">
+      <div class="flex justify-between items-center mb-16">
+        <h3 class="text-emerald">CG集 × 漫画の組み合わせ</h3>
+        <span class="badge badge-emerald">月10〜30万円</span>
+      </div>
+      <div class="grid-2">
+        <div>
+          <p class="fw-600 mb-8">月の制作量</p>
+          <ul class="list-diamond">
+            <li>CG集: 月2〜3作品</li>
+            <li>AI漫画: 月1作品</li>
+          </ul>
+        </div>
+        <div>
+          <p class="fw-600 mb-8">販売先</p>
+          <ul class="list-diamond">
+            <li>FANZA + DLsite</li>
+            <li>BOOTH（サブ）</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+    <div class="card" style="background: rgba(16,185,129,0.05);">
+      <p class="text-center"><span class="text-emerald fw-600">副業として最も安定するパターン。</span>画像生成のスキルだけで到達可能。</p>
+    </div>
+  </div>
+</div>
+
+<!-- ============================================================ -->
+<!-- SLIDE 32: Pattern② 動画中心 -->
+<!-- ============================================================ -->
+<div class="slide" data-slide="32">
+  <div class="slide-inner">
+    <h2 class="title-gradient mb-24">パターン② 動画メイン</h2>
+    <div class="card card-gold mb-20">
+      <div class="flex justify-between items-center mb-16">
+        <h3 class="text-gold">短編〜長編動画の定期リリース</h3>
+        <span class="badge badge-gold">月20〜50万円</span>
+      </div>
+      <div class="grid-2">
+        <div>
+          <p class="fw-600 mb-8">月の制作量</p>
+          <ul class="list-diamond">
+            <li>短編動画: 月4〜6本</li>
+            <li>中編動画: 月1〜2本</li>
+          </ul>
+        </div>
+        <div>
+          <p class="fw-600 mb-8">収益構造</p>
+          <ul class="list-diamond">
+            <li>単価が高い（1,000〜2,980円）</li>
+            <li>競合が少なく有利</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+    <div class="card" style="background: rgba(251,191,36,0.04);">
+      <p class="text-center"><span class="text-gold fw-600">動画に注力すれば一気に収益レベルが上がる。</span>ブルーオーシャンの今が狙い目。</p>
+    </div>
+  </div>
+</div>
+
+<!-- ============================================================ -->
+<!-- SLIDE 33: Pattern③ マルチ -->
+<!-- ============================================================ -->
+<div class="slide" data-slide="33">
+  <div class="slide-inner">
+    <h2 class="title-gradient mb-24">パターン③ マルチ展開</h2>
+    <div class="card" style="border: 1px solid var(--gold-dark); box-shadow: 0 0 40px rgba(251,191,36,0.08); padding: 32px;">
+      <div class="flex justify-between items-center mb-20">
+        <h3 class="title-gold">全商品 × 全プラットフォーム</h3>
+        <span class="badge badge-gold" style="font-size: 0.9rem; padding: 6px 16px;">月50〜300万円</span>
+      </div>
+      <div class="grid-3">
+        <div>
+          <p class="fw-600 text-emerald mb-8">画像系</p>
+          <ul class="list-diamond">
+            <li>CG集 月3〜4作</li>
+            <li>AI漫画 月2作</li>
+          </ul>
+        </div>
+        <div>
+          <p class="fw-600 text-gold mb-8">動画系</p>
+          <ul class="list-diamond">
+            <li>短編 月4〜6本</li>
+            <li>中〜長編 月1〜2本</li>
+          </ul>
+        </div>
+        <div>
+          <p class="fw-600 text-emerald mb-8">その他</p>
+          <ul class="list-diamond">
+            <li>月額サブスク運営</li>
+            <li>ポスター物販</li>
+          </ul>
+        </div>
+      </div>
+      <div class="section-divider" style="margin: 24px auto;"></div>
+      <p class="text-center"><span class="text-gold fw-700">すべてを掛け合わせた最強パターン。</span>上級者〜トップ層の収益モデル。</p>
+    </div>
+  </div>
+</div>
+
+<!-- ============================================================ -->
+<!-- SLIDE 34: Image vs Video -->
+<!-- ============================================================ -->
+<div class="slide" data-slide="34">
+  <div class="slide-inner">
+    <h2 class="title-gradient mb-24">画像 vs 動画 — どちらを攻めるか</h2>
+    <div class="flex gap-16" style="align-items: stretch;">
+      <div class="card card-emerald" style="flex: 1;">
+        <h3 class="text-emerald mb-16">画像コンテンツ</h3>
+        <ul class="list-diamond">
+          <li><span class="fw-600">始めやすさ:</span> ◎ すぐに始められる</li>
+          <li><span class="fw-600">単価:</span> △ 500〜3,000円</li>
+          <li><span class="fw-600">競合:</span> × 多い</li>
+          <li><span class="fw-600">制作速度:</span> ◎ 高速</li>
+        </ul>
+      </div>
+      <div class="vs-badge">VS</div>
+      <div class="card card-gold" style="flex: 1;">
+        <h3 class="text-gold mb-16">動画コンテンツ</h3>
+        <ul class="list-diamond">
+          <li><span class="fw-600">始めやすさ:</span> ○ やや学習必要</li>
+          <li><span class="fw-600">単価:</span> ◎ 1,000〜2,980円</li>
+          <li><span class="fw-600">競合:</span> ◎ まだ少ない</li>
+          <li><span class="fw-600">制作速度:</span> ○ やや時間かかる</li>
+        </ul>
+      </div>
+    </div>
+    <div class="card mt-20" style="background: rgba(16,185,129,0.05);">
+      <p class="text-center"><span class="text-emerald fw-600">理想は両方。</span>画像で収益基盤を作り、動画で差別化＆高単価を狙う。</p>
+    </div>
+  </div>
+</div>
+
+<!-- ============================================================ -->
+<!-- SLIDE 35: Multiplier effect -->
+<!-- ============================================================ -->
+<div class="slide" data-slide="35">
+  <div class="slide-inner">
+    <h2 class="title-gradient mb-24">収益の「掛け算」効果</h2>
+    <div class="card card-gold" style="padding: 32px;">
+      <h3 class="text-gold mb-20 text-center">同じ作品を複数チャネルで展開</h3>
+      <div class="grid-2 mb-24">
+        <div class="card" style="background: rgba(16,185,129,0.06); border-color: var(--border-emerald);">
+          <p class="text-center text-muted mb-8" style="font-size: 0.8rem;">単一チャネル</p>
+          <div class="stat-value title-emerald text-center">月10万円</div>
+          <p class="text-center mt-12" style="font-size: 0.85rem;">CG集のみ / FANZA単独</p>
+        </div>
+        <div class="card" style="background: rgba(251,191,36,0.06); border-color: var(--border-gold);">
+          <p class="text-center text-muted mb-8" style="font-size: 0.8rem;">マルチチャネル</p>
+          <div class="stat-value title-gold text-center">月50万円+</div>
+          <p class="text-center mt-12" style="font-size: 0.85rem;">全商品 × 全プラットフォーム</p>
+        </div>
+      </div>
+      <p class="text-center"><span class="text-gold fw-700">商品の種類 × 販売先の数 = 収益の掛け算</span></p>
+    </div>
+  </div>
+</div>
+
+<!-- ============================================================ -->
+<!-- SLIDE 36: Revenue models summary -->
+<!-- ============================================================ -->
+<div class="slide" data-slide="36">
+  <div class="slide-inner">
+    <h2 class="title-gradient mb-24">収益モデルの全体像</h2>
+    <div class="card" style="padding: 0; overflow: hidden;">
+      <div class="row-item" style="background: rgba(16,185,129,0.06); font-weight: 600; font-size: 0.85rem;">
+        <span style="flex: 1;">モデル</span>
+        <span style="flex: 1;">月収目安</span>
+        <span style="flex: 1;">難易度</span>
+        <span style="flex: 1;">安定性</span>
+      </div>
+      <div class="row-item" style="font-size: 0.9rem;">
+        <span style="flex: 1;">CG集販売</span>
+        <span style="flex: 1;" class="text-emerald">5〜15万</span>
+        <span style="flex: 1;">★☆☆</span>
+        <span style="flex: 1;">★★★</span>
+      </div>
+      <div class="row-item" style="font-size: 0.9rem;">
+        <span style="flex: 1;">AI漫画</span>
+        <span style="flex: 1;" class="text-emerald">15〜30万</span>
+        <span style="flex: 1;">★★☆</span>
+        <span style="flex: 1;">★★★</span>
+      </div>
+      <div class="row-item" style="font-size: 0.9rem;">
+        <span style="flex: 1;">動画販売</span>
+        <span style="flex: 1;" class="text-gold">20〜50万</span>
+        <span style="flex: 1;">★★☆</span>
+        <span style="flex: 1;">★★★</span>
+      </div>
+      <div class="row-item" style="font-size: 0.9rem;">
+        <span style="flex: 1;">物販</span>
+        <span style="flex: 1;" class="text-gold">15〜30万</span>
+        <span style="flex: 1;">★★☆</span>
+        <span style="flex: 1;">★★☆</span>
+      </div>
+      <div class="row-item" style="font-size: 0.9rem;">
+        <span style="flex: 1;">サブスク</span>
+        <span style="flex: 1;" class="text-gold">10〜50万</span>
+        <span style="flex: 1;">★★★</span>
+        <span style="flex: 1;">★★★★</span>
+      </div>
+      <div class="row-item" style="font-size: 0.9rem;">
+        <span style="flex: 1; font-weight: 700;">マルチ全部</span>
+        <span style="flex: 1; font-weight: 700;" class="text-gold">50〜300万</span>
+        <span style="flex: 1;">★★★</span>
+        <span style="flex: 1;">★★★★★</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ============================================================ -->
+<!-- SLIDE 37: Part 5 Section -->
+<!-- ============================================================ -->
+<div class="slide" data-slide="37">
+  <div class="slide-inner section-slide">
+    <div class="section-label">PART 5</div>
+    <div class="section-number">05</div>
+    <div class="section-divider"></div>
+    <h2 class="title-gradient">必要なスキルとツール</h2>
+    <p class="mt-16" style="color: var(--text-muted);">何を使い、何を学ぶか</p>
+  </div>
+</div>
+
+<!-- ============================================================ -->
+<!-- SLIDE 38: AI image gen -->
+<!-- ============================================================ -->
+<div class="slide" data-slide="38">
+  <div class="slide-inner">
+    <h2 class="title-gradient mb-24">AI画像生成 — 最初に習得すべきスキル</h2>
+    <div class="card card-emerald mb-20">
+      <h3 class="text-emerald mb-16">コアスキル</h3>
+      <ul class="list-diamond">
+        <li><span class="fw-600">プロンプト設計</span> — 意図通りの画像を生成する技術</li>
+        <li><span class="fw-600">モデル選定</span> — 目的に合ったモデルを使い分ける</li>
+        <li><span class="fw-600">後処理</span> — アップスケール・修正・仕上げ</li>
+        <li><span class="fw-600">一貫性の管理</span> — キャラクターの統一感を保つ</li>
+      </ul>
+    </div>
+    <div class="card" style="background: rgba(16,185,129,0.05);">
+      <p class="text-center">完璧を目指す必要はない。<span class="text-emerald fw-600">70%のクオリティで出す</span>方が、100%を目指して出さないより遥かに良い。</p>
+    </div>
+  </div>
+</div>
+
+<!-- ============================================================ -->
+<!-- SLIDE 39: Tool comparison -->
+<!-- ============================================================ -->
+<div class="slide" data-slide="39">
+  <div class="slide-inner">
+    <h2 class="title-gradient mb-24">AI画像ツール比較</h2>
+    <div class="card" style="padding: 0; overflow: hidden;">
+      <div class="row-item" style="background: rgba(16,185,129,0.06); font-weight: 600; font-size: 0.85rem;">
+        <span style="flex: 1.2;">ツール</span>
+        <span style="flex: 0.8;">コスト</span>
+        <span style="flex: 0.6;">評価</span>
+        <span style="flex: 1;">特徴</span>
+      </div>
+      <div class="row-item" style="font-size: 0.9rem;">
+        <span style="flex: 1.2;" class="text-emerald fw-600">Stable Diffusion</span>
+        <span style="flex: 0.8;">無料</span>
+        <span style="flex: 0.6;" class="stars">★★★★★</span>
+        <span style="flex: 1; font-size: 0.8rem;">カスタマイズ自由</span>
+      </div>
+      <div class="row-item" style="font-size: 0.9rem;">
+        <span style="flex: 1.2;" class="text-emerald fw-600">Midjourney</span>
+        <span style="flex: 0.8;">月$10〜</span>
+        <span style="flex: 0.6;" class="stars">★★★★★</span>
+        <span style="flex: 1; font-size: 0.8rem;">高品質・簡単</span>
+      </div>
+      <div class="row-item" style="font-size: 0.9rem;">
+        <span style="flex: 1.2;" class="text-gold fw-600">DALL-E</span>
+        <span style="flex: 0.8;">月$20〜</span>
+        <span style="flex: 0.6;" class="stars">★★★★☆</span>
+        <span style="flex: 1; font-size: 0.8rem;">ChatGPT連携</span>
+      </div>
+    </div>
+    <div class="card mt-20" style="background: rgba(16,185,129,0.05);">
+      <p class="text-center">おすすめは<span class="text-emerald fw-700">Stable Diffusion（無料）</span>からスタートして、<span class="text-gold fw-600">Midjourney</span>を併用するスタイル。</p>
+    </div>
+  </div>
+</div>
+
+<!-- ============================================================ -->
+<!-- SLIDE 40: AI video -->
+<!-- ============================================================ -->
+<div class="slide" data-slide="40">
+  <div class="slide-inner">
+    <h2 class="title-gradient mb-24">AI動画生成 — 次の主戦場</h2>
+    <div class="grid-2">
+      <div class="card card-emerald">
+        <h3 class="text-emerald mb-16">主要ツール</h3>
+        <ul class="list-diamond">
+          <li><span class="fw-600">Runway Gen-3</span> — 高品質動画生成</li>
+          <li><span class="fw-600">Kling</span> — コスパの良い選択肢</li>
+          <li><span class="fw-600">Pika</span> — 手軽なアニメーション</li>
+          <li><span class="fw-600">Wan2.1</span> — オープンソース</li>
+        </ul>
+      </div>
+      <div class="card card-gold">
+        <h3 class="text-gold mb-16">動画制作フロー</h3>
+        <ul class="list-diamond">
+          <li>AI画像生成（ベース素材）</li>
+          <li>AI動画変換（動きをつける）</li>
+          <li>編集・BGM追加</li>
+          <li>最終書き出し・アップロード</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ============================================================ -->
+<!-- SLIDE 41: Video differentiation -->
+<!-- ============================================================ -->
+<div class="slide" data-slide="41">
+  <div class="slide-inner">
+    <h2 class="title-gradient mb-24">動画で差別化する方法</h2>
+    <div class="card card-gold" style="padding: 32px;">
+      <h3 class="text-gold mb-20">競合と差をつける5つのポイント</h3>
+      <div class="grid-2">
+        <div>
+          <ul class="list-diamond">
+            <li><span class="fw-600">ストーリー性</span> — ただ動くだけでなく物語がある</li>
+            <li><span class="fw-600">音響効果</span> — BGM・SE・ボイスの追加</li>
+            <li><span class="fw-600">編集品質</span> — トランジション・カット割り</li>
+          </ul>
+        </div>
+        <div>
+          <ul class="list-diamond">
+            <li><span class="fw-600">尺の最適化</span> — 価格に見合うボリューム</li>
+            <li><span class="fw-600">シリーズ展開</span> — 続きが気になる構成</li>
+          </ul>
+        </div>
+      </div>
+      <div class="section-divider" style="margin: 24px auto;"></div>
+      <p class="text-center">動画はまだ<span class="text-gold fw-700">参入者が少ないブルーオーシャン</span>。品質を少し上げるだけで大きな差になる。</p>
+    </div>
+  </div>
+</div>
+
+<!-- ============================================================ -->
+<!-- SLIDE 42: Automation (BRIEF) -->
+<!-- ============================================================ -->
+<div class="slide" data-slide="42">
+  <div class="slide-inner">
+    <h2 class="title-gradient mb-24">効率化のヒント</h2>
+    <div class="card" style="border-color: var(--border-emerald); padding: 32px;">
+      <p style="font-size: 1.05rem; line-height: 1.8;">AIエージェントを活用すれば、画像生成やファイル管理などの<span class="text-emerald fw-600">繰り返し作業を効率化</span>できる。プログラミングの知識は不要。慣れてきたら導入すると、制作時間を大幅に短縮できる。</p>
+      <div class="mt-20 text-center">
+        <span class="badge badge-emerald" style="font-size: 0.85rem; padding: 6px 20px;">まずは手動で慣れてから、徐々に効率化</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ============================================================ -->
+<!-- SLIDE 43: Part 6 Section -->
+<!-- ============================================================ -->
+<div class="slide" data-slide="43">
+  <div class="slide-inner section-slide">
+    <div class="section-label">PART 6</div>
+    <div class="section-number">06</div>
+    <div class="section-divider"></div>
+    <h2 class="title-gradient">マインドセット</h2>
+    <p class="mt-16" style="color: var(--text-muted);">成功する人の思考法と戦略</p>
+  </div>
+</div>
+
+<!-- ============================================================ -->
+<!-- SLIDE 44: Creators vs Earners -->
+<!-- ============================================================ -->
+<div class="slide" data-slide="44">
+  <div class="slide-inner">
+    <h2 class="title-gradient mb-24">「作り手」と「稼ぎ手」の違い</h2>
+    <div class="flex gap-16" style="align-items: stretch;">
+      <div class="card" style="flex: 1; border-color: rgba(255,255,255,0.1);">
+        <h3 style="color: var(--text-muted); margin-bottom: 16px;">作り手マインド</h3>
+        <ul class="list-diamond">
+          <li style="color: var(--text-muted);">自分が満足する作品を作る</li>
+          <li style="color: var(--text-muted);">品質に100%こだわる</li>
+          <li style="color: var(--text-muted);">完成するまで出さない</li>
+          <li style="color: var(--text-muted);">結果: 1作品に何ヶ月も</li>
+        </ul>
+      </div>
+      <div class="vs-badge">VS</div>
+      <div class="card card-gold" style="flex: 1;">
+        <h3 class="text-gold mb-16">稼ぎ手マインド</h3>
+        <ul class="list-diamond">
+          <li><span class="fw-600">市場が求めるもの</span>を作る</li>
+          <li>70%で出して<span class="text-gold fw-600">改善を重ねる</span></li>
+          <li>数を出してデータを取る</li>
+          <li>結果: 月に複数作品リリース</li>
+        </ul>
+      </div>
+    </div>
+    <div class="card mt-20" style="background: rgba(251,191,36,0.04);">
+      <p class="text-center">ビジネスとして取り組むなら<span class="text-gold fw-700">「稼ぎ手」の思考</span>が圧倒的に有利。</p>
+    </div>
+  </div>
+</div>
+
+<!-- ============================================================ -->
+<!-- SLIDE 45: 3 failure causes -->
+<!-- ============================================================ -->
+<div class="slide" data-slide="45">
+  <div class="slide-inner">
+    <h2 class="title-gradient mb-24">失敗する3つの原因</h2>
+    <div class="grid-3">
+      <div class="card" style="border-color: rgba(220,38,38,0.2);">
+        <div style="font-size: 1.8rem; text-align: center; margin-bottom: 12px;">❌</div>
+        <h3 style="color: #f87171; text-align: center; margin-bottom: 12px;">完璧主義</h3>
+        <p style="font-size: 0.85rem; text-align: center;">100%を目指して永遠に出さない。「まだ足りない」が口癖。</p>
+      </div>
+      <div class="card" style="border-color: rgba(220,38,38,0.2);">
+        <div style="font-size: 1.8rem; text-align: center; margin-bottom: 12px;">❌</div>
+        <h3 style="color: #f87171; text-align: center; margin-bottom: 12px;">リサーチ不足</h3>
+        <p style="font-size: 0.85rem; text-align: center;">売れているものを調べずに自分の好みだけで作る。</p>
+      </div>
+      <div class="card" style="border-color: rgba(220,38,38,0.2);">
+        <div style="font-size: 1.8rem; text-align: center; margin-bottom: 12px;">❌</div>
+        <h3 style="color: #f87171; text-align: center; margin-bottom: 12px;">継続できない</h3>
+        <p style="font-size: 0.85rem; text-align: center;">1〜2作出して売れないと諦める。実は10作目から伸びる。</p>
+      </div>
+    </div>
+    <div class="card mt-20" style="background: rgba(16,185,129,0.05);">
+      <p class="text-center"><span class="text-emerald fw-600">この3つを避けるだけで上位20%に入れる。</span>逆に言えば、80%がここで脱落する。</p>
+    </div>
+  </div>
+</div>
+
+<!-- ============================================================ -->
+<!-- SLIDE 46: Success factors -->
+<!-- ============================================================ -->
+<div class="slide" data-slide="46">
+  <div class="slide-inner">
+    <h2 class="title-gradient mb-24">成功者に共通する要素</h2>
+    <div class="card card-gold" style="padding: 32px;">
+      <div class="grid-2">
+        <div>
+          <h3 class="text-gold mb-16">行動面</h3>
+          <ul class="list-diamond">
+            <li><span class="fw-600">とにかく出す</span> — 質より量でスタート</li>
+            <li><span class="fw-600">データで判断</span> — 感覚ではなく数字で改善</li>
+            <li><span class="fw-600">市場を見る</span> — 売れ筋を常にリサーチ</li>
+          </ul>
+        </div>
+        <div>
+          <h3 class="text-emerald mb-16">戦略面</h3>
+          <ul class="list-diamond">
+            <li><span class="fw-600">ニッチを攻める</span> — 小さな市場で1位を取る</li>
+            <li><span class="fw-600">シリーズ化</span> — 1作品で終わらせない</li>
+            <li><span class="fw-600">複数展開</span> — 1つに依存しない</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ============================================================ -->
+<!-- SLIDE 47: Pricing -->
+<!-- ============================================================ -->
+<div class="slide" data-slide="47">
+  <div class="slide-inner">
+    <h2 class="title-gradient mb-24">価格設定の考え方</h2>
+    <div class="grid-2">
+      <div class="card card-emerald">
+        <h3 class="text-emerald mb-16">安すぎる問題</h3>
+        <ul class="list-diamond">
+          <li>100円で出しても売上は微々たるもの</li>
+          <li>安いと「品質が低い」と思われる</li>
+          <li>利益が出ず<span class="text-emerald fw-600">モチベーションが続かない</span></li>
+        </ul>
+      </div>
+      <div class="card card-gold">
+        <h3 class="text-gold mb-16">適正価格のつけ方</h3>
+        <ul class="list-diamond">
+          <li>競合の価格帯をリサーチ</li>
+          <li>ボリュームに見合った設定</li>
+          <li>最初は中間価格帯でテスト</li>
+          <li><span class="text-gold fw-600">セールで初動を作る</span>戦略</li>
+        </ul>
+      </div>
+    </div>
+    <div class="card mt-20" style="background: rgba(251,191,36,0.04);">
+      <p class="text-center">価格を<span class="text-gold fw-700">下げるのは簡単、上げるのは難しい</span>。最初から適正価格で出す勇気を持つ。</p>
+    </div>
+  </div>
+</div>
+
+<!-- ============================================================ -->
+<!-- SLIDE 48: Fans = Assets -->
+<!-- ============================================================ -->
+<div class="slide" data-slide="48">
+  <div class="slide-inner">
+    <h2 class="title-gradient mb-24">ファンは最大の資産</h2>
+    <div class="card card-gold" style="padding: 36px;">
+      <h3 class="text-gold mb-20 text-center">ファン100人 × 月額1,000円 = 月10万円の安定収入</h3>
+      <div class="section-divider" style="margin: 24px auto;"></div>
+      <div class="grid-2 mt-20">
+        <div>
+          <h3 class="text-emerald mb-12">ファンの作り方</h3>
+          <ul class="list-diamond">
+            <li>一貫した世界観・キャラクター</li>
+            <li>定期的なリリース（期待感）</li>
+            <li>SNSでの露出・コミュニケーション</li>
+          </ul>
+        </div>
+        <div>
+          <h3 class="text-gold mb-12">ファンの活かし方</h3>
+          <ul class="list-diamond">
+            <li>新作リリースの告知</li>
+            <li>限定コンテンツで特別感</li>
+            <li>フィードバックを次の作品に反映</li>
+          </ul>
+        </div>
+      </div>
+      <div class="section-divider" style="margin: 24px auto;"></div>
+      <p class="text-center"><span class="text-gold fw-700">1回の売上より、ファンの数を追う。</span>それが長期的な収益の基盤になる。</p>
+    </div>
+  </div>
+</div>
+
+<!-- ============================================================ -->
+<!-- SLIDE 49: Roadmap -->
+<!-- ============================================================ -->
+<div class="slide" data-slide="49">
+  <div class="slide-inner">
+    <h2 class="title-gradient mb-24">ロードマップ — 3つのフェーズ</h2>
+    <div class="phase-line">
+      <div class="phase-item" style="border-color: var(--border-emerald); box-shadow: 0 0 20px var(--glow-emerald);">
+        <span class="badge badge-emerald mb-12">Phase 1</span>
+        <h3 class="text-emerald mb-8">基盤構築</h3>
+        <p class="text-gold fw-700 mb-8" style="font-size: 1.1rem;">月3〜10万円</p>
+        <p style="font-size: 0.8rem; color: var(--text-muted);">期間: 1〜3ヶ月</p>
+        <div class="section-divider" style="width: 40px; margin: 12px 0;"></div>
+        <ul style="font-size: 0.8rem; color: var(--text-secondary);" class="list-diamond">
+          <li>ツールの習得</li>
+          <li>最初の3〜5作品を出す</li>
+          <li>売れ筋をリサーチ</li>
+        </ul>
+      </div>
+      <div class="phase-item" style="border-color: var(--border-gold); box-shadow: 0 0 20px var(--glow-gold);">
+        <span class="badge badge-gold mb-12">Phase 2</span>
+        <h3 class="text-gold mb-8">収益拡大</h3>
+        <p class="text-gold fw-700 mb-8" style="font-size: 1.1rem;">月10〜50万円</p>
+        <p style="font-size: 0.8rem; color: var(--text-muted);">期間: 3〜6ヶ月</p>
+        <div class="section-divider" style="width: 40px; margin: 12px 0;"></div>
+        <ul style="font-size: 0.8rem; color: var(--text-secondary);" class="list-diamond">
+          <li>動画コンテンツ参入</li>
+          <li>複数プラットフォーム展開</li>
+          <li>シリーズ化・ブランド確立</li>
+        </ul>
+      </div>
+      <div class="phase-item" style="border-color: var(--gold-dark); box-shadow: 0 0 30px rgba(251,191,36,0.1);">
+        <span class="badge badge-gold mb-12">Phase 3</span>
+        <h3 class="title-gold mb-8">事業化</h3>
+        <p class="text-gold fw-700 mb-8" style="font-size: 1.1rem;">月50万円〜</p>
+        <p style="font-size: 0.8rem; color: var(--text-muted);">期間: 6ヶ月〜</p>
+        <div class="section-divider" style="width: 40px; margin: 12px 0;"></div>
+        <ul style="font-size: 0.8rem; color: var(--text-secondary);" class="list-diamond">
+          <li>マルチ商品×全販路</li>
+          <li>サブスク運営開始</li>
+          <li>自動化・仕組み化</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ============================================================ -->
+<!-- SLIDE 50: CTA -->
+<!-- ============================================================ -->
+<div class="slide" data-slide="50">
+  <div class="slide-inner">
+    <div class="cta-border">
+      <div style="margin-bottom: 20px;">
+        <span class="diamond"></span><span class="diamond"></span><span class="diamond"></span>
+      </div>
+      <h1 class="title-gradient" style="margin-bottom: 16px;">今日から始めよう</h1>
+      <p style="font-size: 1.1rem; color: var(--text-secondary); margin-bottom: 32px;">市場は拡大中。技術は揃った。あとは行動するだけ。</p>
+      <div class="section-divider" style="margin: 28px auto;"></div>
+      <div class="grid-3 mt-24" style="max-width: 700px; margin: 0 auto;">
+        <div class="text-center">
+          <div class="stat-value title-emerald" style="font-size: 1.6rem;">Step 1</div>
+          <p style="font-size: 0.85rem; margin-top: 8px;">ツールを触る</p>
+        </div>
+        <div class="text-center">
+          <div class="stat-value title-gold" style="font-size: 1.6rem;">Step 2</div>
+          <p style="font-size: 0.85rem; margin-top: 8px;">1作品を出す</p>
+        </div>
+        <div class="text-center">
+          <div class="stat-value title-emerald" style="font-size: 1.6rem;">Step 3</div>
+          <p style="font-size: 0.85rem; margin-top: 8px;">改善を続ける</p>
+        </div>
+      </div>
+      <div class="section-divider" style="margin: 28px auto;"></div>
+      <p class="text-gold fw-700" style="font-size: 1.2rem;">完璧を待たない。今日、最初の一歩を踏み出そう。</p>
+    </div>
+  </div>
+</div>
+
+</div><!-- /slides-wrapper -->
+
+<!-- Navigation -->
+<div class="progress-track">
+  <div class="progress-fill" id="progressFill" style="width: 2%;"></div>
+</div>
+
+<div class="nav-bar">
+  <button class="nav-btn" id="btnPrev" aria-label="前のスライド">◀</button>
+  <span class="nav-counter" id="navCounter">1 / 50</span>
+  <button class="nav-btn" id="btnNext" aria-label="次のスライド">▶</button>
 </div>
 
 <script>
-let currentSlide = 1;
-const totalSlides = 22;
+(function() {
+  'use strict';
 
-function showSlide(n) {
+  const TOTAL = 50;
+  let current = 1;
+  let isAnimating = false;
+
   const slides = document.querySelectorAll('.slide');
-  if (n < 1) n = 1;
-  if (n > totalSlides) n = totalSlides;
-  currentSlide = n;
+  const counter = document.getElementById('navCounter');
+  const progress = document.getElementById('progressFill');
+  const btnPrev = document.getElementById('btnPrev');
+  const btnNext = document.getElementById('btnNext');
 
-  slides.forEach((slide, index) => {
-    slide.classList.remove('active');
-    if (index === n - 1) {
-      slide.classList.add('active');
+  function goTo(n, direction) {
+    if (n < 1 || n > TOTAL || n === current || isAnimating) return;
+    isAnimating = true;
+
+    const oldSlide = slides[current - 1];
+    const newSlide = slides[n - 1];
+
+    // Remove all transition classes first
+    oldSlide.classList.remove('active', 'exit-left');
+    newSlide.classList.remove('active', 'exit-left');
+
+    if (direction === 'next') {
+      oldSlide.style.transform = 'translateX(-60px)';
+      oldSlide.style.opacity = '0';
+      newSlide.style.transform = 'translateX(60px)';
+      newSlide.style.opacity = '0';
+    } else {
+      oldSlide.style.transform = 'translateX(60px)';
+      oldSlide.style.opacity = '0';
+      newSlide.style.transform = 'translateX(-60px)';
+      newSlide.style.opacity = '0';
     }
+
+    // Force reflow
+    void newSlide.offsetWidth;
+
+    // Reset transition properties
+    oldSlide.style.transition = 'opacity 0.4s ease, transform 0.4s ease';
+    newSlide.style.transition = 'opacity 0.4s ease, transform 0.4s ease';
+
+    requestAnimationFrame(function() {
+      newSlide.style.transform = 'translateX(0)';
+      newSlide.style.opacity = '1';
+      newSlide.classList.add('active');
+      oldSlide.style.pointerEvents = 'none';
+      newSlide.style.pointerEvents = 'auto';
+
+      current = n;
+      counter.textContent = current + ' / ' + TOTAL;
+      progress.style.width = ((current / TOTAL) * 100) + '%';
+
+      setTimeout(function() {
+        isAnimating = false;
+        // Clean up inline styles from old slide
+        oldSlide.style.transition = '';
+        oldSlide.style.transform = '';
+        oldSlide.style.opacity = '';
+      }, 450);
+    });
+  }
+
+  function next() { goTo(current + 1, 'next'); }
+  function prev() { goTo(current - 1, 'prev'); }
+
+  btnNext.addEventListener('click', next);
+  btnPrev.addEventListener('click', prev);
+
+  // Keyboard navigation
+  document.addEventListener('keydown', function(e) {
+    if (e.key === 'ArrowRight' || e.key === ' ') { e.preventDefault(); next(); }
+    if (e.key === 'ArrowLeft') { e.preventDefault(); prev(); }
+    if (e.key === 'Home') { e.preventDefault(); goTo(1, 'prev'); }
+    if (e.key === 'End') { e.preventDefault(); goTo(TOTAL, 'next'); }
   });
 
-  document.getElementById('slideCounter').textContent = currentSlide + ' / ' + totalSlides;
-  document.getElementById('progressFill').style.width = ((currentSlide / totalSlides) * 100) + '%';
-}
+  // Touch swipe
+  let touchStartX = 0;
+  let touchStartY = 0;
 
-function changeSlide(direction) {
-  showSlide(currentSlide + direction);
-}
+  document.addEventListener('touchstart', function(e) {
+    touchStartX = e.changedTouches[0].screenX;
+    touchStartY = e.changedTouches[0].screenY;
+  }, { passive: true });
 
-// Keyboard navigation
-document.addEventListener('keydown', function(e) {
-  if (e.key === 'ArrowRight' || e.key === 'ArrowDown' || e.key === ' ') {
-    e.preventDefault();
-    changeSlide(1);
-  } else if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') {
-    e.preventDefault();
-    changeSlide(-1);
-  } else if (e.key === 'Home') {
-    e.preventDefault();
-    showSlide(1);
-  } else if (e.key === 'End') {
-    e.preventDefault();
-    showSlide(totalSlides);
-  }
-});
+  document.addEventListener('touchend', function(e) {
+    const dx = e.changedTouches[0].screenX - touchStartX;
+    const dy = e.changedTouches[0].screenY - touchStartY;
+    if (Math.abs(dx) > Math.abs(dy) && Math.abs(dx) > 50) {
+      if (dx < 0) next();
+      else prev();
+    }
+  }, { passive: true });
 
-// Touch support
-let touchStartX = 0;
-let touchEndX = 0;
-
-document.addEventListener('touchstart', function(e) {
-  touchStartX = e.changedTouches[0].screenX;
-}, false);
-
-document.addEventListener('touchend', function(e) {
-  touchEndX = e.changedTouches[0].screenX;
-  const diff = touchStartX - touchEndX;
-  if (Math.abs(diff) > 50) {
-    if (diff > 0) changeSlide(1);
-    else changeSlide(-1);
-  }
-}, false);
-
-// Initialize
-showSlide(1);
+})();
 </script>
 
 </body>
